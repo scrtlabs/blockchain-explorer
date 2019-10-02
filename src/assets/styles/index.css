@@ -1,0 +1,26 @@
+body {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  background-color: #f4f6f9;
+  font-family: 'Open Sans', 'Helvetica Neue', 'Arial', 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', '-apple-system', 'BlinkMacSystemFont', sans-serif;
+  font-size: 15px;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+body,
+html,
+#root {
+  height: 100vh;
+}
+
+@media (min-width: 768px) {
+  .showOnDesktop {
+    display: table-cell !important;
+  }
+  .hideOnDesktop {
+    display: none !important;
+  }
+}
