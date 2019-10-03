@@ -58,5 +58,10 @@
     "url": "",
     "id": 0,
     "label": "Enigma Mainnet"
+  },
+  "unknown": {
+    "url": "none",
+    "id": -1,
+    "label": "Unknown"
   }
 }

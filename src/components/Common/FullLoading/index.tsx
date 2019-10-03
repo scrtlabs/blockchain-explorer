@@ -1,7 +1,11 @@
-import React from 'react'
+import React, { HTMLAttributes } from 'react'
 import ReactDOM from 'react-dom'
 import Spinner from '../Spinner'
 import styled from 'styled-components'
+
+interface FullLoadingProps extends HTMLAttributes<HTMLDivElement> {
+  message?: string
+}
 
 const FullLoadingStyled = styled.div`
   align-items: center;
@@ -30,15 +34,13 @@ const Message = styled.p`
   width: 480px;
 `
 
-const FullLoading = (props: { message?: string }) => {
-  const { message = 'Loading...', ...restProps } = props
-  return ReactDOM.createPortal(
+const FullLoading = ({ message = 'Loading...', ...restProps }: FullLoadingProps) =>
+  ReactDOM.createPortal(
     <FullLoadingStyled {...restProps}>
       <Spinner />
       {message ? <Message>{message}</Message> : null}
     </FullLoadingStyled>,
-    document.getElementById('loadingContainer') as Element,
+    document.getElementById('loadingContainer') as HTMLDivElement,
   )
-}
 
 export default FullLoading

@@ -21,6 +21,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:coverage": "CI=true react-scripts test --coverage",
+    "coveralls": "CI=true react-scripts test --coverage && cat ./coverage/lcov.info | coveralls",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -48,9 +50,19 @@
       "git add"
     ]
   },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/index.tsx",
+      "!src/*.ts"
+    ]
+  },
   "devDependencies": {
+    "@testing-library/jest-dom": "^4.1.0",
+    "@testing-library/react": "^9.2.0",
     "@typescript-eslint/eslint-plugin": "^2.3.2",
     "@typescript-eslint/parser": "^2.3.2",
+    "coveralls": "^3.0.6",
     "eslint": "^6.5.1",
     "eslint-config-prettier": "^6.3.0",
     "eslint-plugin-import": "^2.18.2",

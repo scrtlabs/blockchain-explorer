@@ -68,16 +68,15 @@ const MainMenuStyled = styled(MainMenu)`
   }
 `
 
-const Header = (props: any) => {
-  const { ...restProps } = props
-  const { label: network = 'Unknown' } = getNetworkDetailsBy('id')(process.env.REACT_APP_ETH_NETWORK_ID) || {}
+const Header: React.FC = props => {
+  const { label: network } = getNetworkDetailsBy('id')(process.env.REACT_APP_ETH_NETWORK_ID)
 
   const [isMenuOpen, setMenuState] = useState(false)
 
   const toggleMenu = () => setMenuState(!isMenuOpen)
 
   return (
-    <HeaderWrapper {...restProps}>
+    <HeaderWrapper {...props}>
       <HeaderInner>
         <NavLink to="/">
           <Logo />

@@ -1,5 +1,8 @@
-// list of networks provided on eth-cli
+// list of ethNetworks provided on eth-cli
 import ethNetworks from './networks.json'
+
+const UNKNOWN_NAME = 'unknown'
+const UNKNOWN_ID = -1
 
 const byId = (Object.keys(ethNetworks) as Array<keyof typeof ethNetworks>).reduce(
   (acc: { [index: string]: any }, key: keyof typeof ethNetworks) => {
@@ -13,9 +16,9 @@ const byId = (Object.keys(ethNetworks) as Array<keyof typeof ethNetworks>).reduc
   {},
 )
 
-const getNetworkDetailsById = (id: number) => byId[id] || byId.enigmaLocal
+const getNetworkDetailsById = (id: number) => byId[id] || byId[UNKNOWN_ID]
 
-const getNetworkDetailsByName = (name: keyof typeof ethNetworks) => ethNetworks[name] || ethNetworks.enigmaLocal
+const getNetworkDetailsByName = (name: keyof typeof ethNetworks) => ethNetworks[name] || ethNetworks[UNKNOWN_NAME]
 
 const getNetworkDetailsBy = (by: string): Function => {
   if (by === 'id') {
