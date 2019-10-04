@@ -10,7 +10,7 @@ describe('networks utility', () => {
     const callWithInvalidValue = () => getNetworkDetailsBy(by)
 
     // Then
-    expect(callWithInvalidValue).toThrow(Error)
+    expect(callWithInvalidValue).toThrowError()
   })
 
   describe('getNetworkDetailsById', () => {

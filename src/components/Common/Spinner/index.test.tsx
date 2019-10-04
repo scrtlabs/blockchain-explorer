@@ -1,9 +1,7 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { render } from '../../../utils/test-utils'
 import Spinner from './'
 
 it('renders Spinner without crashing', () => {
-  const div = document.createElement('div')
-  ReactDOM.render(<Spinner />, div)
-  ReactDOM.unmountComponentAtNode(div)
+  render(<Spinner />)
 })
