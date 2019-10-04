@@ -9,6 +9,8 @@ it('renders HexAddr with default start/end values', () => {
 })
 
 it('should throw if children is a ReactNode', () => {
+  console.error = jest.fn()
+
   const toRender = () =>
     render(
       <HexAddr>

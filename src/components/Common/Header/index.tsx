@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Logo from '../Logo'
 import Network from '../Network'
 import MainMenu from '../MainMenu'
@@ -78,9 +78,9 @@ const Header: React.FC = props => {
   return (
     <HeaderWrapper {...props}>
       <HeaderInner>
-        <NavLink to="/">
+        <Link to="/">
           <Logo />
-        </NavLink>
+        </Link>
         <NetworkStyled network={network} />
         <MainMenuStyled />
         <MobileMenuStyled toggleMenu={toggleMenu} isMenuOpen={isMenuOpen} />

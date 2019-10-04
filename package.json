@@ -22,9 +22,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "test:coverage": "CI=true react-scripts test --coverage",
-    "coveralls": "CI=true react-scripts test --coverage && cat ./coverage/lcov.info | coveralls",
+    "test": "react-scripts test --verbose",
+    "test:coverage": "yarn test --coverage --watchAll=false",
+    "coveralls": "yarn test:coverage && cat ./coverage/lcov.info | coveralls",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -71,6 +71,7 @@
     "eslint-plugin-jest": "^22.17.0",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-react": "^7.15.0",
+    "history": "^4.10.1",
     "husky": "^3.0.7",
     "lint-staged": "^9.4.1"
   }

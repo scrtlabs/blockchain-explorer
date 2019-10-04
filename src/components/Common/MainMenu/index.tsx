@@ -61,27 +61,21 @@ const Item = styled(NavLink)`
   }
 `
 
-const MainMenu = (props: { history: { location: { pathname?: string } } }) => {
-  const { ...restProps } = props
-
-  return (
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    <MainMenuWrapper value={props.history.location.pathname === '/' ? 0 : 1} {...restProps}>
-      <Item activeClassName="active" to={'/dashboard'}>
-        Home
-      </Item>
-      <Item activeClassName="active" to={'/tasks'}>
-        Tasks
-      </Item>
-      <Item activeClassName="active" to={'/users'}>
-        Users
-      </Item>
-      <Item activeClassName="active" to={'/workers'}>
-        Workers
-      </Item>
-    </MainMenuWrapper>
-  )
-}
+const MainMenu: React.FC = props => (
+  <MainMenuWrapper {...props}>
+    <Item activeClassName="active" to={'/home'}>
+      Home
+    </Item>
+    <Item activeClassName="active" to={'/tasks'}>
+      Tasks
+    </Item>
+    <Item activeClassName="active" to={'/users'}>
+      Users
+    </Item>
+    <Item activeClassName="active" to={'/workers'}>
+      Workers
+    </Item>
+  </MainMenuWrapper>
+)
 
 export default withRouter(MainMenu)

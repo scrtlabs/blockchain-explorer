@@ -13,3 +13,11 @@ it('renders Card with title', () => {
     </Card>,
   )
 })
+
+it('renders Card with title and 0 padding', () => {
+  render(
+    <Card noPadding={true} title="Card Title">
+      This is the card content
+    </Card>,
+  )
+})

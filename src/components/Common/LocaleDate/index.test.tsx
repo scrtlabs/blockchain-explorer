@@ -22,6 +22,8 @@ describe('LocaleDate', () => {
   })
 
   it(`should throw if children is a ReactNode`, () => {
+    console.error = jest.fn()
+
     const toRender = () =>
       render(
         <LocaleDate>
