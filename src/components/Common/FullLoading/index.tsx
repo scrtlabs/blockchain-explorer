@@ -1,9 +1,9 @@
-import React, { HTMLAttributes } from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom'
 import Spinner from '../Spinner'
 import styled from 'styled-components'
 
-interface FullLoadingProps extends HTMLAttributes<HTMLDivElement> {
+interface FullLoadingProps extends React.HTMLAttributes<HTMLDivElement> {
   message?: string
 }
 

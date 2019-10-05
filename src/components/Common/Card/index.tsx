@@ -1,4 +1,4 @@
-import React, { HTMLAttributes } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
 type CardStyledProps = {
@@ -9,10 +9,10 @@ type TitleProps = {
   titleAlign: string
 }
 
-interface CardProps extends HTMLAttributes<HTMLDivElement> {
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string
   children: React.ReactNode
-  noPadding: boolean
+  noPadding?: boolean
   titleAlign?: string
 }
 
@@ -45,7 +45,7 @@ const Body = styled.div`
   flex-grow: 1;
 `
 
-const Card = ({ title, children, noPadding, titleAlign = 'left', ...restProps }: CardProps) => {
+const Card = ({ title, children, noPadding = false, titleAlign = 'left', ...restProps }: CardProps) => {
   return (
     <CardStyled noPadding={noPadding} {...restProps}>
       {title ? <Title titleAlign={titleAlign}>{title}</Title> : null}

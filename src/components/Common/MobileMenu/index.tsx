@@ -1,4 +1,4 @@
-import React, { EventHandler, SyntheticEvent } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import MenuIcon from './img/menu.svg'
 import MainMenu from '../MainMenu'
@@ -37,7 +37,7 @@ const MobileMenuOpacityContainer = styled.div`
   z-index: 12345;
 `
 
-const MobileMenu = (props: { isMenuOpen: boolean; toggleMenu: EventHandler<SyntheticEvent> }) => {
+const MobileMenu = (props: { isMenuOpen: boolean; toggleMenu: React.EventHandler<React.SyntheticEvent> }) => {
   const { isMenuOpen, toggleMenu, ...restProps } = props
 
   return (

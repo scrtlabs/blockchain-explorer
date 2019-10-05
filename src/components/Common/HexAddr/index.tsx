@@ -1,7 +1,7 @@
-import React, { HTMLAttributes } from 'react'
+import React from 'react'
 import shrinkHexString from '../../../utils/shrinkHexString'
 
-interface HexAddrProps extends HTMLAttributes<string> {
+interface HexAddrProps extends React.HTMLAttributes<string> {
   start?: number
   end?: number
 }

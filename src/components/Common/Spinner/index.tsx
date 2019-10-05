@@ -1,4 +1,4 @@
-import React, { HTMLAttributes } from 'react'
+import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import SpinnerSVG from './img/spinner.svg'
 
@@ -7,7 +7,7 @@ type RotatingSpinnerProps = {
   height?: string
 }
 
-interface SpinnerProps extends HTMLAttributes<HTMLDivElement>, RotatingSpinnerProps {}
+interface SpinnerProps extends React.HTMLAttributes<HTMLDivElement>, RotatingSpinnerProps {}
 
 const rotate = keyframes`
   from {

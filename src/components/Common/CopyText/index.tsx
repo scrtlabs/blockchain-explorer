@@ -1,9 +1,9 @@
-import React, { HTMLAttributes } from 'react'
+import React from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import styled from 'styled-components'
 import Copy from './img/copy.svg'
 
-interface CopyTextProps extends HTMLAttributes<HTMLDivElement> {
+interface CopyTextProps extends React.HTMLAttributes<HTMLDivElement> {
   canCopy: boolean
   value: string
 }

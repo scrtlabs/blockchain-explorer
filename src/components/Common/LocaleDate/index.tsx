@@ -1,6 +1,6 @@
-import React, { HTMLAttributes } from 'react'
+import React from 'react'
 
-interface LocaleDateProps extends HTMLAttributes<HTMLDivElement> {
+interface LocaleDateProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode
 }
 
