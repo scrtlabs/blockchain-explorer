@@ -8,6 +8,7 @@ interface TableSearchProps extends React.HTMLAttributes<HTMLDivElement> {
   onClearSearch: CallableFunction
   placeholder: string
   id: string
+  realTimeSearch?: boolean
 }
 
 const SearchForm = styled.form`
@@ -56,10 +57,11 @@ const InputBase = styled.input<any>`
   text-align: left;
 `
 
-const TableSearch = ({ onRequestSearch, onClearSearch, placeholder, id }: TableSearchProps) => {
+const TableSearch = ({ onRequestSearch, onClearSearch, placeholder, id, realTimeSearch = true }: TableSearchProps) => {
   const [searchValue, setSearchValue] = useState('')
 
-  const handleClear = () => {
+  const handleClear: React.EventHandler<React.SyntheticEvent> = event => {
+    event.preventDefault()
     onClearSearch()
     setSearchValue('')
   }
@@ -67,11 +69,14 @@ const TableSearch = ({ onRequestSearch, onClearSearch, placeholder, id }: TableS
   const handleInputChange: React.EventHandler<React.SyntheticEvent> = event => {
     const { value } = event.target as HTMLInputElement
     setSearchValue(value)
-    onRequestSearch(event, value)
+
+    if (realTimeSearch) {
+      onRequestSearch(value)
+    }
   }
 
   return (
-    <SearchForm onSubmit={event => onRequestSearch(event, searchValue)}>
+    <SearchForm onSubmit={() => onRequestSearch(searchValue)}>
       <IconButton disabled={!searchValue}>
         <img src={SearchIcon} alt="Search" />
       </IconButton>

@@ -1,0 +1,97 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render TableSearch without crashing 1`] = `
+.c0 {
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 0 3px 0 rgba(0,0,0,0.05);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 30px;
+  width: 100%;
+}
+
+.c1 {
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 30px;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  padding: 0;
+  outline: none;
+  width: 30px;
+}
+
+.c1:active {
+  opacity: 0.5;
+}
+
+.c1[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.c2 {
+  background-color: transparent;
+  border: none;
+  color: #333;
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  font-size: 13px;
+  font-weight: normal;
+  height: 30px;
+  outline: none;
+  text-align: left;
+}
+
+@media (min-width:768px) {
+  .c0 {
+    width: 285px;
+  }
+}
+
+<div>
+  <form
+    class="c0"
+  >
+    <button
+      class="c1"
+      disabled=""
+    >
+      <img
+        alt="Search"
+        src="search.svg"
+      />
+    </button>
+    <input
+      class="c2"
+      id="anId"
+      placeholder="search what you need"
+      type="text"
+      value=""
+    />
+    <button
+      class="c1"
+    >
+      <img
+        alt="Clear Search"
+        src="close.svg"
+      />
+    </button>
+  </form>
+</div>
+`;
