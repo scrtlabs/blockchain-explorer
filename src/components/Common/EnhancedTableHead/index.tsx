@@ -33,6 +33,7 @@ const EnhancedTableHead = ({ headerCells, order, orderBy, onRequestSort }: Enhan
   const createSortHandler = (property: string) => (event: React.SyntheticEvent) => {
     onRequestSort(event, property)
   }
+
   return (
     <TableHead>
       <TableRow>
@@ -56,7 +57,7 @@ const EnhancedTableHead = ({ headerCells, order, orderBy, onRequestSort }: Enhan
                   hideSortIcon={false}
                   onClick={createSortHandler(headerCell.id)}
                   style={{
-                    justifyContent: headerCell.align ? headerCell.align : 'left',
+                    justifyContent: headerCell.align,
                     display: 'flex',
                   }}
                 >
@@ -66,7 +67,7 @@ const EnhancedTableHead = ({ headerCells, order, orderBy, onRequestSort }: Enhan
                 <TableHeadText
                   onClick={createSortHandler(headerCell.id)}
                   style={{
-                    justifyContent: headerCell.align ? headerCell.align : 'left',
+                    justifyContent: headerCell.align,
                     display: 'flex',
                     cursor: 'pointer',
                   }}
