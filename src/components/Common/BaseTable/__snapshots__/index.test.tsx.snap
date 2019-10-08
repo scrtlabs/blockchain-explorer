@@ -1,0 +1,712 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render BaseTable with header and footer 1`] = `
+.c4 {
+  color: #999;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.c4 + svg {
+  opacity: 1;
+}
+
+.c9 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.c10 {
+  padding: 10px 0 0 0;
+}
+
+.c10 > div {
+  color: #666;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  font-size: 12px;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+}
+
+.c0 {
+  background-color: #fff;
+  border-radius: 5px;
+  border: solid 1px #efefef;
+  box-shadow: 0 0 8px 0 rgba(0,0,0,0.04);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  padding: 18px 20px;
+}
+
+.c2 {
+  color: #000;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+}
+
+.c3 {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.c1 {
+  padding: 0 0 5px 0;
+}
+
+.c5 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.c6 {
+  color: #4c904a;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.c7 {
+  color: #954949;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.c8 {
+  color: #1576ad;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+@media (min-width:768px) {
+  .c9 {
+    -webkit-box-pack: end;
+    -webkit-justify-content: flex-end;
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+  }
+}
+
+@media (min-width:768px) {
+  .c10 > div {
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+  }
+}
+
+<div>
+  <div
+    class="c0 c1"
+  >
+    <div
+      class="c2"
+    >
+      <div
+        class="c3"
+      >
+        <table
+          class="MuiTable-root"
+        >
+          <thead
+            class="MuiTableHead-root"
+          >
+            <tr
+              class="MuiTableRow-root MuiTableRow-head"
+            >
+              <th
+                class="MuiTableCell-root MuiTableCell-head"
+                scope="col"
+                style="padding-right: 5px; display: table-cell;"
+              >
+                <span
+                  class="c4"
+                  style="justify-content: flex-start; display: flex; cursor: pointer;"
+                >
+                  Task ID
+                </span>
+              </th>
+              <th
+                class="MuiTableCell-root showOnDesktop MuiTableCell-head"
+                scope="col"
+                style="padding-right: 5px; display: none;"
+              >
+                <span
+                  class="c4"
+                  style="justify-content: flex-start; display: flex; cursor: pointer;"
+                >
+                  Secret Contact Address
+                </span>
+              </th>
+              <th
+                class="MuiTableCell-root showOnDesktop MuiTableCell-head"
+                scope="col"
+                style="padding-right: 5px; display: none;"
+              >
+                <span
+                  class="c4"
+                  style="justify-content: flex-start; display: flex; cursor: pointer;"
+                >
+                  Worker Address (Ethereum)
+                </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class="MuiTableBody-root"
+          >
+            <tr
+              class="MuiTableRow-root"
+            >
+              <td
+                class="MuiTableCell-root MuiTableCell-alignCenter MuiTableCell-body"
+                style="padding-right: 16px;"
+              >
+                <div
+                  class="c5"
+                >
+                  <span
+                    class="c6"
+                  >
+                    first value at first row
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-alignLeft MuiTableCell-body"
+                style="padding-right: 16px;"
+              >
+                <div
+                  class="c5"
+                >
+                  <span
+                    class="c7"
+                  >
+                    second value at first row
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-alignRight MuiTableCell-body"
+                style="padding-right: 16px;"
+              >
+                <div
+                  class="c5"
+                >
+                  <span
+                    class="c8"
+                  >
+                    third value at first row
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="MuiTableRow-root"
+            >
+              <td
+                class="MuiTableCell-root MuiTableCell-alignCenter MuiTableCell-body"
+                style="padding-right: 16px;"
+              >
+                <div
+                  class="c5"
+                >
+                  <span
+                    class="c6"
+                  >
+                    first value at second row
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-alignLeft MuiTableCell-body"
+                style="padding-right: 16px;"
+              >
+                <div
+                  class="c5"
+                >
+                  <span
+                    class="c7"
+                  >
+                    second value at second row
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-alignRight MuiTableCell-body"
+                style="padding-right: 16px;"
+              >
+                <div
+                  class="c5"
+                >
+                  <span
+                    class="c8"
+                  >
+                    third value at second row
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="MuiTableRow-root"
+            >
+              <td
+                class="MuiTableCell-root MuiTableCell-alignCenter MuiTableCell-body"
+                style="padding-right: 16px;"
+              >
+                <div
+                  class="c5"
+                >
+                  <span
+                    class="c6"
+                  >
+                    first value at third row
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-alignRight MuiTableCell-body"
+                colspan="2"
+                style="padding-right: 16px;"
+              >
+                <div
+                  class="c5"
+                >
+                  <span
+                    class="c8"
+                  >
+                    third value at third row
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div
+        class="c9"
+      >
+        <div
+          class="MuiTablePagination-root c10"
+        >
+          <div
+            class="MuiToolbar-root MuiToolbar-regular MuiTablePagination-toolbar MuiToolbar-gutters"
+          >
+            <div
+              class="MuiTablePagination-spacer"
+            />
+            <p
+              class="MuiTypography-root MuiTablePagination-caption MuiTypography-body2 MuiTypography-colorInherit"
+            >
+              Rows per page:
+            </p>
+            <div
+              class="MuiInputBase-root MuiTablePagination-input MuiTablePagination-selectRoot"
+            >
+              <select
+                aria-label="rows per page"
+                class="MuiSelect-root MuiSelect-select MuiTablePagination-select MuiInputBase-input MuiInputBase-inputSelect"
+              >
+                <option
+                  class="MuiTablePagination-menuItem"
+                  value="25"
+                >
+                  25
+                </option>
+                <option
+                  class="MuiTablePagination-menuItem"
+                  value="50"
+                >
+                  50
+                </option>
+                <option
+                  class="MuiTablePagination-menuItem"
+                  value="100"
+                >
+                  100
+                </option>
+                <option
+                  class="MuiTablePagination-menuItem"
+                  value="200"
+                >
+                  200
+                </option>
+              </select>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSelect-icon MuiTablePagination-selectIcon"
+                focusable="false"
+                role="presentation"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M7 10l5 5 5-5z"
+                />
+              </svg>
+            </div>
+            <p
+              class="MuiTypography-root MuiTablePagination-caption MuiTypography-body2 MuiTypography-colorInherit"
+            >
+              1-1 of 3
+            </p>
+            <div
+              style="flex-shrink: 0;"
+            >
+              <button
+                aria-label="first page"
+                class="MuiButtonBase-root MuiIconButton-root Mui-disabled Mui-disabled"
+                disabled=""
+                tabindex="-1"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root"
+                    focusable="false"
+                    role="presentation"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z"
+                    />
+                    <path
+                      d="M24 24H0V0h24v24z"
+                      fill="none"
+                    />
+                  </svg>
+                </span>
+              </button>
+              <button
+                aria-label="previous page"
+                class="MuiButtonBase-root MuiIconButton-root Mui-disabled Mui-disabled"
+                disabled=""
+                tabindex="-1"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root"
+                    focusable="false"
+                    role="presentation"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"
+                    />
+                  </svg>
+                </span>
+              </button>
+              <button
+                aria-label="next page"
+                class="MuiButtonBase-root MuiIconButton-root"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root"
+                    focusable="false"
+                    role="presentation"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+              <button
+                aria-label="last page"
+                class="MuiButtonBase-root MuiIconButton-root"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root"
+                    focusable="false"
+                    role="presentation"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M5.59 7.41L10.18 12l-4.59 4.59L7 18l6-6-6-6zM16 6h2v12h-2z"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`should render BaseTable without crashing 1`] = `
+.c0 {
+  background-color: #fff;
+  border-radius: 5px;
+  border: solid 1px #efefef;
+  box-shadow: 0 0 8px 0 rgba(0,0,0,0.04);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  padding: 18px 20px;
+}
+
+.c2 {
+  color: #000;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+}
+
+.c3 {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.c1 {
+  padding: 0 0 5px 0;
+}
+
+.c4 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.c5 {
+  color: #4c904a;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.c6 {
+  color: #954949;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.c7 {
+  color: #1576ad;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+<div>
+  <div
+    class="c0 c1"
+  >
+    <div
+      class="c2"
+    >
+      <div
+        class="c3"
+      >
+        <table
+          class="MuiTable-root"
+        >
+          <tbody
+            class="MuiTableBody-root"
+          >
+            <tr
+              class="MuiTableRow-root"
+            >
+              <td
+                class="MuiTableCell-root MuiTableCell-alignCenter MuiTableCell-body"
+                style="padding-right: 16px;"
+              >
+                <div
+                  class="c4"
+                >
+                  <span
+                    class="c5"
+                  >
+                    first value at first row
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-alignLeft MuiTableCell-body"
+                style="padding-right: 16px;"
+              >
+                <div
+                  class="c4"
+                >
+                  <span
+                    class="c6"
+                  >
+                    second value at first row
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-alignRight MuiTableCell-body"
+                style="padding-right: 16px;"
+              >
+                <div
+                  class="c4"
+                >
+                  <span
+                    class="c7"
+                  >
+                    third value at first row
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="MuiTableRow-root"
+            >
+              <td
+                class="MuiTableCell-root MuiTableCell-alignCenter MuiTableCell-body"
+                style="padding-right: 16px;"
+              >
+                <div
+                  class="c4"
+                >
+                  <span
+                    class="c5"
+                  >
+                    first value at second row
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-alignLeft MuiTableCell-body"
+                style="padding-right: 16px;"
+              >
+                <div
+                  class="c4"
+                >
+                  <span
+                    class="c6"
+                  >
+                    second value at second row
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-alignRight MuiTableCell-body"
+                style="padding-right: 16px;"
+              >
+                <div
+                  class="c4"
+                >
+                  <span
+                    class="c7"
+                  >
+                    third value at second row
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="MuiTableRow-root"
+            >
+              <td
+                class="MuiTableCell-root MuiTableCell-alignCenter MuiTableCell-body"
+                style="padding-right: 16px;"
+              >
+                <div
+                  class="c4"
+                >
+                  <span
+                    class="c5"
+                  >
+                    first value at third row
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-alignRight MuiTableCell-body"
+                colspan="2"
+                style="padding-right: 16px;"
+              >
+                <div
+                  class="c4"
+                >
+                  <span
+                    class="c7"
+                  >
+                    third value at third row
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+`;

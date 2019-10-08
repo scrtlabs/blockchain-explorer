@@ -56,6 +56,11 @@ const theme = {
     fontWeight: '500',
     placeholderColor: '#666',
   },
+  status: {
+    success: '#4c904a',
+    submitted: '#1576ad',
+    error: '#954949',
+  },
 }
 
 export default theme
