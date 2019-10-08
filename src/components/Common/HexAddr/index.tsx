@@ -2,8 +2,8 @@ import React from 'react'
 import shrinkHexString from '../../../utils/shrinkHexString'
 
 interface HexAddrProps extends React.HTMLAttributes<string> {
-  start?: number
   end?: number
+  start?: number
 }
 
 const HexAddr = ({ start = 5, end = 5, children }: HexAddrProps) => {

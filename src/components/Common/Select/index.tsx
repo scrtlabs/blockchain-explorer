@@ -56,8 +56,8 @@ const FormSelect = styled.select`
   outline: none;
   padding: 0 20px 0 0;
   position: relative;
-  z-index: 5;
   width:100%;
+  z-index: 5;
 `
 
 const Select = (props: Props) => {

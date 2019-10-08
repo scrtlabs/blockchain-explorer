@@ -37,7 +37,12 @@ const MobileMenuOpacityContainer = styled.div`
   z-index: 12345;
 `
 
-const MobileMenu = (props: { isMenuOpen: boolean; toggleMenu: React.EventHandler<React.SyntheticEvent> }) => {
+interface MobileMenuProps {
+  isMenuOpen: boolean
+  toggleMenu: React.EventHandler<React.SyntheticEvent>
+}
+
+const MobileMenu = (props: MobileMenuProps) => {
   const { isMenuOpen, toggleMenu, ...restProps } = props
 
   return (

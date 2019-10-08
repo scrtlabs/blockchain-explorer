@@ -7,7 +7,7 @@ import Header from '../Common/Header'
 import Footer from '../Common/Footer'
 import Home from '../Home'
 import theme from '../../theme'
-import './App.css'
+import '../../assets/styles/index.css'
 
 const EmptyContent = () => <React.Fragment />
 const NonExistent = () => <div>404 Not Found</div>

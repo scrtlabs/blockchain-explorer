@@ -5,8 +5,8 @@ const theme = {
   },
   colors: {
     failed: '#d07676',
-    primary: '#e72e9d',
-    secondary: '#1ca8f8',
+    primary: '#1ca8f8',
+    secondary: '#e72e9d',
     submitted: '#1ca8f8',
     success: '#79d076',
     textCommon: '#333',
@@ -17,8 +17,8 @@ const theme = {
     border: 'solid 1px #efefef',
     borderRadius: '5px',
     boxShadow: '0 0 8px 0 rgba(0, 0, 0, 0.04)',
-    paddingHorizontal: '20px',
-    paddingVertical: '18px',
+    paddingHorizontal: '18px',
+    paddingVertical: '15px',
     textColor: '#000',
     textColorSecondary: '#333',
     titleColor: '#000',
@@ -42,11 +42,12 @@ const theme = {
     xxxl: '1366px',
   },
   borders: {
-    borderColor: '#d9d9d9',
+    borderColor: '#d5d5d5',
     commonBorderRadius: '5px',
   },
   separation: {
     blockVerticalSeparation: '16px',
+    blockBottomMargin: '25px',
   },
   paddings: {
     mainPadding: '15px',

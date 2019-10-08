@@ -21,7 +21,11 @@ const NetworkName = styled.span`
   text-align: left;
 `
 
-const Network = (props: { network: string }) => {
+interface Props {
+  network: string
+}
+
+const Network: React.FC<Props> = (props: Props) => {
   const { network, ...restProps } = props
 
   return (

@@ -19,7 +19,7 @@ const SelectStyled = styled(Select)`
 `
 
 const SelectColor = styled(SelectStyled)`
-  color: ${props => props.theme.colors.secondary};
+  color: ${props => props.theme.colors.primary};
 `
 
 const InfoType: Array<OptionsProps> = [
