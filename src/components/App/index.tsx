@@ -5,10 +5,10 @@ import MainWrapper from '../Common/MainWrapper'
 import MainScroll from '../Common/MainScroll'
 import Header from '../Common/Header'
 import Footer from '../Common/Footer'
+import Home from '../Home'
 import theme from '../../theme'
 import './App.css'
 
-const Home = () => <div>Hello Explorer!</div>
 const EmptyContent = () => <React.Fragment />
 const NonExistent = () => <div>404 Not Found</div>
 

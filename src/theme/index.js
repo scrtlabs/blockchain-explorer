@@ -4,11 +4,13 @@ const theme = {
     fontFamilyCode: `source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace`,
   },
   colors: {
-    primary: '#1ca8f8',
-    secondary: '#536979',
-    tertiary: '#f5f5f5',
-    textColor: '#000',
-    textColorLight: '#999',
+    failed: '#d07676',
+    primary: '#e72e9d',
+    secondary: '#1ca8f8',
+    submitted: '#1ca8f8',
+    success: '#79d076',
+    textCommon: '#333',
+    textLight: '#999',
   },
   cards: {
     backgroundColor: '#fff',
@@ -43,8 +45,8 @@ const theme = {
     borderColor: '#d9d9d9',
     commonBorderRadius: '5px',
   },
-  margins: {
-    blockSeparation: '10px',
+  separation: {
+    blockVerticalSeparation: '16px',
   },
   paddings: {
     mainPadding: '15px',

@@ -48,7 +48,7 @@ const IconButton = styled.button`
 const InputBase = styled.input<any>`
   background-color: transparent;
   border: none;
-  color: #333;
+  color: ${props => props.theme.colors.textCommon};
   flex-grow: 1;
   font-size: 13px;
   font-weight: normal;
