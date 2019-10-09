@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="13.853" height="13.842" viewBox="0 0 13.853 13.842">
+    <defs>
+        <style>
+            .cls-1{fill:#333}
+        </style>
+    </defs>
+    <path id="Search_Magnifier" d="M13.679 13.055L9.7 9.078a5.369 5.369 0 0 0 1.255-3.452A5.48 5.48 0 0 0 0 5.628a5.485 5.485 0 0 0 8.878 4.25l3.989 3.989a.574.574 0 1 0 .812-.812zM1.164 5.628a4.313 4.313 0 0 1 8.625 0 4.313 4.313 0 0 1-8.625 0z" class="cls-1" data-name="Search Magnifier" transform="translate(0 -.2)"/>
+</svg>

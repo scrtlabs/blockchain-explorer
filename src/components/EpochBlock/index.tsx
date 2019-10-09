@@ -2,11 +2,14 @@ import React, { HTMLAttributes } from 'react'
 import styled, { withTheme } from 'styled-components'
 import Card from '../Common/Card'
 import ValueAndSubtitle from '../Common/ValueAndSubtitle'
+import TimeLeft from '../Common/TimeLeft'
 import ProgressCircle from '../ProgressCircle'
 
 const EpochBlockStyled = styled(Card)<BlockProps>`
+  cursor: pointer;
   padding: 19px 15px 12px;
   position: relative;
+  transition: box-shadow 0.15s linear;
 
   &::before {
     background-color: ${props => props.borderColor};
@@ -16,8 +19,12 @@ const EpochBlockStyled = styled(Card)<BlockProps>`
     height: 6px;
     left: 0;
     position: absolute;
-    top: 0;
+    top: -1px;
     width: 100%;
+  }
+
+  &:hover {
+    box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.15);
   }
 
   > div {
@@ -89,10 +96,10 @@ const EpochBlock: React.FC<EpochProps> = (props: EpochProps) => {
       <ProgressCircleStyled color={current ? runningColor : endedColor} title="Completed Tasks" progress={progress} />
       <Values>
         <TwoItemsGrid>
-          <ValueAndSubtitle value={`#${epoch}`} subtitle="Epoch" />
+          <ValueAndSubtitle underlineValue={true} value={`#${epoch}`} subtitle="Epoch" />
           <ValueAndSubtitle value={tasks} subtitle="Tasks" />
         </TwoItemsGrid>
-        <ValueAndSubtitle value={time} subtitle={timeLabel} />
+        <TimeLeft current={current || false} value={time} subtitle={timeLabel} />
       </Values>
     </EpochBlockStyled>
   )
