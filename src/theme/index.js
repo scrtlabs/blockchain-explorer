@@ -26,8 +26,8 @@ const theme = {
   header: {
     backgroundColor: '#fff',
     boxShadow: '0 1px 10px 0 rgba(0, 0, 0, 0.08)',
-    height: '60px',
     color: '#000',
+    height: '60px',
   },
   footer: {
     color: '#303b3e',
@@ -46,8 +46,8 @@ const theme = {
     commonBorderRadius: '5px',
   },
   separation: {
-    blockVerticalSeparation: '16px',
     blockBottomMargin: '25px',
+    blockVerticalSeparation: '16px',
   },
   paddings: {
     mainPadding: '15px',
@@ -60,9 +60,14 @@ const theme = {
     placeholderColor: '#666',
   },
   status: {
-    success: '#4c904a',
-    submitted: '#1576ad',
     error: '#954949',
+    submitted: '#1576ad',
+    success: '#4c904a',
+  },
+  taskStatus: {
+    failed: '#d07676',
+    submitted: '#1ca8f8',
+    success: '#79d076',
   },
 }
 
