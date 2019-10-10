@@ -14,6 +14,7 @@
     "@types/react-router-dom": "^5.1.0",
     "@types/styled-components": "^4.1.19",
     "numeral": "^2.0.6",
+    "polished": "^3.4.1",
     "prettier": "^1.18.2",
     "react": "^16.10.1",
     "react-copy-to-clipboard": "^5.0.1",

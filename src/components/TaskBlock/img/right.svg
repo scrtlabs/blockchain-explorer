@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="17.668" height="10" viewBox="0 0 17.668 10">
+    <defs>
+        <style>
+            .cls-1{fill:#666}
+        </style>
+    </defs>
+    <g id="right" transform="translate(-648 16)">
+        <path id="chevron_right" d="M12.873 0l4.934 5-4.934 5H8.139l4.942-5-4.942-5z" class="cls-1" data-name="chevron right" transform="translate(647.861 -16)"/>
+        <path id="chevron_right-2" d="M12.873 0l4.934 5-4.934 5H8.139l4.942-5-4.942-5z" class="cls-1" data-name="chevron right" transform="translate(639.861 -16)"/>
+    </g>
+</svg>
