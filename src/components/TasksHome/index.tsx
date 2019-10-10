@@ -1,5 +1,4 @@
 import React from 'react'
-import styled from 'styled-components'
 import SectionTitle from '../Common/SectionTitle'
 import TaskBlock, { TaskItemProps, TaskStatus } from '../TaskBlock'
 

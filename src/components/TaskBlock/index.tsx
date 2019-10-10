@@ -32,10 +32,9 @@ const StatusBlock = styled.div<StatusProps>`
   color: ${props => darken(0.1, props.color)};
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
   flex-shrink: 0;
   justify-content: center;
-  max-width: 122px;
+  width: 122px;
   padding: 10px;
 `
 
@@ -59,12 +58,15 @@ const StatusLabel = styled.p`
 const TaskInfo = styled.div`
   display: grid;
   flex-grow: 1;
-  grid-template-columns: 1fr 20px 1fr;
-  padding: 8px 20px 8px 15px;
+  grid-template-columns: auto 1fr auto;
+  padding: 10px 20px 10px 15px;
   row-gap: 13px;
 `
 
 const InfoItem = styled.div`
+  min-width: 0;
+  max-width: 528px;
+
   &:first-child,
   &:nth-child(4n) {
     padding-right: 20px;
@@ -76,7 +78,7 @@ const InfoItem = styled.div`
 `
 
 const InfoItemSeparator = styled.div`
-  width: 20px;
+  /* width: 20px; */
 `
 
 const ArrowContainer = styled(InfoItemSeparator)`
@@ -87,7 +89,7 @@ const ArrowContainer = styled(InfoItemSeparator)`
 
 const InfoLabel = styled.h3`
   color: ${props => props.theme.colors.textLight};
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   line-height: 1.36;
   margin: 0;
@@ -96,10 +98,12 @@ const InfoLabel = styled.h3`
 const InfoValue = styled.span`
   color: ${props => props.theme.colors.textCommon};
   cursor: pointer;
-  font-size: 12px;
+  display: block;
+  font-size: 14px;
   font-weight: normal;
   line-height: 1.42;
   margin: 0;
+  max-width: 100%;
   overflow: hidden;
   text-decoration: underline;
   text-overflow: ellipsis;
