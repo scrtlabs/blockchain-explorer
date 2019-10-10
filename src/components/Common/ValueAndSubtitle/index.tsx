@@ -20,7 +20,7 @@ export const Value = styled.p<{ underline?: boolean }>`
   line-height: 1.4;
   margin: 0;
   text-align: center;
-  text-decoration: ${props => props.underline ? 'underline' : 'none'};
+  text-decoration: ${props => (props.underline ? 'underline' : 'none')};
 `
 
 export interface ValueAndSubtitleProps extends HTMLAttributes<HTMLDivElement> {

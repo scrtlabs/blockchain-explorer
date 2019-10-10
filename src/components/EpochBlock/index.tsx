@@ -5,6 +5,23 @@ import ValueAndSubtitle from '../Common/ValueAndSubtitle'
 import TimeLeft from '../Common/TimeLeft'
 import ProgressCircle from '../ProgressCircle'
 
+export interface ValuesProps {
+  current?: boolean
+  epoch: string
+  progress: string
+  tasks: string
+  time: string
+}
+
+interface EpochProps extends HTMLAttributes<HTMLDivElement> {
+  values: ValuesProps
+  theme: any
+}
+
+interface BlockProps extends HTMLAttributes<HTMLDivElement> {
+  borderColor?: string
+}
+
 const EpochBlockStyled = styled(Card)<BlockProps>`
   cursor: pointer;
   padding: 19px 15px 12px;
@@ -66,29 +83,12 @@ const TwoItemsGrid = styled.div`
   }
 `
 
-export interface ValuesProps {
-  current?: boolean
-  epoch: string
-  progress: string
-  tasks: string
-  time: string
-}
-
-interface EpochProps extends HTMLAttributes<HTMLDivElement> {
-  values: ValuesProps
-  theme: any
-}
-
-interface BlockProps extends HTMLAttributes<HTMLDivElement> {
-  borderColor?: string
-}
-
 const EpochBlock: React.FC<EpochProps> = (props: EpochProps) => {
   const { values, theme, ...restProps } = props
   const { current, epoch, progress, tasks, time } = values
-  const timeLabel: string = current ? 'Time Left' : 'Ended'
-  const endedColor: string = 'rgba(28, 168, 248, 0.5)'
-  const runningColor: string = 'rgba(231, 46, 157, 0.6)'
+  const timeLabel = current ? 'Time Left' : 'Ended'
+  const endedColor = 'rgba(28, 168, 248, 0.5)'
+  const runningColor = 'rgba(231, 46, 157, 0.6)'
   const borderColor: string = current ? theme.colors.secondary : endedColor
 
   return (
