@@ -2,7 +2,9 @@ import React from 'react'
 import styled from 'styled-components'
 import Card from '../Common/Card'
 
-const NetworkInfoCardStyled = styled(Card)``
+const NetworkInfoCardStyled = styled(Card)`
+  min-width: 244px;
+`
 
 const Item = styled.div`
   margin: 0 0 12px 0;

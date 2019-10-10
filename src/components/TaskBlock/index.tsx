@@ -14,28 +14,42 @@ const TaskItem = styled.div`
 
 const TaskCard = styled(Card)`
   > div {
-    flex-direction: row;
+    flex-direction: column;
+
+    @media (min-width: ${props => props.theme.themeBreakPoints.md}) {
+      flex-direction: row;
+    }
   }
 `
 
 const StatusBlock = styled.div<StatusProps>`
   align-items: center;
   background-color: ${props => rgba(props.color, 0.25)};
-  border-bottom-left-radius: ${props => props.theme.cards.borderRadius};
   border-bottom-width: 1px;
   border-color: ${props => props.color};
-  border-left-width: 6px;
+  border-left-width: 1px;
   border-right-width: 1px;
   border-style: solid;
   border-top-left-radius: ${props => props.theme.cards.borderRadius};
-  border-top-width: 1px;
+  border-top-right-radius: ${props => props.theme.cards.borderRadius};
+  border-top-width: 6px;
   color: ${props => darken(0.1, props.color)};
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   justify-content: center;
-  width: 122px;
   padding: 10px;
+  width: 100%;
+
+  @media (min-width: ${props => props.theme.themeBreakPoints.md}) {
+    border-bottom-left-radius: ${props => props.theme.cards.borderRadius};
+    border-color: ${props => props.color};
+    border-left-width: 6px;
+    border-top-left-radius: ${props => props.theme.cards.borderRadius};
+    border-top-right-radius: 0;
+    border-top-width: 1px;
+    width: 122px;
+  }
 `
 
 const Number = styled.h2`
@@ -58,33 +72,50 @@ const StatusLabel = styled.p`
 const TaskInfo = styled.div`
   display: grid;
   flex-grow: 1;
-  grid-template-columns: auto 1fr auto;
-  padding: 10px 20px 10px 15px;
-  row-gap: 13px;
+  grid-template-columns: 1fr;
+  padding: 10px;
+  row-gap: 20px;
+
+  @media (min-width: ${props => props.theme.themeBreakPoints.md}) {
+    grid-template-columns: auto 1fr auto;
+    padding: 10px 20px 10px 15px;
+    row-gap: 13px;
+  }
 `
 
 const InfoItem = styled.div`
   min-width: 0;
-  max-width: 528px;
+  max-width: 100%;
 
-  &:first-child,
-  &:nth-child(4n) {
-    padding-right: 20px;
-  }
+  @media (min-width: ${props => props.theme.themeBreakPoints.md}) {
+    min-width: 0;
+    max-width: 528px;
 
-  &:nth-child(3n) {
-    padding-left: 20px;
+    &:first-child,
+    &:nth-child(4n) {
+      padding-right: 20px;
+    }
+
+    &:nth-child(3n) {
+      padding-left: 20px;
+    }
   }
 `
 
 const InfoItemSeparator = styled.div`
-  /* width: 20px; */
+  display: none;
+
+  @media (min-width: ${props => props.theme.themeBreakPoints.md}) {
+    display: block;
+  }
 `
 
 const ArrowContainer = styled(InfoItemSeparator)`
-  align-items: center;
-  display: flex;
-  justify-content: center;
+  @media (min-width: ${props => props.theme.themeBreakPoints.md}) {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
 `
 
 const InfoLabel = styled.h3`
@@ -202,7 +233,9 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
           </InfoItem>
         </TaskInfo>
       </TaskCard>
-      <TaskTime><img src={TimeIcon} alt="" /> {time}</TaskTime>
+      <TaskTime>
+        <img src={TimeIcon} alt="" /> {time}
+      </TaskTime>
     </TaskItem>
   )
 }

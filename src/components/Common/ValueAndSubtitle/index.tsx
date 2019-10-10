@@ -15,12 +15,16 @@ export const Subtitle = styled.h3`
 
 export const Value = styled.p<{ underline?: boolean }>`
   color: ${props => props.theme.colors.textCommon};
+  display: block;
   font-size: 20px;
   font-weight: 600;
   line-height: 1.4;
   margin: 0;
+  overflow: hidden;
   text-align: center;
   text-decoration: ${props => props.underline ? 'underline' : 'none'};
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `
 
 export interface ValueAndSubtitleProps extends HTMLAttributes<HTMLDivElement> {
