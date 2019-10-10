@@ -69,8 +69,8 @@ const MainMenu: React.FC = props => (
     <Item activeClassName="active" to={'/tasks'}>
       Tasks
     </Item>
-    <Item activeClassName="active" to={'/users'}>
-      Users
+    <Item activeClassName="active" to={'/epochs'}>
+      Epochs
     </Item>
     <Item activeClassName="active" to={'/workers'}>
       Workers

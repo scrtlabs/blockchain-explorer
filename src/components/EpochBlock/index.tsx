@@ -1,20 +1,30 @@
 import React, { HTMLAttributes } from 'react'
 import styled, { withTheme } from 'styled-components'
+import { useQuery } from '@apollo/react-hooks'
 import Card from '../Common/Card'
 import ValueAndSubtitle from '../Common/ValueAndSubtitle'
 import TimeLeft from '../Common/TimeLeft'
 import ProgressCircle from '../ProgressCircle'
+import { GET_TASKS_BY_STATE_IN_BLOCK_RANGE } from '../../utils/subgrah-queries'
 
 export interface ValuesProps {
   current?: boolean
   epoch: string
   progress: string
-  tasks: string
   time: string
 }
 
-interface EpochProps extends HTMLAttributes<HTMLDivElement> {
+export interface EpochProps {
+  id: string
+  inclusionBlockNumber: string
+  startBlockNumber: string
+  completeBlockNumber: string
+  startTime: string
+}
+
+interface EpochBlockProps extends HTMLAttributes<HTMLDivElement> {
   values: ValuesProps
+  epoch: EpochProps
   theme: any
 }
 
@@ -92,20 +102,30 @@ const TwoItemsGrid = styled.div`
   }
 `
 
-const EpochBlock: React.FC<EpochProps> = (props: EpochProps) => {
-  const { values, theme, ...restProps } = props
-  const { current, epoch, progress, tasks, time } = values
+const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
+  const { values, theme, epoch, ...restProps } = props
+  const { current, epoch: epochId, progress, time } = values
   const timeLabel = current ? 'Time Left' : 'Ended'
   const endedColor = 'rgba(28, 168, 248, 0.5)'
   const runningColor = 'rgba(231, 46, 157, 0.6)'
   const borderColor: string = current ? theme.colors.secondary : endedColor
+  const { data, error, loading } = useQuery(GET_TASKS_BY_STATE_IN_BLOCK_RANGE, {
+    variables: { from: +epoch.startBlockNumber, to: +epoch.completeBlockNumber, status: 'RecordCreated' },
+  })
+  const [tasks, setTasks] = React.useState('0')
+
+  React.useEffect(() => {
+    if (!loading && !error) {
+      setTasks(`${data.tasks.length}`)
+    }
+  }, [data, loading])
 
   return (
     <EpochBlockStyled borderColor={borderColor} {...restProps}>
       <ProgressCircleStyled color={current ? runningColor : endedColor} title="Completed Tasks" progress={progress} />
       <Values>
         <TwoItemsGrid>
-          <ValueAndSubtitle underlineValue={true} value={`#${epoch}`} subtitle="Epoch" />
+          <ValueAndSubtitle underlineValue={true} value={`#${epochId}`} subtitle="Epoch" />
           <ValueAndSubtitle value={tasks} subtitle="Tasks" />
         </TwoItemsGrid>
         <TimeLeft current={current || false} value={time} subtitle={timeLabel} />

@@ -1,7 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
+import { useQuery } from '@apollo/react-hooks'
+import humanizeDuration from 'humanize-duration'
 import SectionTitle from '../Common/SectionTitle'
-import EpochBlock from '../EpochBlock'
+import EpochBlock, {EpochProps, ValuesProps} from '../EpochBlock'
+import { GET_RECENT_EPOCHS } from '../../utils/subgrah-queries'
 
 const EpochsRow = styled.div`
   display: grid;
@@ -15,36 +18,67 @@ const EpochsRow = styled.div`
   }
 `
 
-const blockCurrent = {
-  current: true,
-  epoch: '123456',
-  progress: '92',
-  tasks: '15000',
-  time: '2d 23h 54m',
-}
+const shortEngHumanizer = humanizeDuration.humanizer({
+  language: 'shortEn',
+  languages: {
+    shortEn: {
+      y: () => 'y',
+      mo: () => 'mo',
+      w: () => 'w',
+      d: () => 'd',
+      h: () => 'h',
+      m: () => 'm',
+      s: () => 's',
+      ms: () => 'ms',
+    },
+  },
+  round: true,
+  largest: 2,
+  spacer: '',
+  conjunction: ' ',
+})
 
-const block2 = {
-  epoch: '123455',
-  progress: '100',
-  tasks: '53643',
-  time: '50 days ago',
-}
-
-const block3 = {
-  epoch: '123454',
-  progress: '35.63',
-  tasks: '12643',
-  time: '55 days ago',
+const estimateEpochFinishTime = (epoch: EpochProps) => {
+  // TODO: properly estimate FinishTime based on blocks times
+  return shortEngHumanizer(122312, { largest: 3 })
 }
 
 const EpochHomeBlocks = () => {
+  const [epochs, setEpochs] = React.useState([])
+  const { data, error, loading } = useQuery(GET_RECENT_EPOCHS, { variables: { total: 3 } })
+
+  React.useEffect(() => {
+    if (!loading && !error && data) {
+      const { epoches } = data
+
+      setEpochs(
+        epoches.map((epoch: any, index: number) => {
+          const current = index === 0
+
+          return {
+            values: {
+              current,
+              epoch: epoch.id,
+              time: current
+                ? estimateEpochFinishTime(epoch)
+                : shortEngHumanizer(Date.now() - (new Date(epoch.startTime * 1000) as any)) + ' ago',
+              progress: '100',
+              tasks: '0',
+            },
+            epoch,
+          }
+        }),
+      )
+    }
+  }, [data, loading])
+
   return (
     <>
       <SectionTitle>Epochs</SectionTitle>
       <EpochsRow>
-        <EpochBlock values={blockCurrent} />
-        <EpochBlock values={block2} />
-        <EpochBlock values={block3} />
+        {epochs.map(({ values, epoch }: { values: ValuesProps; epoch: any }) => (
+          <EpochBlock values={values} key={values.epoch} epoch={epoch} />
+        ))}
       </EpochsRow>
     </>
   )

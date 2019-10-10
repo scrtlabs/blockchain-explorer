@@ -4,6 +4,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory'
 import { HttpLink } from 'apollo-link-http'
 // import { WebSocketLink } from 'apollo-link-ws'
 // import { getMainDefinition } from 'apollo-utilities'
+import { typeDefs } from './apolloResolvers'
 
 const httpLink = new HttpLink({ uri: 'http://localhost:8000/subgraphs/name/enigmampc/enigma' })
 
@@ -21,6 +22,6 @@ const httpLink = new HttpLink({ uri: 'http://localhost:8000/subgraphs/name/enigm
 //   wsLink,
 // )
 
-const client = new ApolloClient({ link: httpLink, cache: new InMemoryCache() })
+const client = new ApolloClient({ link: httpLink, cache: new InMemoryCache(), typeDefs })
 
 export default client
