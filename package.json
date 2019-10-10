@@ -23,6 +23,7 @@
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "numeral": "^2.0.6",
+    "polished": "^3.4.1",
     "prettier": "^1.18.2",
     "react": "^16.10.1",
     "react-copy-to-clipboard": "^5.0.1",

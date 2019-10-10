@@ -45,13 +45,22 @@ const EpochBlockStyled = styled(Card)<BlockProps>`
   }
 
   > div {
-    flex-direction: row;
+    flex-direction: column;
+
+    @media (min-width: ${props => props.theme.themeBreakPoints.lg}) {
+      flex-direction: row;
+    }
   }
 `
 
 const ProgressCircleStyled = styled(ProgressCircle)`
   flex-shrink: 0;
-  margin-right: 15px;
+  margin: 0 auto 20px;
+
+  @media (min-width: ${props => props.theme.themeBreakPoints.lg}) {
+    margin-bottom: 0;
+    margin-right: 15px;
+  }
 `
 
 const Values = styled.div`

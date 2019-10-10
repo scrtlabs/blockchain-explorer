@@ -5,9 +5,14 @@ import EpochBlock from '../EpochBlock'
 
 const EpochsRow = styled.div`
   display: grid;
-  grid-column-gap: ${props => props.theme.separation.blockVerticalSeparation};
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-row-gap: ${props => props.theme.separation.blockVerticalSeparation};
+  grid-template-columns: 1fr;
   margin-bottom: ${props => props.theme.separation.blockBottomMargin};
+
+  @media (min-width: ${props => props.theme.themeBreakPoints.md}) {
+    grid-column-gap: ${props => props.theme.separation.blockVerticalSeparation};
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 `
 
 const blockCurrent = {

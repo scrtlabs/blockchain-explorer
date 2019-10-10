@@ -7,9 +7,14 @@ import SearchBar from '../Common/SearchBar'
 
 const TopRow = styled.div`
   display: grid;
-  grid-column-gap: ${props => props.theme.separation.blockVerticalSeparation};
-  grid-template-columns: 1fr 3fr;
+  grid-row-gap: ${props => props.theme.separation.blockVerticalSeparation};
+  grid-template-columns: 1fr;
   margin-bottom: ${props => props.theme.separation.blockBottomMargin};
+
+  @media (min-width: ${props => props.theme.themeBreakPoints.md}) {
+    grid-column-gap: ${props => props.theme.separation.blockVerticalSeparation};
+    grid-template-columns: 1fr 3fr;
+  }
 `
 
 const HomeNetworkInfo = () => {
