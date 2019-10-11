@@ -69,6 +69,32 @@ const theme = {
     submitted: '#1ca8f8',
     success: '#79d076',
   },
+  modalStyle: {
+    content: {
+      backgroundColor: '#fff',
+      borderColor: 'transparent',
+      borderRadius: '5px',
+      bottom: 'auto',
+      boxShadow: '0 0 18px 0 rgba(0, 0, 0, 0.08)',
+      display: 'flex',
+      flexDirection: 'column',
+      flexGrow: '0',
+      left: 'auto',
+      overflow: 'hidden',
+      padding: '0',
+      position: 'relative',
+      right: 'auto',
+      top: 'auto',
+      width: '550px',
+    },
+    overlay: {
+      alignItems: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.35)',
+      display: 'flex',
+      justifyContent: 'center',
+      zIndex: '12345',
+    },
+  },
 }
 
 export default theme
