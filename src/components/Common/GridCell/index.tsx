@@ -13,10 +13,14 @@ export const Title = styled.h3`
   text-overflow: ellipsis;
   white-space: nowrap;
 `
+interface ValueProps extends HTMLAttributes<HTMLDivElement> {
+  underline?: boolean
+  color?: string
+}
 
-export const Value = styled.p<{ underline?: boolean }>`
-  color: ${props => props.theme.colors.textCommon};
-  cursor: ${props => props.underline ? 'pointer' : 'default'};
+export const Value = styled.p<ValueProps>`
+  color: ${props => (props.color ? props.color : props.theme.colors.textCommon)};
+  cursor: ${props => (props.underline ? 'pointer' : 'default')};
   display: block;
   font-size: 14px;
   font-weight: 400;
@@ -29,18 +33,21 @@ export const Value = styled.p<{ underline?: boolean }>`
 `
 
 export interface ValueAndSubtitleProps extends HTMLAttributes<HTMLDivElement> {
+  valueColor?: string
   title: string
   underlineValue?: boolean
   value: string
 }
 
 const GridCell: React.FC<ValueAndSubtitleProps> = (props: ValueAndSubtitleProps) => {
-  const { value, title, underlineValue, ...restProps } = props
+  const { value, title, underlineValue, valueColor, ...restProps } = props
 
   return (
     <GridCellStyled {...restProps}>
       <Title>{title}</Title>
-      <Value underline={underlineValue}>{value}</Value>
+      <Value underline={underlineValue} color={valueColor}>
+        {value}
+      </Value>
     </GridCellStyled>
   )
 }

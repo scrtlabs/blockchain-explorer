@@ -7,6 +7,9 @@ import ArrowIcon from './img/right.svg'
 import TimeIcon from './img/time.svg'
 import { useQuery } from '@apollo/react-hooks'
 import { SECRET_CONTRACT_QUERY } from '../../utils/subgrah-queries'
+import ModalWrapper from '../Common/ModalWrapper'
+import GridCell from '../Common/GridCell'
+import StrippedGrid, { StrippedGridRow } from '../Common/StrippedGrid'
 
 const TaskItem = styled.div`
   display: flex;
@@ -206,6 +209,11 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
   const { data, error, loading } = useQuery(SECRET_CONTRACT_QUERY)
   const [secretContract, setSecretContract] = React.useState('...')
 
+  const [modalIsOpen, setModalIsOpen] = React.useState(false)
+
+  const closeModal = () => setModalIsOpen(false)
+  const openModal = () => setModalIsOpen(true)
+
   React.useEffect(() => {
     if (!loading && !error) {
       console.log(data)
@@ -217,39 +225,75 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
   }, [data, loading])
 
   return (
-    <TaskItem {...restProps}>
-      <TaskCard noPadding={true}>
-        <StatusBlock color={statusColors[status]}>
-          <Number>#{number}</Number>
-          <StatusLabel>{statusLabels[status]}</StatusLabel>
-        </StatusBlock>
-        <TaskInfo>
-          <InfoItem>
-            <InfoLabel>Submitted By</InfoLabel>
-            <InfoValue>{submittedBy}</InfoValue>
-          </InfoItem>
-          <ArrowContainer>
-            <img src={ArrowIcon} alt="" />
-          </ArrowContainer>
-          <InfoItem>
-            <InfoLabel>Secret Contract</InfoLabel>
-            <InfoValue>{secretContract}</InfoValue>
-          </InfoItem>
-          <InfoItem>
-            <InfoLabel>Tx Hash</InfoLabel>
-            <InfoValue>{txHash}</InfoValue>
-          </InfoItem>
-          <InfoItemSeparator />
-          <InfoItem>
-            <InfoLabel>Task ID</InfoLabel>
-            <InfoValueClean>{taskID}</InfoValueClean>
-          </InfoItem>
-        </TaskInfo>
-      </TaskCard>
-      <TaskTime>
-        <img src={TimeIcon} alt="" /> {time}
-      </TaskTime>
-    </TaskItem>
+    <>
+      <TaskItem {...restProps}>
+        <TaskCard noPadding={true}>
+          <StatusBlock color={statusColors[status]}>
+            <Number>#{number}</Number>
+            <StatusLabel>{statusLabels[status]}</StatusLabel>
+          </StatusBlock>
+          <TaskInfo>
+            <InfoItem>
+              <InfoLabel>Submitted By</InfoLabel>
+              <InfoValue>{submittedBy}</InfoValue>
+            </InfoItem>
+            <ArrowContainer>
+              <img src={ArrowIcon} alt="" />
+            </ArrowContainer>
+            <InfoItem>
+              <InfoLabel>Secret Contract</InfoLabel>
+              <InfoValue>{secretContract}</InfoValue>
+            </InfoItem>
+            <InfoItem>
+              <InfoLabel>Tx Hash</InfoLabel>
+              <InfoValue onClick={openModal}>{txHash}</InfoValue>
+            </InfoItem>
+            <InfoItemSeparator />
+            <InfoItem>
+              <InfoLabel>Task ID</InfoLabel>
+              <InfoValueClean>{taskID}</InfoValueClean>
+            </InfoItem>
+          </TaskInfo>
+        </TaskCard>
+        <TaskTime>
+          <img src={TimeIcon} alt="" /> {time}
+        </TaskTime>
+      </TaskItem>
+      <ModalWrapper isOpen={modalIsOpen} title={`Task #${number}`} onRequestClose={closeModal}>
+        <StrippedGrid>
+          <StrippedGridRow columns={1}>
+            <GridCell title="ID" value={taskID} />
+          </StrippedGridRow>
+          <StrippedGridRow columns={3}>
+            <GridCell title="Task Number" value={number} />
+            <GridCell title="Status" valueColor={statusColors[status]} value={statusLabels[status]} />
+            <GridCell title="Epoch" value={'#123456789'} underlineValue={true} />
+          </StrippedGridRow>
+          <StrippedGridRow columns={2}>
+            <GridCell title="Submitted On" value={'Sep 25 2019 09:00:00 GMT-0300'} />
+            <GridCell title="Completed On" value={'Sep 25 2019 09:00:00 GMT-0300'} />
+          </StrippedGridRow>
+          <StrippedGridRow columns={1}>
+            <GridCell title="Submitted By" value={submittedBy} underlineValue={true} />
+          </StrippedGridRow>
+          <StrippedGridRow columns={1}>
+            <GridCell title="Secret Contract" value={secretContract} underlineValue={true} />
+          </StrippedGridRow>
+          <StrippedGridRow columns={3}>
+            <GridCell title="ENG Gas Limit" value={'10.000'} />
+            <GridCell title="ENG Gas Used" value={'0.055'} />
+            <GridCell title="ENG Gas Price" value={'0.005'} />
+          </StrippedGridRow>
+          <StrippedGridRow columns={1}>
+            <GridCell
+              title="Callback"
+              underlineValue={true}
+              value={'0xffd4a06a4dc6e8b62114352f4af1f8a28e40c00c7bb333f0900a4e2fde603f9a'}
+            />
+          </StrippedGridRow>
+        </StrippedGrid>
+      </ModalWrapper>
+    </>
   )
 }
 
