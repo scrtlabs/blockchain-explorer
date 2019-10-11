@@ -15,6 +15,7 @@ export const Subtitle = styled.h3`
 
 export const Value = styled.p<{ underline?: boolean }>`
   color: ${props => props.theme.colors.textCommon};
+  cursor: ${props => props.underline ? 'pointer' : 'default'};
   display: block;
   font-size: 20px;
   font-weight: 600;

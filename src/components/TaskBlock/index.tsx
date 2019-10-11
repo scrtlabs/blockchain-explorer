@@ -5,6 +5,8 @@ import theme from 'theme'
 import { rgba, darken } from 'polished'
 import ArrowIcon from './img/right.svg'
 import TimeIcon from './img/time.svg'
+import { useQuery } from '@apollo/react-hooks'
+import { SECRET_CONTRACT_QUERY } from '../../utils/subgrah-queries'
 
 const TaskItem = styled.div`
   display: flex;
@@ -175,7 +177,6 @@ interface StatusProps {
 
 export interface TaskItemProps extends HTMLAttributes<HTMLDivElement> {
   number: string
-  secretContract: string
   status: TaskStatus
   submittedBy: string
   taskID: string
@@ -196,12 +197,24 @@ const statusLabels = {
 
 const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
   const { item, ...restProps } = props
-  const { status = TaskStatus.submitted, number, secretContract, submittedBy, taskID, time, txHash } = item
+  const { status = TaskStatus.submitted, number, submittedBy, taskID, time, txHash } = item
   const statusColors = {
     [TaskStatus.failed]: theme.taskStatus.failed,
     [TaskStatus.submitted]: theme.taskStatus.submitted,
     [TaskStatus.success]: theme.taskStatus.success,
   }
+  const { data, error, loading } = useQuery(SECRET_CONTRACT_QUERY)
+  const [secretContract, setSecretContract] = React.useState('...')
+
+  React.useEffect(() => {
+    if (!loading && !error) {
+      console.log(data)
+      const secretContract = data.secretContracts.find(
+        ({ createdAtTransaction }: { createdAtTransaction: string }) => createdAtTransaction === txHash,
+      )
+      setSecretContract((secretContract && secretContract.address) || '...')
+    }
+  }, [data, loading])
 
   return (
     <TaskItem {...restProps}>

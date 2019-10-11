@@ -22,7 +22,7 @@ const App: React.FC = () => {
             <Switch>
               <Route exact path="/home" component={Home} />
               <Route exact path="/tasks" component={EmptyContent} />
-              <Route exact path="/users" component={EmptyContent} />
+              <Route exact path="/epochs" component={EmptyContent} />
               <Route exact path="/workers" component={EmptyContent} />
               <Route exact path="/">
                 <Redirect to={{ pathname: '/home' }} />

@@ -10,7 +10,7 @@ interface Props extends React.ComponentProps<typeof Modal> {
   title?: string
 }
 
-const EnigmaModal: React.FC<Props> = props => {
+const ModalWrapper: React.FC<Props> = props => {
   const { onRequestClose, theme, title, children, disableCloseButton, ...restProps } = props
   const { modalStyle } = theme
 
@@ -24,4 +24,4 @@ const EnigmaModal: React.FC<Props> = props => {
   )
 }
 
-export default withTheme(EnigmaModal)
+export default withTheme(ModalWrapper)

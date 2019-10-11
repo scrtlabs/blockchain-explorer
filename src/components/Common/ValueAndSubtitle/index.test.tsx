@@ -1,23 +1,29 @@
 import React from 'react'
-import { render } from '../../utils/test-utils'
-import Card from '.'
+import { render } from '../../../utils/test-utils'
+import ValueAndSubtitle from './'
 
-it('renders Card without title', () => {
-  render(<Card noPadding={false}>This is the card content</Card>)
+it('renders ValueAndSubtitle with value not underlined', () => {
+  // Given
+  const value = 'this is a message'
+  const subtitle = 'and a subtitle'
+
+  // When
+  const { getByText, getByRole } = render(<ValueAndSubtitle value={value} subtitle={subtitle} />)
+
+  // Then
+  expect(getByText(value)).toHaveStyleRule('text-decoration', 'none')
+  expect(getByRole('heading')).toHaveTextContent(subtitle)
 })
 
-it('renders Card with title', () => {
-  render(
-    <Card noPadding={false} title="Card Title">
-      This is the card content
-    </Card>,
-  )
-})
+it('renders ValueAndSubtitle with value underlined', () => {
+  // Given
+  const value = 'this is a message'
+  const subtitle = 'and a subtitle'
 
-it('renders Card with title and 0 padding', () => {
-  render(
-    <Card noPadding={true} title="Card Title">
-      This is the card content
-    </Card>,
-  )
+  // When
+  const { getByText, getByRole } = render(<ValueAndSubtitle underlineValue={true} value={value} subtitle={subtitle} />)
+
+  // Then
+  expect(getByText(value)).toHaveStyleRule('text-decoration', 'underline')
+  expect(getByRole('heading')).toHaveTextContent(subtitle)
 })
