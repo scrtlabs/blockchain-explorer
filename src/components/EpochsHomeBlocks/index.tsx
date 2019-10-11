@@ -1,10 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useQuery } from '@apollo/react-hooks'
-import humanizeDuration from 'humanize-duration'
 import SectionTitle from '../Common/SectionTitle'
-import EpochBlock, {EpochProps, ValuesProps} from '../EpochBlock'
+import EpochBlock, { EpochProps, ValuesProps } from '../EpochBlock'
 import { GET_RECENT_EPOCHS } from '../../utils/subgrah-queries'
+import { shortEngHumanizer } from '../../utils/humanizer'
 
 const EpochsRow = styled.div`
   display: grid;
@@ -17,26 +17,6 @@ const EpochsRow = styled.div`
     grid-template-columns: 1fr 1fr 1fr;
   }
 `
-
-const shortEngHumanizer = humanizeDuration.humanizer({
-  language: 'shortEn',
-  languages: {
-    shortEn: {
-      y: () => 'y',
-      mo: () => 'mo',
-      w: () => 'w',
-      d: () => 'd',
-      h: () => 'h',
-      m: () => 'm',
-      s: () => 's',
-      ms: () => 'ms',
-    },
-  },
-  round: true,
-  largest: 2,
-  spacer: '',
-  conjunction: ' ',
-})
 
 const estimateEpochFinishTime = (epoch: EpochProps) => {
   // TODO: properly estimate FinishTime based on blocks times

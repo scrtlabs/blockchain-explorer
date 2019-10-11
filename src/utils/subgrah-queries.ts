@@ -38,3 +38,41 @@ export const GET_TASKS_BY_STATE_IN_BLOCK_RANGE = gql`
     }
   }
 `
+
+export const basicTaskDetailsFragment = gql`
+  fragment BasicTaskDetails on Task {
+    id
+    sender
+    createdAtTransaction
+    createdAt
+    status
+  }
+`
+export const GET_RECENT_TASKS = gql`
+  query recentTasks($total: Int) {
+    tasks(first: $total, orderBy: createdAtBlock, orderDirection: desc) {
+      ...BasicTaskDetails
+    }
+  }
+  ${basicTaskDetailsFragment}
+`
+
+export const secretContractDetailFragment = gql`
+  fragment SecretContractDetail on SecretContract {
+    id
+    address
+    codeHash
+    initStateDeltaHash
+    createdAt
+    createdAtBlock
+    createdAtTransaction
+  }
+`
+export const SECRET_CONTRACT_QUERY = gql`
+  query GetSecretContract {
+    secretContracts {
+      ...SecretContractDetail
+    }
+  }
+  ${secretContractDetailFragment}
+`

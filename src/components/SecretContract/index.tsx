@@ -1,27 +1,7 @@
 import React from 'react'
-import { useQuery } from '@apollo/react-hooks'
-import gql from 'graphql-tag'
+// import { useQuery } from '@apollo/react-hooks'
 import { GetSecretContract_secretContracts } from '../../types/generatedGQL'
 
-const secretContractDetailFragment = gql`
-  fragment SecretContractDetail on SecretContract {
-    id
-    address
-    codeHash
-    initStateDeltaHash
-    createdAt
-    createdAtBlock
-    createdAtTransaction
-  }
-`
-const SECRET_CONTRACT_QUERY = gql`
-  query GetSecretContract {
-    secretContracts {
-      ...SecretContractDetail
-    }
-  }
-  ${secretContractDetailFragment}
-`
 // const SECRET_CONTRACT_SUBSCRIPTION = gql`
 //   subscription SecretContract {
 //     secretContracts {
@@ -60,21 +40,22 @@ const SecretContractsDetails = (props: Props) => {
 
 const SecretContracts = () => {
   // const { subscribeToMore, ...result } = useQuery(SECRET_CONTRACT_QUERY)
-  const result = useQuery(SECRET_CONTRACT_QUERY)
+  // const result = useQuery(SECRET_CONTRACT_QUERY)
 
-  console.log(result)
-
-  if (result.loading) {
-    return <div>loading...</div>
-  }
-
-  if (result.error) {
-    return <div>Error!</div>
-  }
+  // console.log(result)
+  //
+  // if (result.loading) {
+  //   return <div>loading...</div>
+  // }
+  //
+  // if (result.error) {
+  //   return <div>Error!</div>
+  // }
 
   return (
     <SecretContractsDetails
-      data={result.data.secretContracts}
+      data={[]}
+      // data={result.data.secretContracts}
       subscribeToChanges={
         () => console.log('unsubscribed')
         // subscribeToMore({
