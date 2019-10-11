@@ -31,6 +31,7 @@ const ModalTitleText = styled.h2`
 
 const ModalClose = styled.button`
   align-items: flex-start;
+  background-color: transparent;
   background-image: url(${CloseIcon});
   background-position: 100% 50%;
   background-repeat: no-repeat;
