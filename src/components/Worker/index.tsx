@@ -58,7 +58,7 @@ const Worker = () => {
         <GridCellStyled>
           <Title>Address</Title>
           <ValueStyled>
-            <span>0xffd4a06a…e2fde603f9a</span> <CopyText value={'2134'} />
+            <span>0xffd4a06a…e2fde603f9a</span> <CopyText text={'0xffd4a06a…e2fde603f9a'} />
           </ValueStyled>
         </GridCellStyled>
         <GridCell title="Successful Tasks" value={'498 / 500'} />

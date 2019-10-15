@@ -1,13 +1,14 @@
 import React from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import styled from 'styled-components'
-import Copy from './img/copy.svg'
+import { CopyIcon } from './img/CopyIcon'
 
-interface CopyTextProps extends React.HTMLAttributes<HTMLDivElement> {
-  value: string
+interface CopyTextProps extends React.HTMLAttributes<HTMLSpanElement> {
+  color?: string
+  text: string
 }
 
-const CopyWrapper = styled.button`
+const CopyWrapper = styled.span`
   background-color: transparent;
   background-position: 50% 50%;
   background-repeat: no-repeat;
@@ -22,12 +23,16 @@ const CopyWrapper = styled.button`
   }
 `
 
-const CopyText = ({ value }: CopyTextProps) => (
-  <CopyWrapper>
-    <CopyToClipboard text={value}>
-      <img src={Copy} alt="" />
+const CopyText = (props: CopyTextProps) => {
+  const { text, color, ...restProps } = props
+
+  return (
+    <CopyToClipboard options={{ message: 'Copied!', format: 'text/plain' }} text={text}>
+      <CopyWrapper {...restProps}>
+        <CopyIcon color={color} />
+      </CopyWrapper>
     </CopyToClipboard>
-  </CopyWrapper>
-)
+  )
+}
 
 export default CopyText
