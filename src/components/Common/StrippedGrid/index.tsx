@@ -15,9 +15,15 @@ const StrippedGridContainer = styled.div``
 
 export const StrippedGridRow = styled.div<{ columns?: number }>`
   display: grid;
-  grid-column-gap: 15px;
-  grid-template-columns: ${props => createColumns(props.columns || 1)};
+  grid-template-columns: 1fr;
   padding: 12px ${props => props.theme.cards.paddingHorizontal};
+  row-gap: 15px;
+
+  @media (min-width: ${props => props.theme.themeBreakPoints.md}) {
+    grid-column-gap: 15px;
+    grid-template-columns: ${props => createColumns(props.columns || 1)};
+    row-gap: 0;
+  }
 
   &:nth-child(even) {
     background-color: #f8f8f8;

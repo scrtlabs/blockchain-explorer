@@ -23,4 +23,8 @@ html,
   .hideOnDesktop {
     display: none !important;
   }
+
+  .ReactModal__Overlay.ReactModal__Overlay--after-open {
+    align-items: center!important;
+  }
 }

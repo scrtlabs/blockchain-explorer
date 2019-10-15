@@ -13,10 +13,10 @@ const DetailsCard = styled(Card)`
   > div {
     display: grid;
     grid-template-columns: 1fr;
-    row-gap: 20px;
+    row-gap: 15px;
 
     @media (min-width: ${props => props.theme.themeBreakPoints.md}) {
-      column-gap: 20px;
+      column-gap: 15px;
       grid-template-columns: 1fr 1fr 1fr;
     }
 
