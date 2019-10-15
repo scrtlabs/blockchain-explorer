@@ -6,8 +6,10 @@ import MainScroll from '../Common/MainScroll'
 import Header from '../Common/Header'
 import Footer from '../Common/Footer'
 import Home from '../Home'
+import Tasks from '../Tasks'
 import theme from '../../theme'
 import '../../assets/styles/index.css'
+import Workers from '../Workers'
 
 const EmptyContent = () => <React.Fragment />
 const NonExistent = () => <div>404 Not Found</div>
@@ -21,9 +23,9 @@ const App: React.FC = () => {
           <MainScroll>
             <Switch>
               <Route exact path="/home" component={Home} />
-              <Route exact path="/tasks" component={EmptyContent} />
-              <Route exact path="/epochs" component={EmptyContent} />
-              <Route exact path="/workers" component={EmptyContent} />
+              <Route exact path="/tasks/:taskId?" component={Tasks} />
+              <Route exact path="/epochs/:epochNumber?" component={EmptyContent} />
+              <Route exact path="/workers/:workerAddress?" component={Workers} />
               <Route exact path="/">
                 <Redirect to={{ pathname: '/home' }} />
               </Route>
