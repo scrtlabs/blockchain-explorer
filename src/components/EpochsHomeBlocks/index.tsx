@@ -2,9 +2,10 @@ import React from 'react'
 import styled from 'styled-components'
 import { useQuery } from '@apollo/react-hooks'
 import SectionTitle from '../Common/SectionTitle'
-import EpochBlock, { EpochProps, ValuesProps } from '../EpochBlock'
+import EpochBlock, { ValuesProps } from '../EpochBlock'
 import { GET_RECENT_EPOCHS } from '../../utils/subgrah-queries'
 import { shortEngHumanizer } from '../../utils/humanizer'
+import estimateEpochFinishTime from '../../utils/estimateEpochFinishTime'
 
 const EpochsRow = styled.div`
   display: grid;
@@ -18,11 +19,6 @@ const EpochsRow = styled.div`
   }
 `
 
-const estimateEpochFinishTime = (epoch: EpochProps) => {
-  // TODO: properly estimate FinishTime based on blocks times
-  return shortEngHumanizer(122312, { largest: 3 })
-}
-
 const mockedValues: ValuesProps = {
   current: true,
   epoch: '123456',
@@ -34,19 +30,17 @@ const EpochHomeBlocks = () => {
   const [epochs, setEpochs] = React.useState([
     {
       values: mockedValues,
-      epoch: {
-
-      }
+      epoch: {},
     },
   ])
   const { data, error, loading } = useQuery(GET_RECENT_EPOCHS, { variables: { total: 3 } })
 
   React.useEffect(() => {
-    if (!loading && !error && data) {
+    const extractEpochs = async () => {
       const { epoches } = data
 
-      setEpochs(
-        epoches.map((epoch: any, index: number) => {
+      const newEpochs = await Promise.all(
+        epoches.map(async (epoch: any, index: number) => {
           const current = index === 0
 
           return {
@@ -54,8 +48,8 @@ const EpochHomeBlocks = () => {
               current,
               epoch: epoch.id,
               time: current
-                ? estimateEpochFinishTime(epoch)
-                : shortEngHumanizer(Date.now() - (new Date(epoch.startTime * 1000) as any)) + ' ago',
+                ? shortEngHumanizer(await estimateEpochFinishTime(+epoch.completeBlockNumber), { largest: 3 })
+                : shortEngHumanizer(Date.now() - (new Date(epoches[index - 1].startTime * 1000) as any)) + ' ago',
               progress: '100',
               tasks: '0',
             },
@@ -63,6 +57,12 @@ const EpochHomeBlocks = () => {
           }
         }),
       )
+
+      setEpochs(newEpochs as any)
+    }
+
+    if (!loading && !error && data) {
+      extractEpochs()
     }
   }, [data, loading])
 

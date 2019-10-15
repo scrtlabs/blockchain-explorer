@@ -16,6 +16,7 @@
     "@types/react-modal": "^3.8.3",
     "@types/react-router-dom": "^5.1.0",
     "@types/styled-components": "^4.1.19",
+    "@types/web3": "^1.0.20",
     "apollo-cache-inmemory": "^1.6.3",
     "apollo-client": "^2.6.4",
     "apollo-link": "^1.2.13",
@@ -39,7 +40,8 @@
     "sanitize.css": "^11.0.0",
     "styled-components": "^4.4.0",
     "subscriptions-transport-ws": "^0.9.16",
-    "typescript": "3.6.3"
+    "typescript": "3.6.3",
+    "web3": "^1.2.1"
   },
   "scripts": {
     "start": "react-scripts start",
