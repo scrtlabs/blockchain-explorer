@@ -12,7 +12,7 @@ export const Title = styled.h3`
   font-size: 15px;
   font-weight: 600;
   line-height: 1.33;
-  margin: 0 0 5px;
+  margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
