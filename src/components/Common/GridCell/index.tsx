@@ -1,7 +1,11 @@
 import React, { HTMLAttributes } from 'react'
 import styled from 'styled-components'
 
-export const GridCellStyled = styled.div``
+export const GridCellStyled = styled.div`
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+`
 
 export const Title = styled.h3`
   color: ${props => props.theme.colors.textCommon};
@@ -19,10 +23,9 @@ interface ValueProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Value = styled.p<ValueProps>`
-  align-items: center;
   color: ${props => (props.color ? props.color : props.theme.colors.textCommon)};
   cursor: ${props => (props.underline ? 'pointer' : 'default')};
-  display: flex;
+  display: block;
   font-size: 14px;
   font-weight: 400;
   line-height: 1.4;
@@ -31,6 +34,10 @@ export const Value = styled.p<ValueProps>`
   text-decoration: ${props => (props.underline ? 'underline' : 'none')};
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  @media (min-width: ${props => props.theme.themeBreakPoints.md}) {
+
+  }
 `
 
 export interface ValueAndSubtitleProps extends HTMLAttributes<HTMLDivElement> {

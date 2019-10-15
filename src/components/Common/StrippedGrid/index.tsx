@@ -20,6 +20,7 @@ export const StrippedGridRow = styled.div<{ columns?: number }>`
   row-gap: 15px;
 
   @media (min-width: ${props => props.theme.themeBreakPoints.md}) {
+    display: grid;
     grid-column-gap: 15px;
     grid-template-columns: ${props => createColumns(props.columns || 1)};
     row-gap: 0;

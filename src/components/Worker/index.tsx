@@ -20,10 +20,16 @@ const DetailsCard = styled(Card)`
       grid-template-columns: 1fr 1fr 1fr;
     }
 
-    @media (min-width: ${props => props.theme.themeBreakPoints.lg}) {
+    @media (min-width: ${props => props.theme.themeBreakPoints.xxl}) {
       grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     }
   }
+`
+
+const ValueStyled = styled(Value)`
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
 `
 
 const HEADER_CELLS = [
@@ -51,9 +57,9 @@ const Worker = () => {
       <DetailsCard>
         <GridCellStyled>
           <Title>Address</Title>
-          <Value>
-            0xffd4a06a4dc6…00a4e2fde603f9a <CopyText value={'2134'} />
-          </Value>
+          <ValueStyled>
+            <span>0xffd4a06a…e2fde603f9a</span> <CopyText value={'2134'} />
+          </ValueStyled>
         </GridCellStyled>
         <GridCell title="Successful Tasks" value={'498 / 500'} />
         <GridCell title="ENG Rewards" value={'123456.789'} />
