@@ -10,6 +10,7 @@ import Tasks from '../Tasks'
 import theme from '../../theme'
 import '../../assets/styles/index.css'
 import Workers from '../Workers'
+import Worker from '../Worker'
 
 const EmptyContent = () => <React.Fragment />
 const NonExistent = () => <div>404 Not Found</div>
@@ -25,7 +26,8 @@ const App: React.FC = () => {
               <Route exact path="/home" component={Home} />
               <Route exact path="/tasks/:taskId?" component={Tasks} />
               <Route exact path="/epochs/:epochNumber?" component={EmptyContent} />
-              <Route exact path="/workers/:workerAddress?" component={Workers} />
+              <Route exact path="/workers" component={Workers} />
+              <Route exact path="/worker/:workerAddress?" component={Worker} />
               <Route exact path="/">
                 <Redirect to={{ pathname: '/home' }} />
               </Route>

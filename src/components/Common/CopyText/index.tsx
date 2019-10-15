@@ -4,7 +4,6 @@ import styled from 'styled-components'
 import Copy from './img/copy.svg'
 
 interface CopyTextProps extends React.HTMLAttributes<HTMLDivElement> {
-  canCopy: boolean
   value: string
 }
 
@@ -23,13 +22,12 @@ const CopyWrapper = styled.button`
   }
 `
 
-const CopyText = ({ canCopy, value }: CopyTextProps) =>
-  canCopy ? (
-    <CopyWrapper>
-      <CopyToClipboard text={value}>
-        <img src={Copy} alt="" />
-      </CopyToClipboard>
-    </CopyWrapper>
-  ) : null
+const CopyText = ({ value }: CopyTextProps) => (
+  <CopyWrapper>
+    <CopyToClipboard text={value}>
+      <img src={Copy} alt="" />
+    </CopyToClipboard>
+  </CopyWrapper>
+)
 
 export default CopyText

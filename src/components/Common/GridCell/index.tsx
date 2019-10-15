@@ -19,9 +19,10 @@ interface ValueProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Value = styled.p<ValueProps>`
+  align-items: center;
   color: ${props => (props.color ? props.color : props.theme.colors.textCommon)};
   cursor: ${props => (props.underline ? 'pointer' : 'default')};
-  display: block;
+  display: flex;
   font-size: 14px;
   font-weight: 400;
   line-height: 1.4;
@@ -33,10 +34,10 @@ export const Value = styled.p<ValueProps>`
 `
 
 export interface ValueAndSubtitleProps extends HTMLAttributes<HTMLDivElement> {
-  valueColor?: string
   title: string
   underlineValue?: boolean
   value: string
+  valueColor?: string
 }
 
 const GridCell: React.FC<ValueAndSubtitleProps> = (props: ValueAndSubtitleProps) => {
