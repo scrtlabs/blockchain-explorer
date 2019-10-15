@@ -6,6 +6,7 @@ import EpochBlock, { ValuesProps } from '../EpochBlock'
 import { GET_RECENT_EPOCHS } from '../../utils/subgrah-queries'
 import { shortEngHumanizer } from '../../utils/humanizer'
 import estimateEpochFinishTime from '../../utils/estimateEpochFinishTime'
+import { EpochBlockTypes } from '../EpochBlockNumbers'
 
 const EpochsRow = styled.div`
   display: grid;
@@ -19,20 +20,38 @@ const EpochsRow = styled.div`
   }
 `
 
-const mockedValues: ValuesProps = {
-  current: true,
-  epoch: '123456',
-  progress: '92',
-  time: '2d 23h 54m',
-}
+const EpochHomeBlocksMockedData = [
+  {
+    values: {
+      current: true,
+      epoch: '123456',
+      progress: '92',
+      time: '2d 23h 54m',
+      blocks: [
+        { value: '11111111', title: 'First Block', type: EpochBlockTypes.first },
+        { value: '55555555', title: 'Current Block', type: EpochBlockTypes.current },
+        { value: '99999999', title: 'Last Block', type: EpochBlockTypes.last },
+      ],
+    },
+    epoch: {},
+  },
+  {
+    values: {
+      current: false,
+      epoch: '789101',
+      progress: '72.38',
+      time: '4d 19h 23m',
+      blocks: [
+        { value: '00000111', title: 'First Block', type: EpochBlockTypes.first },
+        { value: '00000888', title: 'Last Block', type: EpochBlockTypes.last },
+      ],
+    },
+    epoch: {},
+  },
+]
 
 const EpochHomeBlocks = () => {
-  const [epochs, setEpochs] = React.useState([
-    {
-      values: mockedValues,
-      epoch: {},
-    },
-  ])
+  const [epochs, setEpochs] = React.useState(EpochHomeBlocksMockedData)
   const { data, error, loading } = useQuery(GET_RECENT_EPOCHS, { variables: { total: 3 } })
 
   React.useEffect(() => {

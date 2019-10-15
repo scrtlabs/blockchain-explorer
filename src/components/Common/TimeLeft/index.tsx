@@ -1,42 +1,44 @@
 import React, { HTMLAttributes } from 'react'
 import styled from 'styled-components'
-import { ValueAndSubtitleStyled, Subtitle, Value, ValueAndSubtitleProps } from '../ValueAndSubtitle'
-import LockIcon from './img/lock.svg'
-import TimeIcon from './img/time.svg'
+import { Time } from './img/Time'
+import { Lock } from './img/Lock'
 
-const ValueStyled = styled(Value)<ValueProps>`
+const TimeleftWrapper = styled.div`
   align-items: center;
-  color: ${props => (props.current ? props.theme.colors.textCommon : props.theme.colors.textLight)};
   display: flex;
   justify-content: center;
 
-  > img {
-    margin-right: 5px;
+  > svg {
+    margin-right: 3px;
   }
 `
 
-const SubtitleStyled = styled(Subtitle)`
-  color: ${props => props.theme.colors.textLight};
+const Value = styled.span<{ current: boolean }>`
+  font-size: 10px;
+  font-weight: 600;
+  color: ${props => (props.current ? props.theme.colors.textCommon : props.theme.colors.textLight)};
 `
 
 interface ValueProps {
   current: boolean
+  value: string
 }
 
-interface TimeLeftProps extends HTMLAttributes<HTMLDivElement>, ValueAndSubtitleProps, ValueProps {}
+interface TimeLeftProps extends HTMLAttributes<HTMLDivElement>, ValueProps {}
 
 const TimeLeft: React.FC<TimeLeftProps> = (props: TimeLeftProps) => {
-  const { value, subtitle, current, ...restProps } = props
-  const valueIcon = current ? TimeIcon : LockIcon
+  const { value, current, ...restProps } = props
+  const valueIcon = current ? <Time /> : <Lock />
+  const valueLabel = current ? ' left' : ' ago'
 
   return (
-    <ValueAndSubtitleStyled {...restProps}>
-      <ValueStyled current={current}>
-        <img src={valueIcon} alt="" />
+    <TimeleftWrapper {...restProps}>
+      {valueIcon}
+      <Value current={current}>
         {value}
-      </ValueStyled>
-      <SubtitleStyled>{subtitle}</SubtitleStyled>
-    </ValueAndSubtitleStyled>
+        {valueLabel}
+      </Value>
+    </TimeleftWrapper>
   )
 }
 

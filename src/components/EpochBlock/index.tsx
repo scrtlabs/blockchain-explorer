@@ -7,10 +7,12 @@ import TimeLeft from '../Common/TimeLeft'
 import ProgressCircle from '../ProgressCircle'
 import ModalWrapper from '../Common/ModalWrapper'
 import GridCell from '../Common/GridCell'
+import EpochBlockNumbers, { EpochBlockData } from '../EpochBlockNumbers'
 import StrippedGrid, { StrippedGridRow } from '../Common/StrippedGrid'
 import { GET_TASKS_BY_STATE_IN_BLOCK_RANGE } from '../../utils/subgrah-queries'
 
 export interface ValuesProps {
+  blocks: Array<EpochBlockData>
   current?: boolean
   epoch: string
   progress: string
@@ -37,7 +39,7 @@ interface BlockProps extends HTMLAttributes<HTMLDivElement> {
 
 const EpochBlockStyled = styled(Card)<BlockProps>`
   cursor: pointer;
-  padding: 19px 15px 12px;
+  padding: 19px 10px 12px;
   position: relative;
   transition: box-shadow 0.15s linear;
 
@@ -64,6 +66,12 @@ const EpochBlockStyled = styled(Card)<BlockProps>`
       flex-direction: row;
     }
   }
+`
+
+const TimeLeftStyled = styled(TimeLeft)`
+  bottom: -18px;
+  position: absolute;
+  right: 3px;
 `
 
 const ProgressCircleStyled = styled(ProgressCircle)`
@@ -107,8 +115,7 @@ const TwoItemsGrid = styled.div`
 
 const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   const { values, theme, epoch, ...restProps } = props
-  const { current, epoch: epochId, progress, time } = values
-  const timeLabel = current ? 'Time Left' : 'Ended'
+  const { current, epoch: epochId, progress, time, blocks } = values
   const endedColor = 'rgba(28, 168, 248, 0.5)'
   const runningColor = 'rgba(231, 46, 157, 0.6)'
   const borderColor: string = current ? theme.colors.secondary : endedColor
@@ -136,8 +143,12 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
             <ValueAndSubtitle underlineValue={true} value={`#${epochId}`} subtitle="Epoch" />
             <ValueAndSubtitle value={tasks} subtitle="Tasks" />
           </TwoItemsGrid>
-          <TimeLeft current={current || false} value={time} subtitle={timeLabel} />
+          <EpochBlockNumbers
+            values={blocks}
+            current={current || false}
+          />
         </Values>
+        <TimeLeftStyled current={current || false} value={time} />
       </EpochBlockStyled>
       <ModalWrapper isOpen={modalIsOpen} title={`Epoch #${epochId}`} onRequestClose={closeModal}>
         <StrippedGrid>
