@@ -115,7 +115,7 @@ const TwoItemsGrid = styled.div`
 
 const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   const { values, theme, epoch, ...restProps } = props
-  const { current, epoch: epochId, progress, time, blocks } = values
+  const { current = false, epoch: epochId, progress, time, blocks } = values
   const endedColor = 'rgba(28, 168, 248, 0.5)'
   const runningColor = 'rgba(231, 46, 157, 0.6)'
   const borderColor: string = current ? theme.colors.secondary : endedColor
@@ -128,11 +128,11 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   const closeModal = () => setModalIsOpen(false)
   const openModal = () => setModalIsOpen(true)
 
-  React.useEffect(() => {
+  React.useMemo(() => {
     if (!loading && !error) {
       setTasks(`${data.tasks.length}`)
     }
-  }, [data, loading])
+  }, [loading])
 
   return (
     <>
@@ -143,12 +143,9 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
             <ValueAndSubtitle underlineValue={true} value={`#${epochId}`} subtitle="Epoch" />
             <ValueAndSubtitle value={tasks} subtitle="Tasks" />
           </TwoItemsGrid>
-          <EpochBlockNumbers
-            values={blocks}
-            current={current || false}
-          />
+          <EpochBlockNumbers values={blocks} current={current} />
         </Values>
-        <TimeLeftStyled current={current || false} value={time} />
+        <TimeLeftStyled current={current} value={time} />
       </EpochBlockStyled>
       <ModalWrapper isOpen={modalIsOpen} title={`Epoch #${epochId}`} onRequestClose={closeModal}>
         <StrippedGrid>

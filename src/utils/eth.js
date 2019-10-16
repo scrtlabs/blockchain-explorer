@@ -15,16 +15,14 @@ class EthAPI {
     return this.web3.eth.getBlockNumber()
   }
 
-  async getLatestBlocksTimestamps(numberOfBlocks = 20) {
-    const lastBlock = await this.getBlockNumber()
-    const latestBlocksNumbers = [...Array(numberOfBlocks).keys()].map(key => lastBlock - key)
+  async getBatchBlocksTimestamps(range) {
     const batch = new this.web3.BatchRequest()
 
-    const whenBlocksTimestamp = latestBlocksNumbers.map(blockNumber => {
-      return new Promise(resolve => {
+    const blocks = range.map(blockNumber => {
+      return new Promise((resolve, reject) => {
         const request = this.web3.eth.getBlock.request(blockNumber, (error, data) => {
           if (error) {
-            resolve(error)
+            reject(error)
           } else {
             resolve(data)
           }
@@ -35,8 +33,7 @@ class EthAPI {
 
     batch.execute()
 
-    const blocks = await Promise.all(whenBlocksTimestamp)
-    return blocks.map(({ timestamp }) => (timestamp ? timestamp : '')).filter(timestamp => timestamp !== '')
+    return (await Promise.all(blocks)).map(({ timestamp }) => timestamp)
   }
 }
 

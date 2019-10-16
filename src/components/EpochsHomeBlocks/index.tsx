@@ -5,7 +5,8 @@ import SectionTitle from '../Common/SectionTitle'
 import EpochBlock, { ValuesProps } from '../EpochBlock'
 import { GET_RECENT_EPOCHS } from '../../utils/subgrah-queries'
 import { shortEngHumanizer } from '../../utils/humanizer'
-import estimateEpochFinishTime from '../../utils/estimateEpochFinishTime'
+import ethApi from '../../utils/eth'
+import estimateEpochFinishTimes from '../../utils/estimateEpochFinishTime'
 import { EpochBlockTypes } from '../EpochBlockNumbers'
 
 const EpochsRow = styled.div`
@@ -52,38 +53,62 @@ const EpochHomeBlocksMockedData = [
 
 const EpochHomeBlocks = () => {
   const [epochs, setEpochs] = React.useState(EpochHomeBlocksMockedData)
-  const { data, error, loading } = useQuery(GET_RECENT_EPOCHS, { variables: { total: 3 } })
+  const { data, error, loading } = useQuery(GET_RECENT_EPOCHS, { variables: { total: 8 } })
 
-  React.useEffect(() => {
+  const calculateEpochsValues = async (epochsHistory: Array<any>, epoch: any, index: number, epochs: Array<any>) => {
+    const current = index === 0
+    const calculatedValues: { time: string; blocks: any[] } = {
+      time: '',
+      blocks: [],
+    }
+
+    calculatedValues.blocks.push({
+      value: epoch.startBlockNumber,
+      title: 'First Block',
+      type: EpochBlockTypes.first,
+    })
+
+    if (current) {
+      const actualBlock = await ethApi.getBlockNumber()
+      calculatedValues.blocks.push({ value: actualBlock, title: 'Current Block', type: EpochBlockTypes.current })
+
+      const { finishBlock, finishTime } = await estimateEpochFinishTimes(epochsHistory)
+      calculatedValues.time = shortEngHumanizer(finishTime, { largest: 3 })
+      calculatedValues.blocks.push({ value: finishBlock, title: 'Last Block', type: EpochBlockTypes.last })
+    } else {
+      const nextEpochStartTime = new Date(epochs[index - 1].startTime * 1000) as any
+      calculatedValues.time = shortEngHumanizer(Date.now() - nextEpochStartTime) + ' ago'
+
+      const finishBlock = `${+epochs[index - 1].startBlockNumber - 1}`
+      calculatedValues.blocks.push({ value: finishBlock, title: 'LastBlock', type: EpochBlockTypes.last })
+    }
+
+    return {
+      values: {
+        current,
+        epoch: epoch.id,
+        progress: '100',
+        tasks: '0',
+        ...calculatedValues,
+      },
+      epoch,
+    }
+  }
+
+  React.useMemo(() => {
     const extractEpochs = async () => {
-      const { epoches } = data
+      const { epoches: epochsHistory } = data
+      const epoches = epochsHistory.slice(0, 3)
 
-      const newEpochs = await Promise.all(
-        epoches.map(async (epoch: any, index: number) => {
-          const current = index === 0
-
-          return {
-            values: {
-              current,
-              epoch: epoch.id,
-              time: current
-                ? shortEngHumanizer(await estimateEpochFinishTime(+epoch.completeBlockNumber), { largest: 3 })
-                : shortEngHumanizer(Date.now() - (new Date(epoches[index - 1].startTime * 1000) as any)) + ' ago',
-              progress: '100',
-              tasks: '0',
-            },
-            epoch,
-          }
-        }),
-      )
+      const newEpochs = await Promise.all(epoches.map(calculateEpochsValues.bind(calculateEpochsValues, epochsHistory)))
 
       setEpochs(newEpochs as any)
     }
 
-    if (!loading && !error && data) {
+    if (!loading && !error) {
       extractEpochs()
     }
-  }, [data, loading])
+  }, [loading])
 
   return (
     <>

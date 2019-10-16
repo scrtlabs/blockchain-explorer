@@ -90,7 +90,7 @@ interface EpochBlockNumbersProps {
 interface TimeLeftProps extends HTMLAttributes<HTMLDivElement>, EpochBlockNumbersProps {}
 
 const EpochBlockNumbers: React.FC<TimeLeftProps> = (props: TimeLeftProps) => {
-  const { values, current, theme, ...restProps } = props
+  const { values = [], current, theme, ...restProps } = props
 
   return (
     <EpochBlockNumbersWrapper {...restProps}>
