@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react'
+import React from 'react'
 import BaseTable from '../Common/BaseTable'
 import { HeaderCellAlign } from '../Common/EnhancedTableHead'
 import gql from 'graphql-tag'
@@ -6,8 +6,8 @@ import { useQuery } from '@apollo/react-hooks'
 import HexAddr from '../Common/HexAddr'
 
 const TASKS_QUERY = gql`
-  query Tasks($total: Int, $offset: Int, $limit: Int) {
-    tasks(first: $total, orderBy: createdAtBlock, orderDirection: desc) {
+  query Tasks($total: Int, $offset: Int, $limit: Int, $skip: Int) {
+    tasks(first: $total, orderBy: createdAtBlock, orderDirection: desc, skip: $skip) {
       id
       status
       sender
@@ -27,9 +27,10 @@ const HEADER_CELLS = [
 ]
 
 const Tasks = () => {
-  const { data, error, loading, fetchMore } = useQuery(TASKS_QUERY, { variables: { total: 10 } })
+  const { data, error, loading, fetchMore } = useQuery(TASKS_QUERY, { variables: { total: 10, skip: 0 } })
   const [tasks, setTasks] = React.useState([])
   const [rowsPerPage, setRowsPerPage] = React.useState(10)
+  const [page, setPage] = React.useState(0)
 
   React.useEffect(() => {
     if (!loading && !error) {
@@ -60,15 +61,29 @@ const Tasks = () => {
     }
   }, [data, loading])
 
-  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const total = +event.target.value
+  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, page: number) => {
+    fetchMore({
+      variables: { total: rowsPerPage, skip: page * rowsPerPage },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev
 
-    setRowsPerPage(total)
+        setPage(page)
+
+        return { ...prev, tasks: [...fetchMoreResult.tasks] }
+      },
+    })
+  }
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const total = +event.target.value
 
     fetchMore({
       variables: { total },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) return prev
+
+        setRowsPerPage(total)
+
         return { ...prev, tasks: [...fetchMoreResult.tasks] }
       },
     })
@@ -86,10 +101,10 @@ const Tasks = () => {
         rows={tasks}
         paginatorProps={{
           colSpan: HEADER_CELLS.length,
-          count: tasks.length,
-          onChangePage: console.log.bind(console, 'changePage'),
+          count: 25,
+          onChangePage: handleChangePage,
           onChangeRowsPerPage: handleChangeRowsPerPage,
-          page: 0,
+          page,
           rowsPerPage,
         }}
       />
