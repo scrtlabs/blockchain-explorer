@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { useQuery } from '@apollo/react-hooks'
 import SectionTitle from '../Common/SectionTitle'
 import EpochBlock, { ValuesProps } from '../EpochBlock'
-import { GET_RECENT_EPOCHS } from '../../utils/subgrah-queries'
+import { GET_RECENT_EPOCHS, SUBSCRIBE_RECENT_EPOCHS } from '../../utils/subgrah-queries'
 import { shortEngHumanizer } from '../../utils/humanizer'
 import ethApi from '../../utils/eth'
 import estimateEpochFinishTimes from '../../utils/estimateEpochFinishTime'
@@ -53,7 +53,8 @@ const EpochHomeBlocksMockedData = [
 
 const EpochHomeBlocks = () => {
   const [epochs, setEpochs] = React.useState(EpochHomeBlocksMockedData)
-  const { data, error, loading } = useQuery(GET_RECENT_EPOCHS, { variables: { total: 8 } })
+  const [currentBlock, setCurrentBlock] = React.useState(0)
+  const { subscribeToMore, data, error, loading } = useQuery(GET_RECENT_EPOCHS, { variables: { total: 8 } })
 
   const calculateEpochsValues = async (epochsHistory: Array<any>, epoch: any, index: number, epochs: Array<any>) => {
     const current = index === 0
@@ -95,20 +96,47 @@ const EpochHomeBlocks = () => {
     }
   }
 
-  React.useMemo(() => {
-    const extractEpochs = async () => {
-      const { epoches: epochsHistory } = data
-      const epoches = epochsHistory.slice(0, 3)
+  const extractEpochs = async () => {
+    const { epoches: epochsHistory } = data
+    const epoches = epochsHistory.slice(0, 3)
 
-      const newEpochs = await Promise.all(epoches.map(calculateEpochsValues.bind(calculateEpochsValues, epochsHistory)))
+    const newEpochs = await Promise.all(epoches.map(calculateEpochsValues.bind(calculateEpochsValues, epochsHistory)))
 
-      setEpochs(newEpochs as any)
-    }
+    setEpochs(newEpochs as any)
+  }
 
+  React.useEffect(() => {
     if (!loading && !error) {
       extractEpochs()
     }
-  }, [loading])
+
+    const unsubscribe = subscribeToMore({
+      document: SUBSCRIBE_RECENT_EPOCHS,
+      variables: { total: 8 },
+      updateQuery: (prev, { subscriptionData }) => (subscriptionData.data ? subscriptionData.data : prev),
+    })
+
+    return () => unsubscribe()
+  }, [])
+
+  React.useMemo(() => {
+    if (data) {
+      extractEpochs()
+    }
+  }, [data])
+
+  React.useEffect(() => {
+    const intervalPtr = setInterval(async () => {
+      setCurrentBlock(+(await ethApi.getBlockNumber()))
+    }, 1000)
+    return () => clearInterval(intervalPtr)
+  }, [])
+
+  React.useMemo(() => {
+    if (data) {
+      extractEpochs()
+    }
+  }, [currentBlock])
 
   return (
     <>

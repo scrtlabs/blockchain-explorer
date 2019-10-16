@@ -19,6 +19,15 @@ export const GET_RECENT_EPOCHS = gql`
   ${epochDetailFragment}
 `
 
+export const SUBSCRIBE_RECENT_EPOCHS = gql`
+  subscription GetRecentEpochs($total: Int) {
+    epoches(first: $total, orderBy: id, orderDirection: desc) {
+      ...EpochDetail
+    }
+  }
+  ${epochDetailFragment}
+`
+
 export const ENIGMA_STATE_QUERY = gql`
   query GetEnigmaState {
     enigmaState(id: 0) {
@@ -33,6 +42,14 @@ export const ENIGMA_STATE_QUERY = gql`
 
 export const GET_TASKS_BY_STATE_IN_BLOCK_RANGE = gql`
   query tasksList($from: Int, $to: Int, $status: String) {
+    tasks(where: { createdAtBlock_gte: $from, createdAtBlock_lte: $to, status: $status }) {
+      id
+    }
+  }
+`
+
+export const SUBSCRIBE_TASKS_BY_STATE_IN_BLOCK_RANGE = gql`
+  subscription tasksList($from: Int, $to: Int, $status: String) {
     tasks(where: { createdAtBlock_gte: $from, createdAtBlock_lte: $to, status: $status }) {
       id
     }

@@ -9,7 +9,7 @@ import ModalWrapper from '../Common/ModalWrapper'
 import GridCell from '../Common/GridCell'
 import EpochBlockNumbers, { EpochBlockData } from '../EpochBlockNumbers'
 import StrippedGrid, { StrippedGridRow } from '../Common/StrippedGrid'
-import { GET_TASKS_BY_STATE_IN_BLOCK_RANGE } from '../../utils/subgrah-queries'
+import { GET_TASKS_BY_STATE_IN_BLOCK_RANGE, SUBSCRIBE_TASKS_BY_STATE_IN_BLOCK_RANGE } from '../../utils/subgrah-queries'
 
 export interface ValuesProps {
   blocks: Array<EpochBlockData>
@@ -119,7 +119,7 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   const endedColor = 'rgba(28, 168, 248, 0.5)'
   const runningColor = 'rgba(231, 46, 157, 0.6)'
   const borderColor: string = current ? theme.colors.secondary : endedColor
-  const { data, error, loading } = useQuery(GET_TASKS_BY_STATE_IN_BLOCK_RANGE, {
+  const { data, error, loading, subscribeToMore } = useQuery(GET_TASKS_BY_STATE_IN_BLOCK_RANGE, {
     variables: { from: +epoch.startBlockNumber, to: +epoch.completeBlockNumber, status: 'RecordCreated' },
   })
   const [tasks, setTasks] = React.useState('0')
@@ -128,11 +128,21 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   const closeModal = () => setModalIsOpen(false)
   const openModal = () => setModalIsOpen(true)
 
-  React.useMemo(() => {
+  React.useEffect(() => {
     if (!loading && !error) {
       setTasks(`${data.tasks.length}`)
     }
-  }, [loading])
+
+    const unsubscribe = subscribeToMore({
+      document: SUBSCRIBE_TASKS_BY_STATE_IN_BLOCK_RANGE,
+      variables: { from: +epoch.startBlockNumber, to: +epoch.completeBlockNumber, status: 'RecordCreated' },
+      updateQuery: (prev, { subscriptionData }) => {
+        return subscriptionData.data ? subscriptionData.data : prev
+      },
+    })
+
+    return () => unsubscribe()
+  }, [data, values])
 
   return (
     <>
