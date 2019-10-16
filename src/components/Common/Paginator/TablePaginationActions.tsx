@@ -13,20 +13,20 @@ interface TablePaginationActionsProps extends React.HTMLAttributes<HTMLDivElemen
 }
 
 const TablePaginationActions = ({ count, page, rowsPerPage, onChangePage }: TablePaginationActionsProps) => {
-  const handleFirstPageButtonClick = () => {
-    onChangePage(0)
+  const handleFirstPageButtonClick = (event: React.MouseEvent<HTMLButtonElement> | null) => {
+    onChangePage(event, 0)
   }
 
-  const handleBackButtonClick = () => {
-    onChangePage(page - 1)
+  const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement> | null) => {
+    onChangePage(event, page - 1)
   }
 
-  const handleNextButtonClick = () => {
-    onChangePage(page + 1)
+  const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement> | null) => {
+    onChangePage(event, page + 1)
   }
 
-  const handleLastPageButtonClick = () => {
-    onChangePage(Math.max(0, Math.ceil(count / rowsPerPage) - 1))
+  const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement> | null) => {
+    onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1))
   }
 
   return (
