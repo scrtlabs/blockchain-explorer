@@ -12,9 +12,10 @@ import '../../assets/styles/index.css'
 import Workers from '../Workers'
 import Worker from '../Worker'
 import Contract from '../Contract'
+import NotFound from '../NotFound'
 
 const EmptyContent = () => <React.Fragment />
-const NonExistent = () => <div>404 Not Found</div>
+const NonExistent = () => <NotFound message="404 Not Found" />
 
 const App: React.FC = () => {
   return (
