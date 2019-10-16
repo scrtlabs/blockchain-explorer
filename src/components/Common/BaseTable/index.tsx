@@ -12,11 +12,18 @@ import TableOverflow from '../TableOverflow'
 import ChevronOpen from './img/chevron-open.svg'
 import ChevronClosed from './img/chevron-closed.svg'
 
+export enum CellStatuses {
+  success = 'success',
+  submitted = 'submitted',
+  error = 'error',
+  normal = 'textCommon',
+}
+
 type CellProps = {
   id: string
   align: 'left' | 'right' | 'center'
   value: React.ReactNode | string
-  status?: 'success' | 'submitted' | 'error'
+  status?: CellStatuses
   colSpan?: number
   style?: object
   onClick?: CallableFunction
@@ -43,8 +50,8 @@ const TableCellContent = styled.div`
   display: flex;
 `
 
-const TableCellText = styled.span<{ status?: 'success' | 'submitted' | 'error' }>`
-  color: ${props => props.theme.status[props.status || 'submitted']};
+const TableCellText = styled.span<{ status?: CellStatuses }>`
+  color: ${props => (props.status && props.theme.status[props.status]) || props.theme.colors[CellStatuses.normal]};
   font-size: 13px;
   font-weight: normal;
   line-height: 1.2;
@@ -62,7 +69,7 @@ const Chevron = styled.div<{ isOpen: boolean }>`
   width: 12px;
 `
 
-const BaseTable = ({ headerProps, rows, paginatorProps }: BaseTableProps) => (
+const BaseTable = ({ headerProps, rows = [], paginatorProps }: BaseTableProps) => (
   <CardStyled>
     <TableOverflow>
       <Table>

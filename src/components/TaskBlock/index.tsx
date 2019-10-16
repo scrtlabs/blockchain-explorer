@@ -214,15 +214,14 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
   const closeModal = () => setModalIsOpen(false)
   const openModal = () => setModalIsOpen(true)
 
-  React.useEffect(() => {
+  React.useMemo(() => {
     if (!loading && !error) {
-      console.log(data)
       const secretContract = data.secretContracts.find(
         ({ createdAtTransaction }: { createdAtTransaction: string }) => createdAtTransaction === txHash,
       )
       setSecretContract((secretContract && secretContract.address) || '...')
     }
-  }, [data, loading])
+  }, [loading])
 
   return (
     <>

@@ -35,7 +35,7 @@ const Paginator = (props: TablePaginationProps) => (
     <TablePaginationStyled
       {...props}
       component="div"
-      rowsPerPageOptions={[25, 50, 100, 200]}
+      rowsPerPageOptions={[10, 25, 50, 100, 200]}
       SelectProps={{
         inputProps: { 'aria-label': 'rows per page' },
         native: true,

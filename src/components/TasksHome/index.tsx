@@ -61,8 +61,8 @@ const TasksHome = () => {
   const { data, error, loading } = useQuery(GET_RECENT_TASKS, { variables: { total: 5 } })
   const [tasks, setTasks] = React.useState(_tasks)
 
-  React.useEffect(() => {
-    if (!error && !loading) {
+  React.useMemo(() => {
+    if (!loading && !error) {
       setTasks(
         data.tasks.map((task: TaskBasicData) => ({
           number: shrinkHexString(task.id, 2, 3),
@@ -74,7 +74,7 @@ const TasksHome = () => {
         })),
       )
     }
-  }, [data, loading])
+  }, [loading])
 
   return (
     <>
