@@ -62,7 +62,7 @@ const EpochBlockStyled = styled(Card)<BlockProps>`
   > div {
     flex-direction: column;
 
-    @media (min-width: ${props => props.theme.themeBreakPoints.lg}) {
+    @media (min-width: ${props => props.theme.themeBreakPoints.xxl}) {
       flex-direction: row;
     }
   }
@@ -78,7 +78,7 @@ const ProgressCircleStyled = styled(ProgressCircle)`
   flex-shrink: 0;
   margin: 0 auto 20px;
 
-  @media (min-width: ${props => props.theme.themeBreakPoints.lg}) {
+  @media (min-width: ${props => props.theme.themeBreakPoints.xxl}) {
     margin-bottom: 0;
     margin-right: 15px;
   }
