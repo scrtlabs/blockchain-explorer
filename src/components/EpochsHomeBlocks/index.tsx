@@ -110,13 +110,11 @@ const EpochHomeBlocks = () => {
       extractEpochs()
     }
 
-    const unsubscribe = subscribeToMore({
+    return subscribeToMore({
       document: SUBSCRIBE_RECENT_EPOCHS,
       variables: { total: 8 },
       updateQuery: (prev, { subscriptionData }) => (subscriptionData.data ? subscriptionData.data : prev),
     })
-
-    return () => unsubscribe()
   }, [])
 
   React.useMemo(() => {

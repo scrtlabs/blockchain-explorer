@@ -2,7 +2,7 @@ import React from 'react'
 import SectionTitle from '../Common/SectionTitle'
 import TaskBlock, { TaskItemProps, TaskStatus } from '../TaskBlock'
 import { useQuery } from '@apollo/react-hooks'
-import { GET_RECENT_TASKS } from '../../utils/subgrah-queries'
+import { GET_RECENT_TASKS, SUBSCRIBE_RECENT_TASKS } from '../../utils/subgrah-queries'
 import shrinkHexString from '../../utils/shrinkHexString'
 import { shortEngHumanizer } from '../../utils/humanizer'
 
@@ -58,23 +58,39 @@ export interface TaskBasicData {
 }
 
 const TasksHome = () => {
-  const { data, error, loading } = useQuery(GET_RECENT_TASKS, { variables: { total: 5 } })
+  const { subscribeToMore, data, error, loading } = useQuery(GET_RECENT_TASKS, { variables: { total: 5 } })
   const [tasks, setTasks] = React.useState(_tasks)
 
-  React.useMemo(() => {
+  const extractTasks = () => {
+    setTasks(
+      data.tasks.map((task: TaskBasicData) => ({
+        number: shrinkHexString(task.id, 2, 3),
+        status: task.status === 'RecordCreated' ? 1 : 0, // TODO: fix
+        submittedBy: task.sender,
+        taskID: task.id,
+        time: shortEngHumanizer(Date.now() - (new Date(+task.createdAt * 1000) as any)) + ' ago',
+        txHash: task.createdAtTransaction,
+      })),
+    )
+  }
+
+  React.useEffect(() => {
     if (!loading && !error) {
-      setTasks(
-        data.tasks.map((task: TaskBasicData) => ({
-          number: shrinkHexString(task.id, 2, 3),
-          status: task.status === 'RecordCreated' ? 1 : 0, // TODO: fix
-          submittedBy: task.sender,
-          taskID: task.id,
-          time: shortEngHumanizer(Date.now() - (new Date(+task.createdAt * 1000) as any)) + ' ago',
-          txHash: task.createdAtTransaction,
-        })),
-      )
+      extractTasks()
     }
-  }, [loading])
+
+    return subscribeToMore({
+      document: SUBSCRIBE_RECENT_TASKS,
+      variables: { total: 5 },
+      updateQuery: (prev, { subscriptionData }) => (subscriptionData.data ? subscriptionData.data : prev),
+    })
+  }, [])
+
+  React.useMemo(() => {
+    if (data) {
+      extractTasks()
+    }
+  }, [data])
 
   return (
     <>

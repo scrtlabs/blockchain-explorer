@@ -74,6 +74,15 @@ export const GET_RECENT_TASKS = gql`
   ${basicTaskDetailsFragment}
 `
 
+export const SUBSCRIBE_RECENT_TASKS = gql`
+  subscription recentTasks($total: Int) {
+    tasks(first: $total, orderBy: createdAtBlock, orderDirection: desc) {
+      ...BasicTaskDetails
+    }
+  }
+  ${basicTaskDetailsFragment}
+`
+
 export const secretContractDetailFragment = gql`
   fragment SecretContractDetail on SecretContract {
     id
