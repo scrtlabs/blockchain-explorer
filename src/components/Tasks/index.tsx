@@ -4,10 +4,37 @@ import { HeaderCellAlign } from '../Common/EnhancedTableHead'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
 import HexAddr from '../Common/HexAddr'
+import SectionTitle from '../Common/SectionTitle'
+import FullLoading from '../Common/FullLoading'
+
+enum Direction {
+  'ascending' = 'asc',
+  'descending' = 'desc',
+}
+
+enum FieldToGraph {
+  'taskId' = 'id',
+  'taskStatus' = 'status',
+  'taskEpochNumber' = 'epoch',
+  'taskUserAddress' = 'sender',
+  'taskScAddress' = 'secretContract',
+  'taskEngGasUsed' = 'gasPx',
+  'taskNumber' = 'createdAt',
+}
+
+enum GraphToField {
+  'id' = 'taskId',
+  'status' = 'taskStatus',
+  'epoch' = 'taskEpochNumber',
+  'sender' = 'taskUserAddress',
+  'secretContract' = 'taskScAddress',
+  'gasPx' = 'taskEngGasUsed',
+  'createdAt' = 'taskNumber',
+}
 
 const TASKS_QUERY = gql`
-  query Tasks($total: Int, $offset: Int, $limit: Int, $skip: Int) {
-    tasks(first: $total, orderBy: createdAtBlock, orderDirection: desc, skip: $skip) {
+  query Tasks($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
+    tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
       id
       status
       sender
@@ -26,88 +53,85 @@ const HEADER_CELLS = [
   { id: 'taskNumber', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'Task Number' },
 ]
 
+const INITIAL_VALUES = {
+  total: 10,
+  skip: 0,
+  orderBy: FieldToGraph.taskNumber,
+  orderDirection: Direction.descending,
+}
+
 const Tasks = () => {
-  const { data, error, loading, fetchMore } = useQuery(TASKS_QUERY, { variables: { total: 10, skip: 0 } })
-  const [tasks, setTasks] = React.useState([])
-  const [rowsPerPage, setRowsPerPage] = React.useState(10)
-  const [page, setPage] = React.useState(0)
+  const { data, error, loading, variables, refetch } = useQuery(TASKS_QUERY, { variables: INITIAL_VALUES })
+  const { total, skip, orderBy, orderDirection } = variables
 
-  React.useEffect(() => {
-    if (!loading && !error) {
-      setTasks(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        data.tasks.map(task => ({
-          id: task.id,
-          cells: [
-            {
-              align: 'center',
-              id: `${task.id}_${task.id}`,
-              value: (
-                <HexAddr start={5} end={5}>
-                  {task.id}
-                </HexAddr>
-              ),
-            },
-            { align: 'center', id: `${task.id}_${task.status}`, value: task.status },
-            { align: 'center', id: `${task.id}_${'111'}`, value: '111' },
-            { align: 'center', id: `${task.id}_${task.sender}`, value: task.sender },
-            { align: 'center', id: `${task.id}_${'0x0'}`, value: '0x0' },
-            { align: 'center', id: `${task.id}_${task.gasPx}`, value: task.gasPx },
-            { align: 'center', id: `${task.id}_${'0'}`, value: '0' },
-          ],
-        })),
-      )
-    }
-  }, [data, loading])
+  if (error) console.error(error.message)
 
-  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, page: number) => {
-    fetchMore({
-      variables: { total: rowsPerPage, skip: page * rowsPerPage },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev
-
-        setPage(page)
-
-        return { ...prev, tasks: [...fetchMoreResult.tasks] }
-      },
+  const handleRequestSort = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    sortField: keyof typeof FieldToGraph,
+  ) => {
+    refetch({
+      total,
+      skip: INITIAL_VALUES.skip,
+      orderBy: FieldToGraph[sortField] === orderBy ? orderBy : FieldToGraph[sortField],
+      orderDirection: orderDirection === Direction.descending ? Direction.ascending : Direction.descending,
     })
   }
 
+  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, page: number) => {
+    refetch({ ...variables, skip: page * total })
+  }
+
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const total = +event.target.value
-
-    fetchMore({
-      variables: { total },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev
-
-        setRowsPerPage(total)
-
-        return { ...prev, tasks: [...fetchMoreResult.tasks] }
-      },
-    })
+    refetch({ ...variables, total: +event.target.value, skip: INITIAL_VALUES.skip })
   }
 
   return (
     <>
+      <SectionTitle>Tasks</SectionTitle>
       <BaseTable
         headerProps={{
           headerCells: HEADER_CELLS,
-          order: 'asc',
-          orderBy: 'taskId',
-          onRequestSort: console.log.bind(console, 'requestSort'),
+          order: orderDirection,
+          orderBy: GraphToField[orderBy as keyof typeof GraphToField],
+          onRequestSort: handleRequestSort,
         }}
-        rows={tasks}
+        rows={
+          data &&
+          data.tasks &&
+          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+          // @ts-ignore
+          data.tasks.map(task => ({
+            id: task.id,
+            cells: [
+              {
+                align: 'center',
+                id: `${task.id}_${task.id}`,
+                value: (
+                  <HexAddr start={5} end={5}>
+                    {task.id}
+                  </HexAddr>
+                ),
+              },
+              { align: 'center', id: `${task.id}_${task.status}`, value: task.status },
+              { align: 'center', id: `${task.id}_${'111'}`, value: '111' },
+              { align: 'center', id: `${task.id}_${task.sender}`, value: task.sender },
+              { align: 'center', id: `${task.id}_${'0x0'}`, value: '0x0' },
+              { align: 'center', id: `${task.id}_${task.gasPx}`, value: task.gasPx },
+              { align: 'center', id: `${task.id}_${'0'}`, value: '0' },
+            ],
+          }))
+        }
         paginatorProps={{
           colSpan: HEADER_CELLS.length,
           count: 25,
           onChangePage: handleChangePage,
           onChangeRowsPerPage: handleChangeRowsPerPage,
-          page,
-          rowsPerPage,
+          page: Math.floor(skip / total),
+          rowsPerPage: total,
         }}
       />
+      {loading && <FullLoading />}
     </>
   )
 }
