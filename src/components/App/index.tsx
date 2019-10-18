@@ -13,8 +13,8 @@ import Workers from '../Workers'
 import Worker from '../Worker'
 import Contract from '../Contract'
 import NotFound from '../NotFound'
+import Epochs from '../Epochs'
 
-const EmptyContent = () => <React.Fragment />
 const NonExistent = () => <NotFound message="404 Not Found" />
 
 const App: React.FC = () => {
@@ -27,7 +27,7 @@ const App: React.FC = () => {
             <Switch>
               <Route exact path="/home" component={Home} />
               <Route exact path="/tasks/:taskId?" component={Tasks} />
-              <Route exact path="/epochs/:epochNumber?" component={EmptyContent} />
+              <Route exact path="/epochs/:epochNumber?" component={Epochs} />
               <Route exact path="/workers" component={Workers} />
               <Route exact path="/worker/:workerAddress?" component={Worker} />
               <Route exact path="/contract/:contractAddress?" component={Contract} />
