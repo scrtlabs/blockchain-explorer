@@ -15,6 +15,11 @@ class EthAPI {
     return this.web3.eth.getBlockNumber()
   }
 
+  async getBlockTimestamp(blockNumber) {
+    const block = await this.web3.eth.getBlock(blockNumber)
+    return (block && block.timestamp) || '0'
+  }
+
   async getBatchBlocksTimestamps(range) {
     const batch = new this.web3.BatchRequest()
 

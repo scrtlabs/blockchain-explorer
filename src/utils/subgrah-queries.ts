@@ -7,6 +7,11 @@ export const epochDetailFragment = gql`
     startBlockNumber
     completeBlockNumber
     startTime
+    workers {
+      id
+      balance
+      signerAddress
+    }
   }
 `
 

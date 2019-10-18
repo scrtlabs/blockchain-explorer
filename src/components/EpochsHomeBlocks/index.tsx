@@ -28,6 +28,7 @@ const EpochHomeBlocksMockedData = [
       epoch: '123456',
       progress: '92',
       time: '2d 23h 54m',
+      finishTime: Date.now(),
       blocks: [
         { value: '11111111', title: 'First Block', type: EpochBlockTypes.first },
         { value: '55555555', title: 'Current Block', type: EpochBlockTypes.current },
@@ -58,7 +59,8 @@ const EpochHomeBlocks = () => {
 
   const calculateEpochsValues = async (epochsHistory: Array<any>, epoch: any, index: number, epochs: Array<any>) => {
     const current = index === 0
-    const calculatedValues: { time: string; blocks: any[] } = {
+    const calculatedValues: { finishTime: number; time: string; blocks: any[] } = {
+      finishTime: 0,
       time: '',
       blocks: [],
     }
@@ -74,11 +76,13 @@ const EpochHomeBlocks = () => {
       calculatedValues.blocks.push({ value: actualBlock, title: 'Current Block', type: EpochBlockTypes.current })
 
       const { finishBlock, finishTime } = await estimateEpochFinishTimes(epochsHistory)
+      calculatedValues.finishTime = finishTime
       calculatedValues.time = shortEngHumanizer(finishTime, { largest: 3 })
-      calculatedValues.blocks.push({ value: finishBlock, title: 'Last Block', type: EpochBlockTypes.last })
+      const lastBlock = finishBlock > currentBlock ? finishBlock : currentBlock
+      calculatedValues.blocks.push({ value: lastBlock, title: 'Last Block', type: EpochBlockTypes.last })
     } else {
       const nextEpochStartTime = new Date(epochs[index - 1].startTime * 1000) as any
-      calculatedValues.time = shortEngHumanizer(Date.now() - nextEpochStartTime) + ' ago'
+      calculatedValues.time = shortEngHumanizer(Date.now() - nextEpochStartTime)
 
       const finishBlock = `${+epochs[index - 1].startBlockNumber - 1}`
       calculatedValues.blocks.push({ value: finishBlock, title: 'LastBlock', type: EpochBlockTypes.last })

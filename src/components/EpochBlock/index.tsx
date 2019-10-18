@@ -10,6 +10,8 @@ import GridCell from '../Common/GridCell'
 import EpochBlockNumbers, { EpochBlockData } from '../EpochBlockNumbers'
 import StrippedGrid, { StrippedGridRow } from '../Common/StrippedGrid'
 import { GET_TASKS_BY_STATE_IN_BLOCK_RANGE, SUBSCRIBE_TASKS_BY_STATE_IN_BLOCK_RANGE } from '../../utils/subgrah-queries'
+import ethApi from '../../utils/eth'
+import shrinkHexString from '../../utils/shrinkHexString'
 
 export interface ValuesProps {
   blocks: Array<EpochBlockData>
@@ -17,6 +19,7 @@ export interface ValuesProps {
   epoch: string
   progress: string
   time: string
+  finishTime?: number
 }
 
 export interface EpochProps {
@@ -25,6 +28,7 @@ export interface EpochProps {
   inclusionBlockNumber: string
   startBlockNumber: string
   startTime: string
+  workers: any[]
 }
 
 interface EpochBlockProps extends HTMLAttributes<HTMLDivElement> {
@@ -115,7 +119,7 @@ const TwoItemsGrid = styled.div`
 
 const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   const { values, theme, epoch, ...restProps } = props
-  const { current = false, epoch: epochId, progress, time, blocks } = values
+  const { current = false, epoch: epochId, progress, time, blocks = [] } = values
   const endedColor = 'rgba(28, 168, 248, 0.5)'
   const runningColor = 'rgba(231, 46, 157, 0.6)'
   const borderColor: string = current ? theme.colors.secondary : endedColor
@@ -124,6 +128,7 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   })
   const [tasks, setTasks] = React.useState('0')
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
+  const [datesRange, setDatesRange] = React.useState({ start: '', end: '' })
 
   const closeModal = () => setModalIsOpen(false)
   const openModal = () => setModalIsOpen(true)
@@ -144,6 +149,28 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
     return () => unsubscribe()
   }, [data, values])
 
+  const getEndTime = async () => {
+    if (current && values.finishTime) {
+      const currentBlockTimestamp = await ethApi.getBlockTimestamp(await ethApi.getBlockNumber())
+      return +currentBlockTimestamp * 1000 + values.finishTime
+    }
+    const [, { value: end }] = blocks
+    return +(await ethApi.getBlockTimestamp(end)) * 1000
+  }
+
+  React.useMemo(() => {
+    const updateDates = async () => {
+      const endTimeLocal = new Date(await getEndTime()).toLocaleString()
+      const startTimeLocal = new Date(+epoch.startTime * 1000).toLocaleString()
+      setDatesRange({ start: startTimeLocal, end: endTimeLocal })
+    }
+
+    if (values.blocks.length) {
+      console.log('here', values.blocks)
+      updateDates()
+    }
+  }, [blocks.length])
+
   return (
     <>
       <EpochBlockStyled borderColor={borderColor} onClick={openModal} {...restProps}>
@@ -160,19 +187,22 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
       <ModalWrapper isOpen={modalIsOpen} title={`Epoch #${epochId}`} onRequestClose={closeModal}>
         <StrippedGrid>
           <StrippedGridRow columns={2}>
-            <GridCell title="Started On" value={'Sep 25 2019 09:00:00 GMT-0300'} />
-            <GridCell title="Completed On" value={'Sep 25 2019 09:00:00 GMT-0300'} />
+            <GridCell title="Started On" value={datesRange.start} />
+            <GridCell title="Completed On" value={datesRange.end} />
           </StrippedGridRow>
           <StrippedGridRow columns={2}>
-            <GridCell title="Tasks Submitted to Epoch" value={'39847823482'} underlineValue={true} />
-            <GridCell title="Completed Tasks" value={'98.53%'} />
+            <GridCell title="Tasks Submitted to Epoch" value={tasks} underlineValue={true} />
+            <GridCell title="Completed Tasks" value={`${progress}%`} />
           </StrippedGridRow>
+          {epoch.workers &&
+            epoch.workers.map(worker => (
+              <StrippedGridRow key={worker.id} columns={2}>
+                <GridCell title="Worker" value={shrinkHexString(worker.id, 8, 8)} underlineValue={true} />
+                <GridCell title="Worker’s Stake" value={worker.balance} />
+              </StrippedGridRow>
+            ))}
           <StrippedGridRow columns={2}>
-            <GridCell title="Worker" value={'0xffd4aew0…6ree03f9a'} underlineValue={true} />
-            <GridCell title="Worker’s Stake" value={'99.999'} />
-          </StrippedGridRow>
-          <StrippedGridRow columns={2}>
-            <GridCell title="Registered Workers" value={'9999'} />
+            <GridCell title="Registered Workers" value={`${epoch.workers && epoch.workers.length}`} />
             <GridCell title="Users" value={'555666'} />
           </StrippedGridRow>
           <StrippedGridRow columns={2}>
