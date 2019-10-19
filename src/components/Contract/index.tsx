@@ -1,6 +1,4 @@
 import React from 'react'
-import BaseTable from '../Common/BaseTable'
-import { HeaderCellAlign } from '../Common/EnhancedTableHead'
 import Card from '../Common/Card'
 import SectionTitle from '../Common/SectionTitle'
 import CopyText from '../Common/CopyText'
@@ -9,6 +7,7 @@ import { ButtonExpand } from '../Common/ButtonExpand'
 import GridCell, { GridCellStyled, Title, Value } from '../Common/GridCell'
 import styled from 'styled-components'
 import ModalWrapper from '../Common/ModalWrapper'
+import Epochs from '../Epochs'
 
 const DetailsCard = styled(Card)`
   margin-bottom: 35px;
@@ -527,26 +526,6 @@ type Subscription {
 }
 `
 
-const HEADER_CELLS = [
-  { id: 'taskID', useClassShowOnDesktop: true, align: HeaderCellAlign.flexStart, label: 'Task ID' },
-  { id: 'status', useClassShowOnDesktop: true, align: HeaderCellAlign.center, label: 'Status' },
-  {
-    id: 'epoch',
-    useClassShowOnDesktop: true,
-    align: HeaderCellAlign.center,
-    label: 'Epoch',
-  },
-  {
-    id: 'user',
-    useClassShowOnDesktop: true,
-    align: HeaderCellAlign.center,
-    label: 'User',
-  },
-  { id: 'secretContract', useClassShowOnDesktop: true, align: HeaderCellAlign.center, label: 'Secret Contract' },
-  { id: 'engGasUsed', useClassShowOnDesktop: true, align: HeaderCellAlign.flexEnd, label: 'ENG Gas Used' },
-  { id: 'Task Number', useClassShowOnDesktop: true, align: HeaderCellAlign.flexEnd, label: 'Task Number' },
-]
-
 const Contract = () => {
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
 
@@ -568,24 +547,7 @@ const Contract = () => {
         <ButtonView>Contracts Called</ButtonView>
         <ButtonExpand onClick={openModal}>Expand Bytecode</ButtonExpand>
       </DetailsCard>
-      <SectionTitle>Selected Epochs</SectionTitle>
-      <BaseTable
-        headerProps={{
-          headerCells: HEADER_CELLS,
-          order: 'asc',
-          orderBy: 'taskID',
-          onRequestSort: console.log.bind(console, 'requestSort'),
-        }}
-        rows={[]}
-        paginatorProps={{
-          colSpan: HEADER_CELLS.length,
-          count: [].length,
-          onChangePage: console.log.bind(console, 'changePage'),
-          onChangeRowsPerPage: console.log.bind(console, 'rowsPerPage'),
-          page: 0,
-          rowsPerPage: 50,
-        }}
-      />
+      <Epochs title="Selected Epochs" />
       <ModalWrapper ariaHideApp={false} isOpen={modalIsOpen} title={`Contract’s Bytecode`} onRequestClose={closeModal}>
         <ContractWrapper>
           <ContractSRC defaultValue={CONTRACT_VALUE} />

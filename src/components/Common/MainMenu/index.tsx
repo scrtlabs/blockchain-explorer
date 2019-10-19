@@ -72,7 +72,7 @@ const MainMenu: React.FC = props => (
     <Item activeClassName="active" to={'/epochs'}>
       Epochs
     </Item>
-    <Item activeClassName="active" to={'/workers'}>
+    <Item activeClassName="active" to={'/worker*'}>
       Workers
     </Item>
   </MainMenuWrapper>

@@ -32,6 +32,10 @@ enum GraphToField {
   'engReward' = 'epochEngReward',
 }
 
+interface EpochsProps extends React.HTMLAttributes<HTMLDivElement> {
+  title?: string
+}
+
 const EPOCHS_QUERY = gql`
   query Epoches($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
     epoches(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
@@ -65,9 +69,8 @@ const INITIAL_VALUES = {
   orderDirection: Direction.descending,
 }
 
-const Epochs = () => {
+const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs' }: EpochsProps) => {
   const { data, error, loading, variables, refetch } = useQuery(EPOCHS_QUERY, { variables: INITIAL_VALUES })
-
   const { total, skip, orderBy, orderDirection } = variables
 
   if (error) console.error(error.message)
@@ -94,7 +97,7 @@ const Epochs = () => {
 
   return (
     <>
-      <SectionTitle>Epochs</SectionTitle>
+      <SectionTitle>{title}</SectionTitle>
       <BaseTable
         headerProps={{
           headerCells: HEADER_CELLS,
