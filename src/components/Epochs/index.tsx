@@ -77,7 +77,7 @@ const EPOCHS_QUERY = gql`
 
 const EPOCHS_BY_WORKER_QUERY = gql`
   query EpochesByWorker($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $workerId: String) {
-    workers(where: { id: $workerId }) {
+    worker(id: $workerId) {
       epochs(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
         ...EpochsDetails
       }
@@ -143,7 +143,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
   const getEndTime = (current: boolean, epochId: string) => {
     if (current) return 'current'
 
-    const epochs = workerId ? data.workers[0].epochs : data.epoches
+    const epochs = workerId ? data.worker.epochs : data.epoches
     const nextEpoch = epochs.find(({ id }: { id: string }) => +id === +epochId + 1)
 
     return shortEngHumanizer(Date.now() - +nextEpoch.startTime * 1000)
@@ -186,8 +186,6 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
     }
   }
 
-  console.log(data)
-
   return (
     <>
       <SectionTitle>{title}</SectionTitle>
@@ -200,7 +198,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
         }}
         rows={
           (data && data.epoches && data.epoches.map(extractEpochData)) ||
-          (data && data.workers && data.workers[0].epochs && data.workers[0].epochs.map(extractEpochData))
+          (data && data.worker && data.worker.epochs && data.worker.epochs.map(extractEpochData))
         }
         paginatorProps={{
           colSpan: HEADER_CELLS.length,
