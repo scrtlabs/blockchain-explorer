@@ -148,7 +148,6 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
     }
 
     if (values.blocks.length) {
-      console.log('here', values.blocks)
       updateDates()
     }
   }, [blocks.length])

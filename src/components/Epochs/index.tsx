@@ -1,9 +1,8 @@
 import React from 'react'
-import BaseTable from '../Common/BaseTable'
-import { HeaderCellAlign } from '../Common/EnhancedTableHead'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
-import HexAddr from '../Common/HexAddr'
+import BaseTable from '../Common/BaseTable'
+import { HeaderCellAlign } from '../Common/EnhancedTableHead'
 import SectionTitle from '../Common/SectionTitle'
 import FullLoading from '../Common/FullLoading'
 import { shortEngHumanizer } from '../../utils/humanizer'
@@ -100,7 +99,12 @@ const HEADER_CELLS = [
     align: HeaderCellAlign.flexStart,
     label: '% Of Completed Tasks',
   },
-  { id: 'epochWorkers', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'Workers' },
+  {
+    id: 'epochWorkers',
+    useClassShowOnDesktop: false,
+    align: HeaderCellAlign.flexStart,
+    label: 'Number Of Selected Workers',
+  },
   { id: 'epochEngGasUsed', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'ENG Gas Used' },
   { id: 'epochEngReward', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'ENG Reward' },
 ]
@@ -169,16 +173,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
         {
           align: 'center',
           id: `${epoch.id}_${epoch.workers.map(({ id }: { id: string | undefined }) => id).join('')}_w`,
-          value:
-            (epoch.workers.length &&
-              epoch.workers.map((worker: { id: string }) => (
-                <div key={worker.id}>
-                  <HexAddr start={5} end={5}>
-                    {worker.id}
-                  </HexAddr>
-                </div>
-              ))) ||
-            'no workers',
+          value: epoch.workers.length || 'no workers',
         },
         { align: 'center', id: `${epoch.id}_${epoch.gasUsed}`, value: epoch.gasUsed },
         { align: 'center', id: `${epoch.id}_${epoch.reward}`, value: epoch.reward },
