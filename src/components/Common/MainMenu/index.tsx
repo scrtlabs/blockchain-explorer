@@ -72,7 +72,14 @@ const MainMenu: React.FC = props => (
     <Item activeClassName="active" to={'/epochs'}>
       Epochs
     </Item>
-    <Item activeClassName="active" to={'/worker*'}>
+    <Item
+      activeClassName="active"
+      to={'/workers'}
+      isActive={(match, location) => {
+        if (match) return true
+        return location.pathname.startsWith('/worker/')
+      }}
+    >
       Workers
     </Item>
   </MainMenuWrapper>
