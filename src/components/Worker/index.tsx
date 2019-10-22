@@ -1,11 +1,14 @@
 import React from 'react'
+import gql from 'graphql-tag'
+import { useQuery } from '@apollo/react-hooks'
+import styled from 'styled-components'
 import Card from '../Common/Card'
 import SectionTitle from '../Common/SectionTitle'
 import CopyText from '../Common/CopyText'
 import GridCell, { GridCellStyled, Title, Value } from '../Common/GridCell'
-import styled from 'styled-components'
 import Epochs from '../Epochs'
 import HexAddr from '../Common/HexAddr'
+import FullLoading from '../Common/FullLoading'
 
 const DetailsCard = styled(Card)`
   margin-bottom: 35px;
@@ -32,12 +35,40 @@ const ValueStyled = styled(Value)`
   flex-wrap: wrap;
 `
 
+const WORKER_BY_ID_QUERY = gql`
+  query WorkerById($workerId: String) {
+    worker(id: $workerId) {
+      tasksCompletedCount
+      tasks {
+        id
+      }
+      reward
+      balance
+      epochs {
+        id
+      }
+    }
+    enigmaState(id: 0) {
+      latestEpoch {
+        id
+      }
+    }
+  }
+`
+
 const Worker = (props: any) => {
   const {
     match: {
       params: { workerAddress },
     },
   } = props
+  const { data, error, loading } = useQuery(WORKER_BY_ID_QUERY, { variables: { workerId: workerAddress } })
+  console.log(data)
+  const worker = data ? data.worker : { tasksCompletedCount: 0, tasks: [], reward: 0, balance: 0, epochs: [] }
+  const totalEpochs = (data && data.enigmaState && data.enigmaState.latestEpoch && data.enigmaState.latestEpoch.id) || 0
+
+  if (error) console.error(error.message)
+
   return (
     <>
       <SectionTitle>Worker</SectionTitle>
@@ -51,12 +82,13 @@ const Worker = (props: any) => {
             <CopyText text={workerAddress} />
           </ValueStyled>
         </GridCellStyled>
-        <GridCell title="Successful Tasks" value={'498 / 500'} />
-        <GridCell title="ENG Rewards" value={'123456.789'} />
-        <GridCell title="ENG Staked" value={'10000'} />
-        <GridCell title="Epochs Active" value={'48 / 50'} />
+        <GridCell title="Successful Tasks" value={`${worker.tasksCompletedCount} / ${worker.tasks.length}`} />
+        <GridCell title="ENG Rewards" value={worker.reward} />
+        <GridCell title="ENG Staked" value={worker.balance} />
+        <GridCell title="Epochs Active" value={`${worker.epochs.length} / ${totalEpochs}`} />
       </DetailsCard>
       <Epochs title="Selected Epochs" workerId={workerAddress} />
+      {loading && <FullLoading />}
     </>
   )
 }
