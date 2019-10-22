@@ -56,7 +56,7 @@ const Worker = (props: any) => {
         <GridCell title="ENG Staked" value={'10000'} />
         <GridCell title="Epochs Active" value={'48 / 50'} />
       </DetailsCard>
-      <Epochs title="Selected Epochs" />
+      <Epochs title="Selected Epochs" workerId={workerAddress} />
     </>
   )
 }

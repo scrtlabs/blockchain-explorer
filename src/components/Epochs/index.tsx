@@ -35,29 +35,59 @@ enum GraphToField {
 
 interface EpochsProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string
+  workerId?: string | null
 }
+
+const epochesDetailsFragment = gql`
+  fragment EpochsDetails on Epoch {
+    id
+    startTime
+    startBlockNumber
+    workers {
+      id
+    }
+    tasksCompletedCount
+    tasksCount
+    tasksFailedCount
+    gasUsed
+    reward
+  }
+`
+
+const latestEpochFragment = gql`
+  fragment LatestEpoch on EnigmaState {
+    latestEpoch {
+      id
+    }
+  }
+`
 
 const EPOCHS_QUERY = gql`
   query Epoches($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
     epoches(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
-      id
-      startTime
-      startBlockNumber
-      workers {
-        id
-      }
-      tasksCompletedCount
-      tasksCount
-      tasksFailedCount
-      gasUsed
-      reward
+      ...EpochsDetails
     }
     enigmaState(id: 0) {
-      latestEpoch {
-        id
-      }
+      ...LatestEpoch
     }
   }
+  ${epochesDetailsFragment}
+  ${latestEpochFragment}
+`
+
+const EPOCHS_BY_WORKER_QUERY = gql`
+  query EpochesByWorker($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $workerId: String) {
+    workers(where: { id: $workerId }) {
+      epochs(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
+        ...EpochsDetails
+      }
+    }
+    enigmaState(id: 0) {
+      ...LatestEpoch
+    }
+  }
+  ${epochesDetailsFragment}
+  ${latestEpochFragment}
 `
 
 const HEADER_CELLS = [
@@ -82,8 +112,10 @@ const INITIAL_VALUES = {
   orderDirection: Direction.descending,
 }
 
-const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs' }: EpochsProps) => {
-  const { data, error, loading, variables, refetch } = useQuery(EPOCHS_QUERY, { variables: INITIAL_VALUES })
+const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: EpochsProps) => {
+  const query = workerId ? EPOCHS_BY_WORKER_QUERY : EPOCHS_QUERY
+  const queryVariables = workerId ? { ...INITIAL_VALUES, workerId } : INITIAL_VALUES
+  const { data, error, loading, variables, refetch } = useQuery(query, { variables: queryVariables })
   const { total, skip, orderBy, orderDirection } = variables
 
   if (error) console.error(error.message)
@@ -111,9 +143,50 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs' }: EpochsProps) => {
   const getEndTime = (current: boolean, epochId: string) => {
     if (current) return 'current'
 
-    const nextEpoch = data.epoches.find(({ id }: { id: string }) => +id === +epochId + 1)
+    const epochs = workerId ? data.workers[0].epochs : data.epoches
+    const nextEpoch = epochs.find(({ id }: { id: string }) => +id === +epochId + 1)
+
     return shortEngHumanizer(Date.now() - +nextEpoch.startTime * 1000)
   }
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
+  const extractEpochData = epoch => {
+    const current = epoch.id === data.enigmaState.latestEpoch.id
+    const age = getEndTime(current, epoch.id)
+
+    return {
+      id: epoch.id,
+      cells: [
+        { align: 'center', id: `${epoch.id}_${epoch.id}`, value: epoch.id },
+        { align: 'center', id: `${epoch.id}_${age}_age`, value: age },
+        { align: 'center', id: `${epoch.id}_${epoch.tasksCount}`, value: epoch.tasksCount },
+        {
+          align: 'center',
+          id: `${epoch.id}_${epoch.tasksCompletedCount + epoch.tasksCount + epoch.tasksFailedCount}`,
+          value: `${+epoch.tasksCount !== 0 ? +(+epoch.tasksCompletedCount / +epoch.tasksCount).toFixed(2) * 100 : 0}%`,
+        },
+        {
+          align: 'center',
+          id: `${epoch.id}_${epoch.workers.map(({ id }: { id: string | undefined }) => id).join('')}_w`,
+          value:
+            (epoch.workers.length &&
+              epoch.workers.map((worker: { id: string }) => (
+                <div key={worker.id}>
+                  <HexAddr start={5} end={5}>
+                    {worker.id}
+                  </HexAddr>
+                </div>
+              ))) ||
+            'no workers',
+        },
+        { align: 'center', id: `${epoch.id}_${epoch.gasUsed}`, value: epoch.gasUsed },
+        { align: 'center', id: `${epoch.id}_${epoch.reward}`, value: epoch.reward },
+      ],
+    }
+  }
+
+  console.log(data)
 
   return (
     <>
@@ -126,46 +199,8 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs' }: EpochsProps) => {
           onRequestSort: handleRequestSort,
         }}
         rows={
-          data &&
-          data.epoches &&
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-          // @ts-ignore
-          data.epoches.map(epoch => {
-            const current = epoch.id === data.enigmaState.latestEpoch.id
-            const age = getEndTime(current, epoch.id)
-
-            return {
-              id: epoch.id,
-              cells: [
-                { align: 'center', id: `${epoch.id}_${epoch.id}`, value: epoch.id },
-                { align: 'center', id: `${epoch.id}_${age}_age`, value: age },
-                { align: 'center', id: `${epoch.id}_${epoch.tasksCount}`, value: epoch.tasksCount },
-                {
-                  align: 'center',
-                  id: `${epoch.id}_${epoch.tasksCompletedCount + epoch.tasksCount + epoch.tasksFailedCount}`,
-                  value: `${
-                    +epoch.tasksCount !== 0 ? +(+epoch.tasksCompletedCount / +epoch.tasksCount).toFixed(2) * 100 : 0
-                  }%`,
-                },
-                {
-                  align: 'center',
-                  id: `${epoch.id}_${epoch.workers.map(({ id }: { id: string | undefined }) => id).join('')}_w`,
-                  value:
-                    (epoch.workers.length &&
-                      epoch.workers.map((worker: { id: string }) => (
-                        <div key={worker.id}>
-                          <HexAddr start={5} end={5}>
-                            {worker.id}
-                          </HexAddr>
-                        </div>
-                      ))) ||
-                    'no workers',
-                },
-                { align: 'center', id: `${epoch.id}_${epoch.gasUsed}`, value: epoch.gasUsed },
-                { align: 'center', id: `${epoch.id}_${epoch.reward}`, value: epoch.reward },
-              ],
-            }
-          })
+          (data && data.epoches && data.epoches.map(extractEpochData)) ||
+          (data && data.workers && data.workers[0].epochs && data.workers[0].epochs.map(extractEpochData))
         }
         paginatorProps={{
           colSpan: HEADER_CELLS.length,
