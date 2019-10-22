@@ -175,13 +175,15 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
             <GridCell title="Tasks Submitted to Epoch" value={tasks} underlineValue={true} />
             <GridCell title="Completed Tasks" value={`${progress}%`} />
           </StrippedGridRow>
-          {epoch.workers &&
-            epoch.workers.map(worker => (
-              <StrippedGridRow key={worker.id} columns={2}>
-                <GridCell title="Worker" value={shrinkHexString(worker.id, 8, 8)} underlineValue={true} />
-                <GridCell title="Worker’s Stake" value={worker.balance} />
-              </StrippedGridRow>
-            ))}
+          {epoch.workers && (
+            <StrippedGridRow columns={2}>
+              <GridCell title="Number Of Selected Workers" value={`${epoch.workers.length}`} underlineValue={true} />
+              <GridCell
+                title="Workers’ Stake"
+                value={`${epoch.workers.reduce((acc, { balance }) => (acc += +balance), 0)}`}
+              />
+            </StrippedGridRow>
+          )}
           <StrippedGridRow columns={2}>
             <GridCell title="Registered Workers" value={`${epoch.workers && epoch.workers.length}`} />
             <GridCell title="Users" value={'555666'} />
