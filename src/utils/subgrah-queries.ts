@@ -5,13 +5,20 @@ export const epochDetailFragment = gql`
     id
     inclusionBlockNumber
     startBlockNumber
-    completeBlockNumber
     startTime
+    tasksCount
+    tasksFailedCount
+    tasksCompletedCount
     workers {
       id
       balance
       signerAddress
     }
+    tasks {
+      id
+      gasUsed
+    }
+    reward
   }
 `
 
@@ -68,6 +75,10 @@ export const basicTaskDetailsFragment = gql`
     createdAtTransaction
     createdAt
     status
+    order
+    gasUsed
+    gasLimit
+    optionalEthereumContractAddress
   }
 `
 export const GET_RECENT_TASKS = gql`

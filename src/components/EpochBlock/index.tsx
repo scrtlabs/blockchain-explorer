@@ -1,6 +1,5 @@
 import React, { HTMLAttributes } from 'react'
 import styled, { withTheme } from 'styled-components'
-import { useQuery } from '@apollo/react-hooks'
 import Card from '../Common/Card'
 import ValueAndSubtitle from '../Common/ValueAndSubtitle'
 import TimeLeft from '../Common/TimeLeft'
@@ -9,7 +8,6 @@ import ModalWrapper from '../Common/ModalWrapper'
 import GridCell from '../Common/GridCell'
 import EpochBlockNumbers, { EpochBlockData } from '../EpochBlockNumbers'
 import StrippedGrid, { StrippedGridRow } from '../Common/StrippedGrid'
-import { GET_TASKS_BY_STATE_IN_BLOCK_RANGE, SUBSCRIBE_TASKS_BY_STATE_IN_BLOCK_RANGE } from '../../utils/subgrah-queries'
 import ethApi from '../../utils/eth'
 import shrinkHexString from '../../utils/shrinkHexString'
 
@@ -19,6 +17,7 @@ export interface ValuesProps {
   epoch: string
   progress: string
   time: string
+  tasks: string
   finishTime?: number
 }
 
@@ -29,6 +28,9 @@ export interface EpochProps {
   startBlockNumber: string
   startTime: string
   workers: any[]
+  tasks: any[]
+  gasUsed: string
+  reward: string
 }
 
 interface EpochBlockProps extends HTMLAttributes<HTMLDivElement> {
@@ -119,35 +121,15 @@ const TwoItemsGrid = styled.div`
 
 const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   const { values, theme, epoch, ...restProps } = props
-  const { current = false, epoch: epochId, progress, time, blocks = [] } = values
+  const { current = false, epoch: epochId, progress, time, blocks = [], tasks } = values
   const endedColor = 'rgba(28, 168, 248, 0.5)'
   const runningColor = 'rgba(231, 46, 157, 0.6)'
   const borderColor: string = current ? theme.colors.secondary : endedColor
-  const { data, error, loading, subscribeToMore } = useQuery(GET_TASKS_BY_STATE_IN_BLOCK_RANGE, {
-    variables: { from: +epoch.startBlockNumber, to: +epoch.completeBlockNumber, status: 'RecordCreated' },
-  })
-  const [tasks, setTasks] = React.useState('0')
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
   const [datesRange, setDatesRange] = React.useState({ start: '', end: '' })
 
   const closeModal = () => setModalIsOpen(false)
   const openModal = () => setModalIsOpen(true)
-
-  React.useEffect(() => {
-    if (!loading && !error) {
-      setTasks(`${data.tasks.length}`)
-    }
-
-    const unsubscribe = subscribeToMore({
-      document: SUBSCRIBE_TASKS_BY_STATE_IN_BLOCK_RANGE,
-      variables: { from: +epoch.startBlockNumber, to: +epoch.completeBlockNumber, status: 'RecordCreated' },
-      updateQuery: (prev, { subscriptionData }) => {
-        return subscriptionData.data ? subscriptionData.data : prev
-      },
-    })
-
-    return () => unsubscribe()
-  }, [data, values])
 
   const getEndTime = async () => {
     if (current && values.finishTime) {
@@ -206,8 +188,8 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
             <GridCell title="Users" value={'555666'} />
           </StrippedGridRow>
           <StrippedGridRow columns={2}>
-            <GridCell title="ENG Gas Used" value={'0.001'} />
-            <GridCell title="ENG Reward" value={'1.222'} />
+            <GridCell title="ENG Gas Used" value={epoch.gasUsed} />
+            <GridCell title="ENG Reward" value={epoch.reward} />
           </StrippedGridRow>
         </StrippedGrid>
       </ModalWrapper>

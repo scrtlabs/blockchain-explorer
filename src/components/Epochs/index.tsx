@@ -6,6 +6,7 @@ import { useQuery } from '@apollo/react-hooks'
 import HexAddr from '../Common/HexAddr'
 import SectionTitle from '../Common/SectionTitle'
 import FullLoading from '../Common/FullLoading'
+import { shortEngHumanizer } from '../../utils/humanizer'
 
 enum Direction {
   'ascending' = 'asc',
@@ -13,7 +14,7 @@ enum Direction {
 }
 
 enum FieldToGraph {
-  'epochId' = 'id',
+  'epochId' = 'order',
   'epochAge' = 'age',
   'epochTotalTasks' = 'tasksCount',
   'epochCompleteTask' = 'tasksCompleted',
@@ -23,7 +24,7 @@ enum FieldToGraph {
 }
 
 enum GraphToField {
-  'id' = 'epochId',
+  'order' = 'epochId',
   'age' = 'epochAge',
   'tasksCount' = 'epochTotalTasks',
   'tasksCompleted' = 'epochCompleteTask',
@@ -40,7 +41,19 @@ const EPOCHS_QUERY = gql`
   query Epoches($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
     epoches(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
       id
+      startTime
+      startBlockNumber
       workers {
+        id
+      }
+      tasksCompletedCount
+      tasksCount
+      tasksFailedCount
+      gasUsed
+      reward
+    }
+    enigmaState(id: 0) {
+      latestEpoch {
         id
       }
     }
@@ -95,6 +108,13 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs' }: EpochsProps) => {
     refetch({ ...variables, total: +event.target.value, skip: INITIAL_VALUES.skip })
   }
 
+  const getEndTime = (current: boolean, epochId: string) => {
+    if (current) return 'current'
+
+    const nextEpoch = data.epoches.find(({ id }: { id: string }) => +id === +epochId + 1)
+    return shortEngHumanizer(Date.now() - +nextEpoch.startTime * 1000)
+  }
+
   return (
     <>
       <SectionTitle>{title}</SectionTitle>
@@ -110,35 +130,46 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs' }: EpochsProps) => {
           data.epoches &&
           // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
           // @ts-ignore
-          data.epoches.map(epoch => ({
-            id: epoch.id,
-            cells: [
-              { align: 'center', id: `${epoch.id}_${epoch.id}`, value: epoch.id },
-              { align: 'center', id: `${epoch.id}_${'5'}_age`, value: '5' },
-              { align: 'center', id: `${epoch.id}_${'111'}`, value: '111' },
-              { align: 'center', id: `${epoch.id}_${'100'}`, value: `${'100'}%` },
-              {
-                align: 'center',
-                id: `${epoch.id}_${epoch.workers.length}_w`,
-                value:
-                  (epoch.workers.length &&
-                    epoch.workers.map((worker: { id: string }) => (
-                      <div key={worker.id}>
-                        <HexAddr start={5} end={5}>
-                          {worker.id}
-                        </HexAddr>
-                      </div>
-                    ))) ||
-                  'no workers',
-              },
-              { align: 'center', id: `${epoch.id}_${'0001'}`, value: '0.001' },
-              { align: 'center', id: `${epoch.id}_${'1123'}`, value: '1.123' },
-            ],
-          }))
+          data.epoches.map(epoch => {
+            const current = epoch.id === data.enigmaState.latestEpoch.id
+            const age = getEndTime(current, epoch.id)
+
+            return {
+              id: epoch.id,
+              cells: [
+                { align: 'center', id: `${epoch.id}_${epoch.id}`, value: epoch.id },
+                { align: 'center', id: `${epoch.id}_${age}_age`, value: age },
+                { align: 'center', id: `${epoch.id}_${epoch.tasksCount}`, value: epoch.tasksCount },
+                {
+                  align: 'center',
+                  id: `${epoch.id}_${epoch.tasksCompletedCount + epoch.tasksCount + epoch.tasksFailedCount}`,
+                  value: `${
+                    +epoch.tasksCount !== 0 ? +(+epoch.tasksCompletedCount / +epoch.tasksCount).toFixed(2) * 100 : 0
+                  }%`,
+                },
+                {
+                  align: 'center',
+                  id: `${epoch.id}_${epoch.workers.map(({ id }: { id: string | undefined }) => id).join('')}_w`,
+                  value:
+                    (epoch.workers.length &&
+                      epoch.workers.map((worker: { id: string }) => (
+                        <div key={worker.id}>
+                          <HexAddr start={5} end={5}>
+                            {worker.id}
+                          </HexAddr>
+                        </div>
+                      ))) ||
+                    'no workers',
+                },
+                { align: 'center', id: `${epoch.id}_${epoch.gasUsed}`, value: epoch.gasUsed },
+                { align: 'center', id: `${epoch.id}_${epoch.reward}`, value: epoch.reward },
+              ],
+            }
+          })
         }
         paginatorProps={{
           colSpan: HEADER_CELLS.length,
-          count: 10,
+          count: data ? +data.enigmaState.latestEpoch.id + 1 : 0,
           onChangePage: handleChangePage,
           onChangeRowsPerPage: handleChangeRowsPerPage,
           page: Math.floor(skip / total),

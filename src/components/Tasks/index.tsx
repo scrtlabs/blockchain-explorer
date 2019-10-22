@@ -18,8 +18,8 @@ enum FieldToGraph {
   'taskEpochNumber' = 'epoch',
   'taskUserAddress' = 'sender',
   'taskScAddress' = 'secretContract',
-  'taskEngGasUsed' = 'gasPx',
-  'taskNumber' = 'createdAt',
+  'taskEngGasUsed' = 'gasUsed',
+  'taskNumber' = 'order',
 }
 
 enum GraphToField {
@@ -28,8 +28,8 @@ enum GraphToField {
   'epoch' = 'taskEpochNumber',
   'sender' = 'taskUserAddress',
   'secretContract' = 'taskScAddress',
-  'gasPx' = 'taskEngGasUsed',
-  'createdAt' = 'taskNumber',
+  'gasUsed' = 'taskEngGasUsed',
+  'order' = 'taskNumber',
 }
 
 const TASKS_QUERY = gql`
@@ -37,8 +37,15 @@ const TASKS_QUERY = gql`
     tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
       id
       status
+      epoch {
+        id
+      }
       sender
-      gasPx
+      gasUsed
+      order
+    }
+    enigmaState(id: 0) {
+      tasksCount
     }
   }
 `
@@ -114,17 +121,17 @@ const Tasks = () => {
                 ),
               },
               { align: 'center', id: `${task.id}_${task.status}`, value: task.status },
-              { align: 'center', id: `${task.id}_${'111'}`, value: '111' },
+              { align: 'center', id: `${task.id}_${task.epoch.id}`, value: task.epoch.id },
               { align: 'center', id: `${task.id}_${task.sender}`, value: task.sender },
               { align: 'center', id: `${task.id}_${'0x0'}`, value: '0x0' },
-              { align: 'center', id: `${task.id}_${task.gasPx}`, value: task.gasPx },
-              { align: 'center', id: `${task.id}_${'0'}`, value: '0' },
+              { align: 'center', id: `${task.id}_${task.gasUsed}`, value: task.gasUsed },
+              { align: 'center', id: `${task.id}_${task.order}`, value: task.order },
             ],
           }))
         }
         paginatorProps={{
           colSpan: HEADER_CELLS.length,
-          count: 25,
+          count: data ? +data.enigmaState.tasksCount : 0,
           onChangePage: handleChangePage,
           onChangeRowsPerPage: handleChangeRowsPerPage,
           page: Math.floor(skip / total),

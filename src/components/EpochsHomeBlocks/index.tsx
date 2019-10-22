@@ -28,6 +28,7 @@ const EpochHomeBlocksMockedData = [
       epoch: '123456',
       progress: '92',
       time: '2d 23h 54m',
+      tasks: '1',
       finishTime: Date.now(),
       blocks: [
         { value: '11111111', title: 'First Block', type: EpochBlockTypes.first },
@@ -43,6 +44,7 @@ const EpochHomeBlocksMockedData = [
       epoch: '789101',
       progress: '72.38',
       time: '4d 19h 23m',
+      tasks: '3',
       blocks: [
         { value: '00000111', title: 'First Block', type: EpochBlockTypes.first },
         { value: '00000888', title: 'Last Block', type: EpochBlockTypes.last },
@@ -77,7 +79,7 @@ const EpochHomeBlocks = () => {
 
       const { finishBlock, finishTime } = await estimateEpochFinishTimes(epochsHistory)
       calculatedValues.finishTime = finishTime
-      calculatedValues.time = shortEngHumanizer(finishTime, { largest: 3 })
+      calculatedValues.time = shortEngHumanizer(finishTime)
       const lastBlock = finishBlock > currentBlock ? finishBlock : currentBlock
       calculatedValues.blocks.push({ value: lastBlock, title: 'Last Block', type: EpochBlockTypes.last })
     } else {
@@ -92,8 +94,8 @@ const EpochHomeBlocks = () => {
       values: {
         current,
         epoch: epoch.id,
-        progress: '100',
-        tasks: '0',
+        progress: `${+epoch.tasksCount !== 0 ? +(+epoch.tasksCompletedCount / +epoch.tasksCount).toFixed(2) * 100 : 0}`,
+        tasks: epoch.tasksCount,
         ...calculatedValues,
       },
       epoch,

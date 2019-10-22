@@ -5,8 +5,6 @@ import theme from 'theme'
 import { rgba, darken } from 'polished'
 import ArrowIcon from './img/right.svg'
 import TimeIcon from './img/time.svg'
-import { useQuery } from '@apollo/react-hooks'
-import { SECRET_CONTRACT_QUERY } from '../../utils/subgrah-queries'
 import ModalWrapper from '../Common/ModalWrapper'
 import GridCell from '../Common/GridCell'
 import StrippedGrid, { StrippedGridRow } from '../Common/StrippedGrid'
@@ -179,12 +177,15 @@ interface StatusProps {
 }
 
 export interface TaskItemProps extends HTMLAttributes<HTMLDivElement> {
-  number: string
+  order: string
   status: TaskStatus
   submittedBy: string
   taskID: string
   time: string
   txHash: string
+  gasLimit: string
+  gasUsed: string
+  callback: string | null
 }
 
 interface TaskBlockProps extends HTMLAttributes<HTMLDivElement> {
@@ -200,35 +201,23 @@ const statusLabels = {
 
 const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
   const { item, ...restProps } = props
-  const { status = TaskStatus.submitted, number, submittedBy, taskID, time, txHash } = item
+  const { status = TaskStatus.submitted, order, submittedBy, taskID, time, txHash, gasLimit, gasUsed, callback } = item
   const statusColors = {
     [TaskStatus.failed]: theme.taskStatus.failed,
     [TaskStatus.submitted]: theme.taskStatus.submitted,
     [TaskStatus.success]: theme.taskStatus.success,
   }
-  const { data, error, loading } = useQuery(SECRET_CONTRACT_QUERY)
-  const [secretContract, setSecretContract] = React.useState('...')
-
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
 
   const closeModal = () => setModalIsOpen(false)
   const openModal = () => setModalIsOpen(true)
-
-  React.useMemo(() => {
-    if (!loading && !error) {
-      const secretContract = data.secretContracts.find(
-        ({ createdAtTransaction }: { createdAtTransaction: string }) => createdAtTransaction === txHash,
-      )
-      setSecretContract((secretContract && secretContract.address) || '...')
-    }
-  }, [loading])
 
   return (
     <>
       <TaskItem {...restProps}>
         <TaskCard noPadding={true}>
           <StatusBlock color={statusColors[status]}>
-            <Number>#{number}</Number>
+            <Number>#{order}</Number>
             <StatusLabel>{statusLabels[status]}</StatusLabel>
           </StatusBlock>
           <TaskInfo>
@@ -241,7 +230,7 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
             </ArrowContainer>
             <InfoItem>
               <InfoLabel>Secret Contract</InfoLabel>
-              <InfoValue>{secretContract}</InfoValue>
+              <InfoValue>{'...'}</InfoValue>
             </InfoItem>
             <InfoItem>
               <InfoLabel>Tx Hash</InfoLabel>
@@ -258,13 +247,13 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
           <img src={TimeIcon} alt="" /> {time}
         </TaskTime>
       </TaskItem>
-      <ModalWrapper isOpen={modalIsOpen} title={`Task #${number}`} onRequestClose={closeModal}>
+      <ModalWrapper isOpen={modalIsOpen} title={`Task #${order}`} onRequestClose={closeModal}>
         <StrippedGrid>
           <StrippedGridRow columns={1}>
             <GridCell title="ID" value={taskID} />
           </StrippedGridRow>
           <StrippedGridRow columns={3}>
-            <GridCell title="Task Number" value={number} />
+            <GridCell title="Task Number" value={order} />
             <GridCell title="Status" valueColor={statusColors[status]} value={statusLabels[status]} />
             <GridCell title="Epoch" value={'#123456789'} underlineValue={true} />
           </StrippedGridRow>
@@ -276,20 +265,18 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
             <GridCell title="Submitted By" value={submittedBy} underlineValue={true} />
           </StrippedGridRow>
           <StrippedGridRow columns={1}>
-            <GridCell title="Secret Contract" value={secretContract} underlineValue={true} />
+            <GridCell title="Secret Contract" value={'...'} underlineValue={true} />
           </StrippedGridRow>
           <StrippedGridRow columns={3}>
-            <GridCell title="ENG Gas Limit" value={'10.000'} />
-            <GridCell title="ENG Gas Used" value={'0.055'} />
+            <GridCell title="ENG Gas Limit" value={gasLimit} />
+            <GridCell title="ENG Gas Used" value={gasUsed} />
             <GridCell title="ENG Gas Price" value={'0.005'} />
           </StrippedGridRow>
-          <StrippedGridRow columns={1}>
-            <GridCell
-              title="Callback"
-              underlineValue={true}
-              value={'0xffd4a06a4dc6e8b62114352f4af1f8a28e40c00c7bb333f0900a4e2fde603f9a'}
-            />
-          </StrippedGridRow>
+          {callback && (
+            <StrippedGridRow columns={1}>
+              <GridCell title="Callback" underlineValue={true} value={callback} />
+            </StrippedGridRow>
+          )}
         </StrippedGrid>
       </ModalWrapper>
     </>

@@ -36,10 +36,17 @@ const WORKERS_QUERY = gql`
       epochs {
         id
       }
+      tasksCompletedCount
+      tasks {
+        id
+      }
+      reward
     }
     enigmaState(id: 0) {
-      # TODO: this is done to simulate an scenario, but 'epochSize' must be changed to 'epochCount'
-      epochSize
+      latestEpoch {
+        id
+      }
+      workerCount
     }
   }
 `
@@ -112,7 +119,8 @@ const Workers = () => {
           // @ts-ignore
           data.workers.map(worker => {
             const epochsActiveIn = worker.epochs && worker.epochs.length
-            const totalEpochs = data.enigmaState && data.enigmaState.epochSize
+            const totalEpochs = +data.enigmaState.latestEpoch.id + 1
+
             return {
               id: worker.id,
               cells: [
@@ -131,15 +139,21 @@ const Workers = () => {
                   id: `${worker.id}_${epochsActiveIn}_${totalEpochs}`,
                   value: `${epochsActiveIn} of ${totalEpochs}`,
                 },
-                { align: 'center', id: `${worker.id}_${'100'}`, value: '100%' },
-                { align: 'center', id: `${worker.id}_${'1.123'}`, value: '1.123' },
+                {
+                  align: 'center',
+                  id: `${worker.id}_${worker.tasks.map(({ id }: { id: string }) => id).join('')}`,
+                  value: `${
+                    worker.tasks.length ? +(worker.tasksCompletedCount / worker.tasks.length).toFixed(2) * 100 : 0
+                  }%`,
+                },
+                { align: 'center', id: `${worker.id}_${worker.reward}`, value: worker.reward },
               ],
             }
           })
         }
         paginatorProps={{
           colSpan: HEADER_CELLS.length,
-          count: 4,
+          count: data ? +data.enigmaState.workerCount : 0,
           onChangePage: handleChangePage,
           onChangeRowsPerPage: handleChangeRowsPerPage,
           page: Math.floor(skip / total),
