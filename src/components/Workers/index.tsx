@@ -1,11 +1,13 @@
 import React from 'react'
-import BaseTable from '../Common/BaseTable'
-import { HeaderCellAlign } from '../Common/EnhancedTableHead'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
+import { History } from 'history'
+import BaseTable from '../Common/BaseTable'
+import { HeaderCellAlign } from '../Common/EnhancedTableHead'
 import HexAddr from '../Common/HexAddr'
 import SectionTitle from 'components/Common/SectionTitle'
 import FullLoading from '../Common/FullLoading'
+import { Value } from 'components/Common/GridCell'
 
 enum Direction {
   'ascending' = 'asc',
@@ -76,7 +78,11 @@ const INITIAL_VALUES = {
   orderDirection: Direction.descending,
 }
 
-const Workers = () => {
+interface WorkersProps {
+  history: History
+}
+
+const Workers: React.FC<WorkersProps> = ({ history }) => {
   const { data, error, loading, variables, refetch } = useQuery(WORKERS_QUERY, { variables: INITIAL_VALUES })
   const { total, skip, orderBy, orderDirection } = variables
 
@@ -100,6 +106,10 @@ const Workers = () => {
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     refetch({ ...variables, total: +event.target.value, skip: INITIAL_VALUES.skip })
+  }
+
+  const goToWorker = (workerId: string) => {
+    history.push(`/worker/${workerId}`)
   }
 
   return (
@@ -128,9 +138,11 @@ const Workers = () => {
                   align: 'center',
                   id: `${worker.id}_${worker.id}`,
                   value: (
-                    <HexAddr start={5} end={5}>
-                      {worker.id}
-                    </HexAddr>
+                    <Value underline={true} onClick={() => goToWorker(worker.id)}>
+                      <HexAddr start={8} end={8}>
+                        {worker.id}
+                      </HexAddr>
+                    </Value>
                   ),
                 },
                 { align: 'center', id: `${worker.id}_${worker.balance}`, value: worker.balance },
