@@ -14,6 +14,10 @@ const ModalWrapper: React.FC<Props> = props => {
   const { onRequestClose, theme, title, children, disableCloseButton, ...restProps } = props
   const { modalStyle } = theme
 
+  React.useEffect(() => {
+    Modal.setAppElement('#root')
+  }, [])
+
   return (
     <Modal {...restProps} style={modalStyle}>
       {title ? (

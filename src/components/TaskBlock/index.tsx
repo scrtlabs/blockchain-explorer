@@ -2,12 +2,11 @@ import React, { HTMLAttributes } from 'react'
 import styled, { withTheme } from 'styled-components'
 import Card from '../Common/Card'
 import theme from 'theme'
-import { rgba, darken } from 'polished'
+import { darken, rgba } from 'polished'
 import ArrowIcon from './img/right.svg'
 import TimeIcon from './img/time.svg'
-import ModalWrapper from '../Common/ModalWrapper'
-import GridCell from '../Common/GridCell'
-import StrippedGrid, { StrippedGridRow } from '../Common/StrippedGrid'
+import TaskDetailed, { TaskDetailedProps } from '../TaskDetailed'
+import { TaskBasicData } from '../TasksHome'
 
 const TaskItem = styled.div`
   display: flex;
@@ -179,42 +178,22 @@ interface StatusProps {
   color: string
 }
 
-export interface TaskItemProps extends HTMLAttributes<HTMLDivElement> {
-  order: string
-  status: keyof typeof TaskStatus
-  submittedBy: string
-  taskID: string
-  time: string
-  txHash: string
-  gasLimit: string
-  gasUsed: string
-  callback: string | null
-}
-
 interface TaskBlockProps extends HTMLAttributes<HTMLDivElement> {
-  item: TaskItemProps
+  task: TaskBasicData
   theme?: any
 }
 
 const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
-  const { item, ...restProps } = props
-  const {
-    status = TaskStatus.ReceiptVerified,
-    order,
-    submittedBy,
-    taskID,
-    time,
-    txHash,
-    gasLimit,
-    gasUsed,
-    callback,
-  } = item
-  const [modalIsOpen, setModalIsOpen] = React.useState(false)
+  const { task, ...restProps } = props
+  const { status = TaskStatus.ReceiptVerified, order, sender, id, time, createdAtTransaction } = task
   const taskStatus = TaskStatus[status as keyof typeof TaskStatus] || 'Success'
   const taskStatusColor = theme.taskStatus[taskStatus.toLowerCase() as keyof typeof theme.taskStatus]
 
+  const [modalIsOpen, setModalIsOpen] = React.useState(false)
   const closeModal = () => setModalIsOpen(false)
   const openModal = () => setModalIsOpen(true)
+
+  const taskDetailedProps: TaskDetailedProps = { ...task, taskStatus, taskStatusColor, modalIsOpen, closeModal }
 
   return (
     <>
@@ -227,7 +206,7 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
           <TaskInfo>
             <InfoItem>
               <InfoLabel>Submitted By</InfoLabel>
-              <InfoValue>{submittedBy}</InfoValue>
+              <InfoValue>{sender}</InfoValue>
             </InfoItem>
             <ArrowContainer>
               <img src={ArrowIcon} alt="" />
@@ -238,12 +217,12 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
             </InfoItem>
             <InfoItem>
               <InfoLabel>Tx Hash</InfoLabel>
-              <InfoValueClean>{txHash}</InfoValueClean>
+              <InfoValueClean>{createdAtTransaction}</InfoValueClean>
             </InfoItem>
             <InfoItemSeparator />
             <InfoItem>
               <InfoLabel>Task ID</InfoLabel>
-              <InfoValue onClick={openModal}>{taskID}</InfoValue>
+              <InfoValue onClick={openModal}>{id}</InfoValue>
             </InfoItem>
           </TaskInfo>
         </TaskCard>
@@ -251,38 +230,7 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
           <img src={TimeIcon} alt="" /> {time}
         </TaskTime>
       </TaskItem>
-      <ModalWrapper isOpen={modalIsOpen} title={`Task #${order}`} onRequestClose={closeModal}>
-        <StrippedGrid>
-          <StrippedGridRow columns={1}>
-            <GridCell title="ID" value={taskID} />
-          </StrippedGridRow>
-          <StrippedGridRow columns={3}>
-            <GridCell title="Task Number" value={order} />
-            <GridCell title="Status" valueColor={taskStatusColor} value={taskStatus} />
-            <GridCell title="Epoch" value={'#123456789'} underlineValue={true} />
-          </StrippedGridRow>
-          <StrippedGridRow columns={2}>
-            <GridCell title="Submitted On" value={'Sep 25 2019 09:00:00 GMT-0300'} />
-            <GridCell title="Completed On" value={'Sep 25 2019 09:00:00 GMT-0300'} />
-          </StrippedGridRow>
-          <StrippedGridRow columns={1}>
-            <GridCell title="Submitted By" value={submittedBy} underlineValue={true} />
-          </StrippedGridRow>
-          <StrippedGridRow columns={1}>
-            <GridCell title="Secret Contract" value={'...'} underlineValue={true} />
-          </StrippedGridRow>
-          <StrippedGridRow columns={3}>
-            <GridCell title="ENG Gas Limit" value={gasLimit} />
-            <GridCell title="ENG Gas Used" value={gasUsed} />
-            <GridCell title="ENG Gas Price" value={'0.005'} />
-          </StrippedGridRow>
-          {callback && (
-            <StrippedGridRow columns={1}>
-              <GridCell title="Callback" underlineValue={true} value={callback} />
-            </StrippedGridRow>
-          )}
-        </StrippedGrid>
-      </ModalWrapper>
+      <TaskDetailed {...taskDetailedProps} />
     </>
   )
 }

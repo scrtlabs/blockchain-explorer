@@ -15,24 +15,18 @@ export interface TaskBasicData {
   gasUsed: string
   gasLimit: string
   optionalEthereumContractAddress: string | null
+  time: string
 }
 
 const TasksHome = () => {
   const { subscribeToMore, data, error, loading } = useQuery(GET_RECENT_TASKS, { variables: { total: 5 } })
-  const [tasks, setTasks] = React.useState([])
+  const [tasks, setTasks] = React.useState<TaskBasicData[]>([])
 
   const extractTasks = () => {
     setTasks(
       data.tasks.map((task: TaskBasicData) => ({
-        order: task.order,
-        status: task.status,
-        submittedBy: task.sender,
-        taskID: task.id,
+        ...task,
         time: shortEngHumanizer(Date.now() - (new Date(+task.createdAt * 1000) as any)) + ' ago',
-        txHash: task.createdAtTransaction,
-        gasUsed: task.gasUsed,
-        gasLimit: task.gasLimit,
-        callback: task.optionalEthereumContractAddress,
       })),
     )
   }
@@ -58,8 +52,8 @@ const TasksHome = () => {
   return (
     <>
       <SectionTitle>Tasks</SectionTitle>
-      {tasks.map((item, index) => {
-        return <TaskBlock item={item} key={index} />
+      {tasks.map((task: TaskBasicData) => {
+        return <TaskBlock task={task} key={task.id} />
       })}
     </>
   )

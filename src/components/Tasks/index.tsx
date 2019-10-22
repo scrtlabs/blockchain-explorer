@@ -9,6 +9,8 @@ import SectionTitle from '../Common/SectionTitle'
 import FullLoading from '../Common/FullLoading'
 import { TaskStatus } from '../TaskBlock'
 import { Value } from '../Common/GridCell'
+import TaskDetailed, { TaskDetailedProps } from '../TaskDetailed'
+import { basicTaskDetailsFragment } from '../../utils/subgrah-queries'
 
 enum Direction {
   'ascending' = 'asc',
@@ -42,19 +44,16 @@ interface TasksProps {
 const TASKS_QUERY = gql`
   query Tasks($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
     tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
-      id
-      status
+      ...BasicTaskDetails
       epoch {
         id
       }
-      sender
-      gasUsed
-      order
     }
     enigmaState(id: 0) {
       tasksCount
     }
   }
+  ${basicTaskDetailsFragment}
 `
 
 const HEADER_CELLS = [
@@ -100,6 +99,15 @@ const Tasks: React.FC<TasksProps> = ({ theme }: TasksProps) => {
     refetch({ ...variables, total: +event.target.value, skip: INITIAL_VALUES.skip })
   }
 
+  const [modalIsOpen, setModalIsOpen] = React.useState(false)
+  const [modalProps, setModalProps] = React.useState<TaskDetailedProps | null>(null)
+  const closeModal = () => setModalIsOpen(false)
+
+  const openModal = (taskDetailedProps: TaskDetailedProps) => {
+    setModalProps({ ...taskDetailedProps })
+    setModalIsOpen(true)
+  }
+
   return (
     <>
       <SectionTitle>Tasks</SectionTitle>
@@ -119,6 +127,8 @@ const Tasks: React.FC<TasksProps> = ({ theme }: TasksProps) => {
             const taskStatus = TaskStatus[task.status as keyof typeof TaskStatus] || 'Success'
             const taskStatusColor = theme.taskStatus[taskStatus.toLowerCase() as keyof typeof theme.taskStatus]
 
+            const taskDetailedProps: TaskDetailedProps = { ...task, taskStatus, taskStatusColor }
+
             return {
               id: task.id,
               cells: [
@@ -126,9 +136,11 @@ const Tasks: React.FC<TasksProps> = ({ theme }: TasksProps) => {
                   align: 'center',
                   id: `${task.id}_${task.id}`,
                   value: (
-                    <HexAddr start={5} end={5}>
-                      {task.id}
-                    </HexAddr>
+                    <Value underline={true} onClick={() => openModal(taskDetailedProps)}>
+                      <HexAddr start={8} end={8}>
+                        {task.id}
+                      </HexAddr>
+                    </Value>
                   ),
                 },
                 {
@@ -158,6 +170,7 @@ const Tasks: React.FC<TasksProps> = ({ theme }: TasksProps) => {
           rowsPerPage: total,
         }}
       />
+      <TaskDetailed {...modalProps} modalIsOpen={modalIsOpen} closeModal={closeModal} />
       {loading && <FullLoading />}
     </>
   )
