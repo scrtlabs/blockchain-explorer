@@ -24,7 +24,7 @@ export const epochDetailFragment = gql`
 
 export const GET_RECENT_EPOCHS = gql`
   query GetRecentEpochs($total: Int) {
-    epoches(first: $total, orderBy: id, orderDirection: desc) {
+    epoches(first: $total, orderBy: order, orderDirection: desc) {
       ...EpochDetail
     }
   }
