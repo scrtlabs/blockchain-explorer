@@ -25,7 +25,7 @@ const TasksHome = () => {
     setTasks(
       data.tasks.map((task: TaskBasicData) => ({
         order: task.order,
-        status: task.status === 'RecordCreated' ? 1 : 0, // TODO: fix
+        status: task.status,
         submittedBy: task.sender,
         taskID: task.id,
         time: shortEngHumanizer(Date.now() - (new Date(+task.createdAt * 1000) as any)) + ' ago',

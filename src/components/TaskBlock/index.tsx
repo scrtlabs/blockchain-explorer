@@ -167,9 +167,12 @@ const TaskTime = styled.div`
 `
 
 export enum TaskStatus {
-  success,
-  submitted,
-  failed,
+  'RecordCreated' = 'Submitted',
+  'ReceiptVerified' = 'Success',
+  'ReceiptFailedENG' = 'Failed',
+  'ReceiptFailedETH' = 'Failed',
+  'ReceiptFailedReturn' = 'Failed',
+  'ReceiptFailed' = 'Failed',
 }
 
 interface StatusProps {
@@ -178,7 +181,7 @@ interface StatusProps {
 
 export interface TaskItemProps extends HTMLAttributes<HTMLDivElement> {
   order: string
-  status: TaskStatus
+  status: keyof typeof TaskStatus
   submittedBy: string
   taskID: string
   time: string
@@ -193,21 +196,22 @@ interface TaskBlockProps extends HTMLAttributes<HTMLDivElement> {
   theme?: any
 }
 
-const statusLabels = {
-  [TaskStatus.failed]: 'Failed',
-  [TaskStatus.submitted]: 'Submitted',
-  [TaskStatus.success]: 'Success',
-}
-
 const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
   const { item, ...restProps } = props
-  const { status = TaskStatus.submitted, order, submittedBy, taskID, time, txHash, gasLimit, gasUsed, callback } = item
-  const statusColors = {
-    [TaskStatus.failed]: theme.taskStatus.failed,
-    [TaskStatus.submitted]: theme.taskStatus.submitted,
-    [TaskStatus.success]: theme.taskStatus.success,
-  }
+  const {
+    status = TaskStatus.ReceiptVerified,
+    order,
+    submittedBy,
+    taskID,
+    time,
+    txHash,
+    gasLimit,
+    gasUsed,
+    callback,
+  } = item
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
+  const taskStatus = TaskStatus[status as keyof typeof TaskStatus] || 'Success'
+  const taskStatusColor = theme.taskStatus[taskStatus.toLowerCase() as keyof typeof theme.taskStatus]
 
   const closeModal = () => setModalIsOpen(false)
   const openModal = () => setModalIsOpen(true)
@@ -216,9 +220,9 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
     <>
       <TaskItem {...restProps}>
         <TaskCard noPadding={true}>
-          <StatusBlock color={statusColors[status]}>
+          <StatusBlock color={taskStatusColor}>
             <Number>#{order}</Number>
-            <StatusLabel>{statusLabels[status]}</StatusLabel>
+            <StatusLabel>{taskStatus}</StatusLabel>
           </StatusBlock>
           <TaskInfo>
             <InfoItem>
@@ -234,12 +238,12 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
             </InfoItem>
             <InfoItem>
               <InfoLabel>Tx Hash</InfoLabel>
-              <InfoValue onClick={openModal}>{txHash}</InfoValue>
+              <InfoValueClean>{txHash}</InfoValueClean>
             </InfoItem>
             <InfoItemSeparator />
             <InfoItem>
               <InfoLabel>Task ID</InfoLabel>
-              <InfoValueClean>{taskID}</InfoValueClean>
+              <InfoValue onClick={openModal}>{taskID}</InfoValue>
             </InfoItem>
           </TaskInfo>
         </TaskCard>
@@ -254,7 +258,7 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
           </StrippedGridRow>
           <StrippedGridRow columns={3}>
             <GridCell title="Task Number" value={order} />
-            <GridCell title="Status" valueColor={statusColors[status]} value={statusLabels[status]} />
+            <GridCell title="Status" valueColor={taskStatusColor} value={taskStatus} />
             <GridCell title="Epoch" value={'#123456789'} underlineValue={true} />
           </StrippedGridRow>
           <StrippedGridRow columns={2}>

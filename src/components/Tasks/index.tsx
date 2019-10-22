@@ -1,11 +1,14 @@
 import React from 'react'
-import BaseTable from '../Common/BaseTable'
-import { HeaderCellAlign } from '../Common/EnhancedTableHead'
+import { withTheme } from 'styled-components'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
+import BaseTable from '../Common/BaseTable'
+import { HeaderCellAlign } from '../Common/EnhancedTableHead'
 import HexAddr from '../Common/HexAddr'
 import SectionTitle from '../Common/SectionTitle'
 import FullLoading from '../Common/FullLoading'
+import { TaskStatus } from '../TaskBlock'
+import { Value } from '../Common/GridCell'
 
 enum Direction {
   'ascending' = 'asc',
@@ -30,6 +33,10 @@ enum GraphToField {
   'secretContract' = 'taskScAddress',
   'gasUsed' = 'taskEngGasUsed',
   'order' = 'taskNumber',
+}
+
+interface TasksProps {
+  theme?: any
 }
 
 const TASKS_QUERY = gql`
@@ -67,7 +74,7 @@ const INITIAL_VALUES = {
   orderDirection: Direction.descending,
 }
 
-const Tasks = () => {
+const Tasks: React.FC<TasksProps> = ({ theme }: TasksProps) => {
   const { data, error, loading, variables, refetch } = useQuery(TASKS_QUERY, { variables: INITIAL_VALUES })
   const { total, skip, orderBy, orderDirection } = variables
 
@@ -108,26 +115,39 @@ const Tasks = () => {
           data.tasks &&
           // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
           // @ts-ignore
-          data.tasks.map(task => ({
-            id: task.id,
-            cells: [
-              {
-                align: 'center',
-                id: `${task.id}_${task.id}`,
-                value: (
-                  <HexAddr start={5} end={5}>
-                    {task.id}
-                  </HexAddr>
-                ),
-              },
-              { align: 'center', id: `${task.id}_${task.status}`, value: task.status },
-              { align: 'center', id: `${task.id}_${task.epoch.id}`, value: task.epoch.id },
-              { align: 'center', id: `${task.id}_${task.sender}`, value: task.sender },
-              { align: 'center', id: `${task.id}_${'0x0'}`, value: '0x0' },
-              { align: 'center', id: `${task.id}_${task.gasUsed}`, value: task.gasUsed },
-              { align: 'center', id: `${task.id}_${task.order}`, value: task.order },
-            ],
-          }))
+          data.tasks.map(task => {
+            const taskStatus = TaskStatus[task.status as keyof typeof TaskStatus] || 'Success'
+            const taskStatusColor = theme.taskStatus[taskStatus.toLowerCase() as keyof typeof theme.taskStatus]
+
+            return {
+              id: task.id,
+              cells: [
+                {
+                  align: 'center',
+                  id: `${task.id}_${task.id}`,
+                  value: (
+                    <HexAddr start={5} end={5}>
+                      {task.id}
+                    </HexAddr>
+                  ),
+                },
+                {
+                  align: 'center',
+                  id: `${task.id}_${taskStatus}`,
+                  value: (
+                    <Value underline={false} color={taskStatusColor}>
+                      {taskStatus}
+                    </Value>
+                  ),
+                },
+                { align: 'center', id: `${task.id}_${task.epoch.id}`, value: task.epoch.id },
+                { align: 'center', id: `${task.id}_${task.sender}`, value: task.sender },
+                { align: 'center', id: `${task.id}_${'0x0'}`, value: '0x0' },
+                { align: 'center', id: `${task.id}_${task.gasUsed}`, value: task.gasUsed },
+                { align: 'center', id: `${task.id}_${task.order}`, value: task.order },
+              ],
+            }
+          })
         }
         paginatorProps={{
           colSpan: HEADER_CELLS.length,
@@ -143,4 +163,4 @@ const Tasks = () => {
   )
 }
 
-export default Tasks
+export default withTheme(Tasks)
