@@ -65,7 +65,7 @@ const Worker = (props: any) => {
   const { data, error, loading } = useQuery(WORKER_BY_ID_QUERY, { variables: { workerId: workerAddress } })
   console.log(data)
   const worker = data ? data.worker : { tasksCompletedCount: 0, tasks: [], reward: 0, balance: 0, epochs: [] }
-  const totalEpochs = (data && data.enigmaState && data.enigmaState.latestEpoch && data.enigmaState.latestEpoch.id) || 0
+  const totalEpochs = +(data && data.enigmaState.latestEpoch.id) + 1 || 0
 
   if (error) console.error(error.message)
 
