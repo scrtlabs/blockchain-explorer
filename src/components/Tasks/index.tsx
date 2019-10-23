@@ -1,6 +1,7 @@
 import React from 'react'
-import { withTheme } from 'styled-components'
+import styled, { withTheme } from 'styled-components'
 import gql from 'graphql-tag'
+import { History } from 'history'
 import { useQuery } from '@apollo/react-hooks'
 import BaseTable from '../Common/BaseTable'
 import { HeaderCellAlign } from '../Common/EnhancedTableHead'
@@ -39,11 +40,44 @@ enum GraphToField {
 
 interface TasksProps {
   theme?: any
+  history: History
+  match: {
+    params: {
+      userAddress: string | undefined
+    }
+  }
 }
+
+interface UserAddressProps extends React.HTMLAttributes<HTMLSpanElement> {
+  underline?: boolean
+}
+
+const UserAddress = styled.span<UserAddressProps>`
+  cursor: ${props => (props.underline ? 'pointer' : 'default')};
+  overflow: hidden;
+  text-decoration: ${props => (props.underline ? 'underline' : 'none')};
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
 
 const TASKS_QUERY = gql`
   query Tasks($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
     tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
+      ...BasicTaskDetails
+      epoch {
+        id
+      }
+    }
+    enigmaState(id: 0) {
+      tasksCount
+    }
+  }
+  ${basicTaskDetailsFragment}
+`
+
+const TASKS_BY_USER_ADDRESS_QUERY = gql`
+  query Tasks($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $sender: String) {
+    tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection, where: { sender: $sender }) {
       ...BasicTaskDetails
       epoch {
         id
@@ -73,8 +107,13 @@ const INITIAL_VALUES = {
   orderDirection: Direction.descending,
 }
 
-const Tasks: React.FC<TasksProps> = ({ theme }: TasksProps) => {
-  const { data, error, loading, variables, refetch } = useQuery(TASKS_QUERY, { variables: INITIAL_VALUES })
+const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
+  const {
+    params: { userAddress },
+  } = match
+  const query = userAddress ? TASKS_BY_USER_ADDRESS_QUERY : TASKS_QUERY
+  const queryVariables = userAddress ? { ...INITIAL_VALUES, sender: userAddress } : INITIAL_VALUES
+  const { data, error, loading, variables, refetch } = useQuery(query, { variables: queryVariables })
   const { total, skip, orderBy, orderDirection } = variables
 
   if (error) console.error(error.message)
@@ -108,9 +147,21 @@ const Tasks: React.FC<TasksProps> = ({ theme }: TasksProps) => {
     setModalIsOpen(true)
   }
 
+  const goToTaskByUser = (userAddress: string) => {
+    history.push(`/tasks/${userAddress}`, {})
+  }
+
   return (
     <>
-      <SectionTitle>Tasks</SectionTitle>
+      <SectionTitle>
+        Tasks
+        {userAddress && (
+          <span>
+            {' '}
+            From User <UserAddress underline={true}>{userAddress}</UserAddress>
+          </span>
+        )}
+      </SectionTitle>
       <BaseTable
         headerProps={{
           headerCells: HEADER_CELLS,
@@ -153,7 +204,15 @@ const Tasks: React.FC<TasksProps> = ({ theme }: TasksProps) => {
                   ),
                 },
                 { align: 'center', id: `${task.id}_${task.epoch.id}`, value: task.epoch.id },
-                { align: 'center', id: `${task.id}_${task.sender}`, value: task.sender },
+                {
+                  align: 'center',
+                  id: `${task.id}_${task.sender}`,
+                  value: (
+                    <Value underline={true} onClick={() => goToTaskByUser(task.sender)}>
+                      {task.sender}
+                    </Value>
+                  ),
+                },
                 { align: 'center', id: `${task.id}_${'0x0'}`, value: '0x0' },
                 { align: 'center', id: `${task.id}_${task.gasUsed}`, value: task.gasUsed },
                 { align: 'center', id: `${task.id}_${task.order}`, value: task.order },
@@ -171,7 +230,7 @@ const Tasks: React.FC<TasksProps> = ({ theme }: TasksProps) => {
         }}
       />
       <TaskDetailed {...modalProps} modalIsOpen={modalIsOpen} closeModal={closeModal} />
-      {loading && <FullLoading />}
+      {loading && !data && <FullLoading />}
     </>
   )
 }

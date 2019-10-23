@@ -1,12 +1,13 @@
 import React, { HTMLAttributes } from 'react'
 import styled, { withTheme } from 'styled-components'
-import Card from '../Common/Card'
+import { History } from 'history'
 import theme from 'theme'
 import { darken, rgba } from 'polished'
-import ArrowIcon from './img/right.svg'
-import TimeIcon from './img/time.svg'
+import Card from '../Common/Card'
 import TaskDetailed, { TaskDetailedProps } from '../TaskDetailed'
 import { TaskBasicData } from '../TasksHome'
+import ArrowIcon from './img/right.svg'
+import TimeIcon from './img/time.svg'
 
 const TaskItem = styled.div`
   display: flex;
@@ -181,10 +182,11 @@ interface StatusProps {
 interface TaskBlockProps extends HTMLAttributes<HTMLDivElement> {
   task: TaskBasicData
   theme?: any
+  history: History
 }
 
 const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
-  const { task, ...restProps } = props
+  const { task, history, ...restProps } = props
   const { status = TaskStatus.ReceiptVerified, order, sender, id, time, createdAtTransaction } = task
   const taskStatus = TaskStatus[status as keyof typeof TaskStatus] || 'Success'
   const taskStatusColor = theme.taskStatus[taskStatus.toLowerCase() as keyof typeof theme.taskStatus]
@@ -192,6 +194,10 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
   const closeModal = () => setModalIsOpen(false)
   const openModal = () => setModalIsOpen(true)
+
+  const viewSenderTasks = (sender: string) => {
+    history.push(`/tasks/${sender}`)
+  }
 
   const taskDetailedProps: TaskDetailedProps = { ...task, taskStatus, taskStatusColor, modalIsOpen, closeModal }
 
@@ -206,7 +212,7 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
           <TaskInfo>
             <InfoItem>
               <InfoLabel>Submitted By</InfoLabel>
-              <InfoValue>{sender}</InfoValue>
+              <InfoValue onClick={() => viewSenderTasks(sender)}>{sender}</InfoValue>
             </InfoItem>
             <ArrowContainer>
               <img src={ArrowIcon} alt="" />

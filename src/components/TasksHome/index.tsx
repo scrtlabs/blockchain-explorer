@@ -18,7 +18,7 @@ export interface TaskBasicData {
   time: string
 }
 
-const TasksHome = () => {
+const TasksHome = (props: any) => {
   const { subscribeToMore, data, error, loading } = useQuery(GET_RECENT_TASKS, { variables: { total: 5 } })
   const [tasks, setTasks] = React.useState<TaskBasicData[]>([])
 
@@ -53,7 +53,7 @@ const TasksHome = () => {
     <>
       <SectionTitle>Tasks</SectionTitle>
       {tasks.map((task: TaskBasicData) => {
-        return <TaskBlock task={task} key={task.id} />
+        return <TaskBlock task={task} key={task.id} {...props} />
       })}
     </>
   )

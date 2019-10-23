@@ -3,12 +3,12 @@ import HomeNetworkInfo from '../HomeNetworkInfo'
 import EpochsHomeBlocks from '../EpochsHomeBlocks'
 import TasksHome from '../TasksHome'
 
-const Home = () => {
+const Home = (props: any) => {
   return (
     <>
       <HomeNetworkInfo />
       <EpochsHomeBlocks />
-      <TasksHome />
+      <TasksHome {...props} />
     </>
   )
 }

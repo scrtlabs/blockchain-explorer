@@ -26,7 +26,7 @@ const App: React.FC = () => {
           <MainScroll>
             <Switch>
               <Route exact path="/home" component={Home} />
-              <Route exact path="/tasks/:taskId?" component={Tasks} />
+              <Route exact path="/tasks/:userAddress?" component={Tasks} />
               <Route exact path="/epochs/:epochNumber?" component={Epochs} />
               <Route exact path="/workers" component={Workers} />
               <Route exact path="/worker/:workerAddress?" component={Worker} />
