@@ -4,6 +4,7 @@ import StrippedGrid, { StrippedGridRow } from '../Common/StrippedGrid'
 import GridCell from '../Common/GridCell'
 import { TaskStatus } from '../TaskBlock'
 import { TaskBasicData } from '../TasksHome'
+import ethApi from '../../utils/eth'
 
 export interface TaskDetailedProps extends TaskBasicData {
   modalIsOpen: boolean
@@ -12,13 +13,17 @@ export interface TaskDetailedProps extends TaskBasicData {
   taskStatus: TaskStatus
 }
 
-const TaskDetailed: React.FC<TaskDetailedProps | any> = (props: TaskDetailedProps | any) => {
+const TaskDetailed: React.FC<TaskDetailedProps | any> = props => {
   const {
     id,
     order,
     sender,
+    createdAt,
+    changedAt,
     gasLimit,
     gasUsed,
+    gasPx,
+    scAddr,
     optionalEthereumContractAddress,
     modalIsOpen = false,
     closeModal,
@@ -38,21 +43,21 @@ const TaskDetailed: React.FC<TaskDetailedProps | any> = (props: TaskDetailedProp
           <GridCell title="Epoch" value={'#123456789'} underlineValue={true} />
         </StrippedGridRow>
         <StrippedGridRow columns={2}>
-          <GridCell title="Submitted On" value={'Sep 25 2019 09:00:00 GMT-0300'} />
-          <GridCell title="Completed On" value={'Sep 25 2019 09:00:00 GMT-0300'} />
+          <GridCell title="Submitted On" value={new Date(createdAt * 1000).toLocaleString()} />
+          <GridCell title="Completed On" value={changedAt ? new Date(changedAt * 1000).toLocaleString() : '...'} />
         </StrippedGridRow>
         <StrippedGridRow columns={1}>
           <GridCell title="Submitted By" value={sender} underlineValue={true} />
         </StrippedGridRow>
         <StrippedGridRow columns={1}>
-          <GridCell title="Secret Contract" value={'...'} underlineValue={true} />
+          <GridCell title="Secret Contract" value={scAddr} underlineValue={true} />
         </StrippedGridRow>
         <StrippedGridRow columns={3}>
           <GridCell title="ENG Gas Limit" value={gasLimit} />
           <GridCell title="ENG Gas Used" value={gasUsed} />
-          <GridCell title="ENG Gas Price" value={'0.005'} />
+          <GridCell title="ENG Gas Price" value={gasPx} />
         </StrippedGridRow>
-        {optionalEthereumContractAddress && (
+        {optionalEthereumContractAddress && ethApi.web3.utils.toBN(optionalEthereumContractAddress).toString() !== '0' && (
           <StrippedGridRow columns={1}>
             <GridCell title="Callback" underlineValue={true} value={optionalEthereumContractAddress} />
           </StrippedGridRow>

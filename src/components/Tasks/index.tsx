@@ -23,7 +23,7 @@ enum FieldToGraph {
   'taskStatus' = 'status',
   'taskEpochNumber' = 'epoch',
   'taskUserAddress' = 'sender',
-  'taskScAddress' = 'secretContract',
+  'taskScAddress' = 'scAddr',
   'taskEngGasUsed' = 'gasUsed',
   'taskNumber' = 'order',
 }
@@ -33,7 +33,7 @@ enum GraphToField {
   'status' = 'taskStatus',
   'epoch' = 'taskEpochNumber',
   'sender' = 'taskUserAddress',
-  'secretContract' = 'taskScAddress',
+  'scAddr' = 'taskScAddress',
   'gasUsed' = 'taskEngGasUsed',
   'order' = 'taskNumber',
 }
@@ -48,11 +48,11 @@ interface TasksProps {
   }
 }
 
-interface UserAddressProps extends React.HTMLAttributes<HTMLSpanElement> {
+interface LinkTextProps extends React.HTMLAttributes<HTMLSpanElement> {
   underline?: boolean
 }
 
-const UserAddress = styled.span<UserAddressProps>`
+export const LinkText = styled.span<LinkTextProps>`
   cursor: ${props => (props.underline ? 'pointer' : 'default')};
   overflow: hidden;
   text-decoration: ${props => (props.underline ? 'underline' : 'none')};
@@ -154,6 +154,10 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
     history.push(`/tasks/${userAddress}`)
   }
 
+  const goToSecretContract = (scAddress: string) => {
+    history.push(`/contract/${scAddress}`)
+  }
+
   return (
     <>
       <SectionTitle>
@@ -161,7 +165,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
         {userAddress && (
           <span>
             {' '}
-            From User <UserAddress underline={true}>{userAddress}</UserAddress>
+            From User <LinkText underline={false}>{userAddress}</LinkText>
           </span>
         )}
       </SectionTitle>
@@ -177,7 +181,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
           data.tasks &&
           // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
           // @ts-ignore
-          data.tasks.map(task => {
+          data.tasks.map((task, index) => {
             const taskStatus = TaskStatus[task.status as keyof typeof TaskStatus] || 'Success'
             const taskStatusColor = theme.taskStatus[taskStatus.toLowerCase() as keyof typeof theme.taskStatus]
 
@@ -190,11 +194,11 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
                   align: 'center',
                   id: `${task.id}_${task.id}`,
                   value: (
-                    <Value underline={true} onClick={() => openModal(taskDetailedProps)}>
+                    <LinkText underline={true} onClick={() => openModal(taskDetailedProps)}>
                       <HexAddr start={8} end={8}>
                         {task.id}
                       </HexAddr>
-                    </Value>
+                    </LinkText>
                   ),
                 },
                 {
@@ -211,12 +215,22 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
                   align: 'center',
                   id: `${task.id}_${task.sender}`,
                   value: (
-                    <Value underline={true} onClick={() => goToTaskByUser(task.sender)}>
+                    <LinkText underline={true} onClick={() => goToTaskByUser(task.sender)}>
                       {task.sender}
-                    </Value>
+                    </LinkText>
                   ),
                 },
-                { align: 'center', id: `${task.id}_${'0x0'}`, value: '0x0' },
+                {
+                  align: 'center',
+                  id: `${task.id}_${task.scAddr}_${index}`,
+                  value: task.scAddr && (
+                    <LinkText underline={true} onClick={() => goToSecretContract(task.scAddr)}>
+                      <HexAddr start={8} end={8}>
+                        {task.scAddr}
+                      </HexAddr>
+                    </LinkText>
+                  ),
+                },
                 { align: 'center', id: `${task.id}_${task.gasUsed}`, value: task.gasUsed },
                 { align: 'center', id: `${task.id}_${task.order}`, value: task.order },
               ],

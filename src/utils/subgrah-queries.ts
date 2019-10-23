@@ -74,11 +74,14 @@ export const basicTaskDetailsFragment = gql`
     sender
     createdAtTransaction
     createdAt
+    changedAt
     status
     order
     gasUsed
     gasLimit
+    gasPx
     optionalEthereumContractAddress
+    scAddr
   }
 `
 export const GET_RECENT_TASKS = gql`
