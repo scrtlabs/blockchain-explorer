@@ -6,28 +6,14 @@ import TimeLeft from '../Common/TimeLeft'
 import ProgressCircle from '../ProgressCircle'
 import EpochBlockNumbers, { EpochBlockData } from '../EpochBlockNumbers'
 import ethApi from '../../utils/eth'
-import EpochDetailed from '../EpochDetailed'
+import EpochDetailed, { EpochProps } from '../EpochDetailed'
 
 export interface ValuesProps {
-  blocks: Array<EpochBlockData>
+  blocks: EpochBlockData[]
   current?: boolean
-  epoch: string
   progress: string
   time: string
-  tasks: string
   finishTime?: number
-}
-
-export interface EpochProps {
-  completeBlockNumber: string
-  id: string
-  inclusionBlockNumber: string
-  startBlockNumber: string
-  startTime: string
-  workers: any[]
-  tasks: any[]
-  gasUsed: string
-  reward: string
 }
 
 interface EpochBlockProps extends HTMLAttributes<HTMLDivElement> {
@@ -118,7 +104,7 @@ const TwoItemsGrid = styled.div`
 
 const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   const { values, theme, epoch, ...restProps } = props
-  const { current = false, epoch: epochId, progress, time, blocks = [], tasks } = values
+  const { current = false, progress, time, blocks = [] } = values
   const endedColor = 'rgba(28, 168, 248, 0.5)'
   const runningColor = 'rgba(231, 46, 157, 0.6)'
   const borderColor: string = current ? theme.colors.secondary : endedColor
@@ -155,8 +141,8 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
         <ProgressCircleStyled color={current ? runningColor : endedColor} title="Completed Tasks" progress={progress} />
         <Values>
           <TwoItemsGrid>
-            <ValueAndSubtitle underlineValue={true} value={`#${epochId}`} subtitle="Epoch" />
-            <ValueAndSubtitle value={tasks} subtitle="Tasks" />
+            <ValueAndSubtitle underlineValue={true} value={`#${epoch.id}`} subtitle="Epoch" />
+            <ValueAndSubtitle value={epoch.tasksCount} subtitle="Tasks" />
           </TwoItemsGrid>
           <EpochBlockNumbers values={blocks} current={current} />
         </Values>
@@ -164,10 +150,8 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
       </EpochBlockStyled>
       <EpochDetailed
         modalIsOpen={modalIsOpen}
-        epochId={epochId}
         closeModal={closeModal}
         datesRange={datesRange}
-        tasks={tasks}
         progress={progress}
         epoch={epoch}
       />

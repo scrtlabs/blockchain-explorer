@@ -93,9 +93,7 @@ const EpochHomeBlocks = () => {
     return {
       values: {
         current,
-        epoch: epoch.id,
         progress: `${+epoch.tasksCount !== 0 ? +(+epoch.tasksCompletedCount / +epoch.tasksCount).toFixed(2) * 100 : 0}`,
-        tasks: epoch.tasksCount,
         ...calculatedValues,
       },
       epoch,
@@ -147,7 +145,7 @@ const EpochHomeBlocks = () => {
       <SectionTitle>Epochs</SectionTitle>
       <EpochsRow>
         {epochs.map(({ values, epoch }: { values: ValuesProps; epoch: any }) => (
-          <EpochBlock values={values} key={values.epoch} epoch={epoch} />
+          <EpochBlock values={values} key={epoch.id} epoch={epoch} />
         ))}
       </EpochsRow>
     </>
