@@ -6,6 +6,8 @@ import { HeaderCellAlign } from '../Common/EnhancedTableHead'
 import SectionTitle from '../Common/SectionTitle'
 import FullLoading from '../Common/FullLoading'
 import { shortEngHumanizer } from '../../utils/humanizer'
+import EpochDetailed, { EpochDetailedProps, EpochProps } from '../EpochDetailed'
+import { LinkText } from '../Tasks'
 
 enum Direction {
   'ascending' = 'asc',
@@ -153,16 +155,33 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
     return shortEngHumanizer(Date.now() - +nextEpoch.startTime * 1000)
   }
 
+  const [modalIsOpen, setModalIsOpen] = React.useState(false)
+  const [modalProps, setModalProps] = React.useState<EpochDetailedProps | {}>({})
+  const closeModal = () => setModalIsOpen(false)
+
+  const openModal = (epochDetailedProps: EpochProps) => {
+    setModalProps({ epoch: { ...epochDetailedProps } })
+    setModalIsOpen(true)
+  }
+
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
-  const extractEpochData = epoch => {
+  const extractEpochData = (epoch, index) => {
     const current = epoch.id === data.enigmaState.latestEpoch.id
     const age = getEndTime(current, epoch.id)
 
     return {
       id: epoch.id,
       cells: [
-        { align: 'center', id: `${epoch.id}_${epoch.id}`, value: epoch.id },
+        {
+          align: 'center',
+          id: `${epoch.id}_${epoch.id}`,
+          value: (
+            <LinkText underline={true} onClick={() => openModal(epoch)}>
+              {epoch.id}
+            </LinkText>
+          ),
+        },
         { align: 'center', id: `${epoch.id}_${age}_age`, value: age },
         { align: 'center', id: `${epoch.id}_${epoch.tasksCount}`, value: epoch.tasksCount },
         {
@@ -172,7 +191,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
         },
         {
           align: 'center',
-          id: `${epoch.id}_${epoch.workers.map(({ id }: { id: string | undefined }) => id).join('')}_w`,
+          id: `${epoch.id}_${epoch.workers.map(({ id }: { id: string | undefined }) => id).join('')}_w_${index}`,
           value: epoch.workers.length || 'no workers',
         },
         { align: 'center', id: `${epoch.id}_${epoch.gasUsed}`, value: epoch.gasUsed },
@@ -204,6 +223,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
           rowsPerPage: total,
         }}
       />
+      <EpochDetailed {...modalProps} modalIsOpen={modalIsOpen} closeModal={closeModal} />
       {loading && <FullLoading />}
     </>
   )

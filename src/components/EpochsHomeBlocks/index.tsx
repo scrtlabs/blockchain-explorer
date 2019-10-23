@@ -21,41 +21,8 @@ const EpochsRow = styled.div`
   }
 `
 
-const EpochHomeBlocksMockedData = [
-  {
-    values: {
-      current: true,
-      epoch: '123456',
-      progress: '92',
-      time: '2d 23h 54m',
-      tasks: '1',
-      finishTime: Date.now(),
-      blocks: [
-        { value: '11111111', title: 'First Block', type: EpochBlockTypes.first },
-        { value: '55555555', title: 'Current Block', type: EpochBlockTypes.current },
-        { value: '99999999', title: 'Last Block', type: EpochBlockTypes.last },
-      ],
-    },
-    epoch: {},
-  },
-  {
-    values: {
-      current: false,
-      epoch: '789101',
-      progress: '72.38',
-      time: '4d 19h 23m',
-      tasks: '3',
-      blocks: [
-        { value: '00000111', title: 'First Block', type: EpochBlockTypes.first },
-        { value: '00000888', title: 'Last Block', type: EpochBlockTypes.last },
-      ],
-    },
-    epoch: {},
-  },
-]
-
 const EpochHomeBlocks = () => {
-  const [epochs, setEpochs] = React.useState(EpochHomeBlocksMockedData)
+  const [epochs, setEpochs] = React.useState([])
   const [currentBlock, setCurrentBlock] = React.useState(0)
   const { subscribeToMore, data, error, loading } = useQuery(GET_RECENT_EPOCHS, { variables: { total: 8 } })
 
