@@ -38,7 +38,7 @@ const WORKERS_QUERY = gql`
       epochs {
         id
       }
-      tasksCompletedCount
+      taskCount
       tasks {
         id
       }
@@ -155,7 +155,7 @@ const Workers: React.FC<WorkersProps> = ({ history }) => {
                   align: 'center',
                   id: `${worker.id}_${worker.tasks.map(({ id }: { id: string }) => id).join('')}`,
                   value: `${
-                    worker.tasks.length ? +(worker.tasksCompletedCount / worker.tasks.length).toFixed(2) * 100 : 0
+                    worker.tasks.length ? +(worker.taskCount / worker.tasks.length).toFixed(2) * 100 : 0
                   }%`,
                 },
                 { align: 'center', id: `${worker.id}_${worker.reward}`, value: worker.reward },

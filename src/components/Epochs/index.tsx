@@ -17,21 +17,21 @@ enum Direction {
 enum FieldToGraph {
   'epochId' = 'order',
   'epochAge' = 'age',
-  'epochTotalTasks' = 'tasksCount',
-  'epochCompleteTask' = 'tasksCompleted',
-  'epochWorkers' = 'workers',
+  'epochTotalTasks' = 'taskCount',
+  'epochCompleteTask' = 'completedTaskCount',
+  'epochWorkers' = 'workerCount',
   'epochEngGasUsed' = 'gasUsed',
-  'epochEngReward' = 'engReward',
+  'epochEngReward' = 'reward',
 }
 
 enum GraphToField {
   'order' = 'epochId',
   'age' = 'epochAge',
-  'tasksCount' = 'epochTotalTasks',
-  'tasksCompleted' = 'epochCompleteTask',
-  'workers' = 'epochWorkers',
+  'taskCount' = 'epochTotalTasks',
+  'completedTaskCount' = 'epochCompleteTask',
+  'workerCount' = 'epochWorkers',
   'gasUsed' = 'epochEngGasUsed',
-  'engReward' = 'epochEngReward',
+  'reward' = 'epochEngReward',
 }
 
 interface EpochsProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -43,13 +43,13 @@ const epochesDetailsFragment = gql`
   fragment EpochsDetails on Epoch {
     id
     startTime
+    endTime
     startBlockNumber
-    workers {
-      id
-    }
-    tasksCompletedCount
-    tasksCount
-    tasksFailedCount
+    workerCount
+    completedTaskCount
+    taskCount
+    userCount
+    failedTaskCount
     gasUsed
     reward
   }
@@ -146,15 +146,6 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
     refetch({ ...variables, total: +event.target.value, skip: INITIAL_VALUES.skip })
   }
 
-  const getEndTime = (current: boolean, epochId: string) => {
-    if (current) return 'current'
-
-    const epochs = workerId ? data.worker.epochs : data.epoches
-    const nextEpoch = epochs.find(({ id }: { id: string }) => +id === +epochId + 1)
-
-    return shortEngHumanizer(Date.now() - +nextEpoch.startTime * 1000)
-  }
-
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
   const [modalProps, setModalProps] = React.useState<EpochDetailedProps | {}>({})
   const closeModal = () => setModalIsOpen(false)
@@ -168,7 +159,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
   // @ts-ignore
   const extractEpochData = (epoch, index) => {
     const current = epoch.id === data.enigmaState.latestEpoch.id
-    const age = getEndTime(current, epoch.id)
+    const age = current ? 'current' : shortEngHumanizer(Date.now() - +epoch.endTime * 1000)
 
     return {
       id: epoch.id,
@@ -183,19 +174,15 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
           ),
         },
         { align: 'center', id: `${epoch.id}_${age}_age`, value: age },
-        { align: 'center', id: `${epoch.id}_${epoch.tasksCount}`, value: epoch.tasksCount },
+        { align: 'center', id: `${epoch.id}_${epoch.taskCount}_tasks_${index}`, value: epoch.taskCount },
         {
           align: 'center',
-          id: `${epoch.id}_${epoch.tasksCompletedCount + epoch.tasksCount + epoch.tasksFailedCount}`,
-          value: `${+epoch.tasksCount !== 0 ? +(+epoch.tasksCompletedCount / +epoch.tasksCount).toFixed(2) * 100 : 0}%`,
+          id: `${epoch.id}_${epoch.completedTaskCount + epoch.taskCount + epoch.failedTaskCount}_${index}`,
+          value: `${+epoch.taskCount !== 0 ? +(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100 : 0}%`,
         },
-        {
-          align: 'center',
-          id: `${epoch.id}_${epoch.workers.map(({ id }: { id: string | undefined }) => id).join('')}_w_${index}`,
-          value: epoch.workers.length || 'no workers',
-        },
-        { align: 'center', id: `${epoch.id}_${epoch.gasUsed}`, value: epoch.gasUsed },
-        { align: 'center', id: `${epoch.id}_${epoch.reward}`, value: epoch.reward },
+        { align: 'center', id: `${epoch.id}_${epoch.workerCount}_w_${index}`, value: epoch.workerCount },
+        { align: 'center', id: `${epoch.id}_${epoch.gasUsed}_gu_${index}`, value: epoch.gasUsed },
+        { align: 'center', id: `${epoch.id}_${epoch.reward}_rw_${index}`, value: epoch.reward },
       ],
     }
   }

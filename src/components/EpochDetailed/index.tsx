@@ -15,7 +15,9 @@ export interface EpochProps {
   startTime: string
   workers: WorkerType[]
   tasks: any[]
-  tasksCount: string
+  taskCount: string
+  workerCount: string
+  userCount: string
   gasUsed: string
   reward: string
 }
@@ -44,21 +46,12 @@ const EpochDetailed: React.FC<EpochDetailedProps> = props => {
           <GridCell title="Completed On" value={datesRange.end} />
         </StrippedGridRow>
         <StrippedGridRow columns={2}>
-          <GridCell title="Tasks Submitted to Epoch" value={epoch.tasksCount} underlineValue={true} />
+          <GridCell title="Tasks Submitted to Epoch" value={epoch.taskCount} underlineValue={true} />
           <GridCell title="Completed Tasks" value={`${progress}%`} />
         </StrippedGridRow>
-        {epoch.workers && (
-          <StrippedGridRow columns={2}>
-            <GridCell title="Number Of Selected Workers" value={`${epoch.workers.length}`} underlineValue={true} />
-            <GridCell
-              title="Workers’ Stake"
-              value={`${epoch.workers.reduce((acc, { balance }) => acc + +balance, 0)}`}
-            />
-          </StrippedGridRow>
-        )}
         <StrippedGridRow columns={2}>
-          <GridCell title="Registered Workers" value={`${epoch.workers && epoch.workers.length}`} />
-          <GridCell title="Users" value={'555666'} />
+          <GridCell title="Registered Workers" value={epoch.workerCount} />
+          <GridCell title="Users" value={epoch.userCount} />
         </StrippedGridRow>
         <StrippedGridRow columns={2}>
           <GridCell title="ENG Gas Used" value={epoch.gasUsed} />

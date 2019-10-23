@@ -142,7 +142,7 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
         <Values>
           <TwoItemsGrid>
             <ValueAndSubtitle underlineValue={true} value={`#${epoch.id}`} subtitle="Epoch" />
-            <ValueAndSubtitle value={epoch.tasksCount} subtitle="Tasks" />
+            <ValueAndSubtitle value={epoch.taskCount} subtitle="Tasks" />
           </TwoItemsGrid>
           <EpochBlockNumbers values={blocks} current={current} />
         </Values>

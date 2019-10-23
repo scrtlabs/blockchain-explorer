@@ -38,7 +38,7 @@ const ValueStyled = styled(Value)`
 const WORKER_BY_ID_QUERY = gql`
   query WorkerById($workerId: String) {
     worker(id: $workerId) {
-      tasksCompletedCount
+      taskCount
       tasks {
         id
       }
@@ -64,7 +64,7 @@ const Worker = (props: any) => {
   } = props
   const { data, error, loading } = useQuery(WORKER_BY_ID_QUERY, { variables: { workerId: workerAddress } })
   console.log(data)
-  const worker = data ? data.worker : { tasksCompletedCount: 0, tasks: [], reward: 0, balance: 0, epochs: [] }
+  const worker = data ? data.worker : { taskCount: 0, tasks: [], reward: 0, balance: 0, epochs: [] }
   const totalEpochs = +(data && data.enigmaState.latestEpoch.id) + 1 || 0
 
   if (error) console.error(error.message)
@@ -82,7 +82,7 @@ const Worker = (props: any) => {
             <CopyText text={workerAddress} />
           </ValueStyled>
         </GridCellStyled>
-        <GridCell title="Successful Tasks" value={`${worker.tasksCompletedCount} / ${worker.tasks.length}`} />
+        <GridCell title="Successful Tasks" value={`${worker.taskCount} / ${worker.tasks.length}`} />
         <GridCell title="ENG Rewards" value={worker.reward} />
         <GridCell title="ENG Staked" value={worker.balance} />
         <GridCell title="Epochs Active" value={`${worker.epochs.length} / ${totalEpochs}`} />

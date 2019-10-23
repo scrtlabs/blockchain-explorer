@@ -19,10 +19,10 @@ const TaskDetailed: React.FC<TaskDetailedProps | any> = props => {
     order,
     sender,
     createdAt,
-    changedAt,
+    modifiedAt,
     gasLimit,
     gasUsed,
-    gasPx,
+    gasPrice,
     scAddr,
     optionalEthereumContractAddress,
     modalIsOpen = false,
@@ -44,7 +44,7 @@ const TaskDetailed: React.FC<TaskDetailedProps | any> = props => {
         </StrippedGridRow>
         <StrippedGridRow columns={2}>
           <GridCell title="Submitted On" value={new Date(createdAt * 1000).toLocaleString()} />
-          <GridCell title="Completed On" value={changedAt ? new Date(changedAt * 1000).toLocaleString() : '...'} />
+          <GridCell title="Completed On" value={modifiedAt ? new Date(modifiedAt * 1000).toLocaleString() : '...'} />
         </StrippedGridRow>
         <StrippedGridRow columns={1}>
           <GridCell title="Submitted By" value={sender} underlineValue={true} />
@@ -55,7 +55,7 @@ const TaskDetailed: React.FC<TaskDetailedProps | any> = props => {
         <StrippedGridRow columns={3}>
           <GridCell title="ENG Gas Limit" value={gasLimit} />
           <GridCell title="ENG Gas Used" value={gasUsed} />
-          <GridCell title="ENG Gas Price" value={gasPx} />
+          <GridCell title="ENG Gas Price" value={gasPrice} />
         </StrippedGridRow>
         {optionalEthereumContractAddress && ethApi.web3.utils.toBN(optionalEthereumContractAddress).toString() !== '0' && (
           <StrippedGridRow columns={1}>

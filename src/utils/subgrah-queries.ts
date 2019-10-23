@@ -3,12 +3,14 @@ import gql from 'graphql-tag'
 export const epochDetailFragment = gql`
   fragment EpochDetail on Epoch {
     id
-    inclusionBlockNumber
-    startBlockNumber
     startTime
-    tasksCount
-    tasksFailedCount
-    tasksCompletedCount
+    endTime
+    startBlockNumber
+    taskCount
+    failedTaskCount
+    completedTaskCount
+    userCount
+    workerCount
     workers {
       id
       balance
@@ -18,6 +20,7 @@ export const epochDetailFragment = gql`
       id
       gasUsed
     }
+    gasUsed
     reward
   }
 `
@@ -74,12 +77,12 @@ export const basicTaskDetailsFragment = gql`
     sender
     createdAtTransaction
     createdAt
-    changedAt
+    modifiedAt
     status
     order
     gasUsed
     gasLimit
-    gasPx
+    gasPrice
     optionalEthereumContractAddress
     scAddr
   }

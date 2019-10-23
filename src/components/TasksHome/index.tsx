@@ -10,12 +10,12 @@ export interface TaskBasicData {
   status: string
   sender: string
   createdAt: string
-  changedAt: string | null
+  modifiedAt: string | null
   createdAtTransaction: string
   order: string
   gasUsed: string
   gasLimit: string
-  gasPx: string
+  gasPrice: string
   scAddr: string | null
   optionalEthereumContractAddress: string | null
   time: string

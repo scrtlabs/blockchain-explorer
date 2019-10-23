@@ -69,7 +69,7 @@ const TASKS_QUERY = gql`
       }
     }
     enigmaState(id: 0) {
-      tasksCount
+      taskCount
     }
   }
   ${basicTaskDetailsFragment}
@@ -84,7 +84,7 @@ const TASKS_BY_USER_ADDRESS_QUERY = gql`
       }
     }
     enigmaState(id: 0) {
-      tasksCount
+      taskCount
     }
   }
   ${basicTaskDetailsFragment}
@@ -239,7 +239,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
         }
         paginatorProps={{
           colSpan: HEADER_CELLS.length,
-          count: data ? +data.enigmaState.tasksCount : 0,
+          count: data ? +data.enigmaState.taskCount : 0,
           onChangePage: handleChangePage,
           onChangeRowsPerPage: handleChangeRowsPerPage,
           page: Math.floor(skip / total),
