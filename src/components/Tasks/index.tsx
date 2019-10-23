@@ -113,7 +113,10 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
   } = match
   const query = userAddress ? TASKS_BY_USER_ADDRESS_QUERY : TASKS_QUERY
   const queryVariables = userAddress ? { ...INITIAL_VALUES, sender: userAddress } : INITIAL_VALUES
-  const { data, error, loading, variables, refetch } = useQuery(query, { variables: queryVariables })
+  const { data, error, loading, variables, refetch } = useQuery(query, {
+    variables: queryVariables,
+    fetchPolicy: 'cache-and-network',
+  })
   const { total, skip, orderBy, orderDirection } = variables
 
   if (error) console.error(error.message)
@@ -148,7 +151,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
   }
 
   const goToTaskByUser = (userAddress: string) => {
-    history.push(`/tasks/${userAddress}`, {})
+    history.push(`/tasks/${userAddress}`)
   }
 
   return (
