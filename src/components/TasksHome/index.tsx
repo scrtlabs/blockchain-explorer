@@ -16,7 +16,9 @@ export interface TaskBasicData {
   gasUsed: string
   gasLimit: string
   gasPrice: string
-  scAddr: string | null
+  secretContract: {
+    address: string
+  } | null
   optionalEthereumContractAddress: string | null
   time: string
 }

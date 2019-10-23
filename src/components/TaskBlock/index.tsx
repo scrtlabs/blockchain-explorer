@@ -219,7 +219,7 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
             </ArrowContainer>
             <InfoItem>
               <InfoLabel>Secret Contract</InfoLabel>
-              <InfoValue>{'...'}</InfoValue>
+              <InfoValue>{task.secretContract ? task.secretContract.address : '...'}</InfoValue>
             </InfoItem>
             <InfoItem>
               <InfoLabel>Tx Hash</InfoLabel>

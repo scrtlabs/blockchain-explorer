@@ -23,7 +23,7 @@ const TaskDetailed: React.FC<TaskDetailedProps | any> = props => {
     gasLimit,
     gasUsed,
     gasPrice,
-    scAddr,
+    secretContract,
     optionalEthereumContractAddress,
     modalIsOpen = false,
     closeModal,
@@ -50,7 +50,7 @@ const TaskDetailed: React.FC<TaskDetailedProps | any> = props => {
           <GridCell title="Submitted By" value={sender} underlineValue={true} />
         </StrippedGridRow>
         <StrippedGridRow columns={1}>
-          <GridCell title="Secret Contract" value={scAddr} underlineValue={true} />
+          <GridCell title="Secret Contract" value={secretContract ? secretContract.address : '...'} underlineValue={true} />
         </StrippedGridRow>
         <StrippedGridRow columns={3}>
           <GridCell title="ENG Gas Limit" value={gasLimit} />

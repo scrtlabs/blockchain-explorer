@@ -5,7 +5,7 @@ import { HeaderCell } from '../EnhancedTableHead'
 
 const HEADER_CELLS: HeaderCell[] = [
   { id: '_id', useClassShowOnDesktop: false, align: 'flex-start', label: 'Task ID' },
-  { id: 'scAddr', useClassShowOnDesktop: true, align: 'flex-start', label: 'Secret Contact Address' },
+  { id: 'secretContract', useClassShowOnDesktop: true, align: 'flex-start', label: 'Secret Contact Address' },
   { id: 'workerAddress', useClassShowOnDesktop: true, align: 'flex-start', label: 'Worker Address (Ethereum)' },
 ]
 

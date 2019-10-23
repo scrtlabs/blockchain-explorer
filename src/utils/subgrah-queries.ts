@@ -84,7 +84,9 @@ export const basicTaskDetailsFragment = gql`
     gasLimit
     gasPrice
     optionalEthereumContractAddress
-    scAddr
+    secretContract {
+      address
+    }
   }
 `
 export const GET_RECENT_TASKS = gql`

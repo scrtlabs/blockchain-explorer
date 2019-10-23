@@ -5,7 +5,7 @@ import Table from '@material-ui/core/Table'
 
 const HEADER_CELLS: HeaderCell[] = [
   { id: '_id', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'Task ID' },
-  { id: 'scAddr', useClassShowOnDesktop: true, align: HeaderCellAlign.flexStart, label: 'Secret Contact Address' },
+  { id: 'secretContract', useClassShowOnDesktop: true, align: HeaderCellAlign.flexStart, label: 'Secret Contact Address' },
   {
     id: 'workerAddress',
     useClassShowOnDesktop: true,

@@ -23,7 +23,7 @@ enum FieldToGraph {
   'taskStatus' = 'status',
   'taskEpochNumber' = 'epoch',
   'taskUserAddress' = 'sender',
-  'taskScAddress' = 'scAddr',
+  'taskScAddress' = 'secretContract',
   'taskEngGasUsed' = 'gasUsed',
   'taskNumber' = 'order',
 }
@@ -33,7 +33,7 @@ enum GraphToField {
   'status' = 'taskStatus',
   'epoch' = 'taskEpochNumber',
   'sender' = 'taskUserAddress',
-  'scAddr' = 'taskScAddress',
+  'secretContract' = 'taskScAddress',
   'gasUsed' = 'taskEngGasUsed',
   'order' = 'taskNumber',
 }
@@ -192,7 +192,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
               cells: [
                 {
                   align: 'center',
-                  id: `${task.id}_${task.id}`,
+                  id: `${task.id}_${task.id}_id_${index}`,
                   value: (
                     <LinkText underline={true} onClick={() => openModal(taskDetailedProps)}>
                       <HexAddr start={8} end={8}>
@@ -203,17 +203,17 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
                 },
                 {
                   align: 'center',
-                  id: `${task.id}_${taskStatus}`,
+                  id: `${task.id}_${taskStatus}_status_${index}`,
                   value: (
                     <Value underline={false} color={taskStatusColor}>
                       {taskStatus}
                     </Value>
                   ),
                 },
-                { align: 'center', id: `${task.id}_${task.epoch.id}`, value: task.epoch.id },
+                { align: 'center', id: `${task.id}_${task.epoch.id}_epoch_${index}`, value: task.epoch.id },
                 {
                   align: 'center',
-                  id: `${task.id}_${task.sender}`,
+                  id: `${task.id}_${task.sender}_user_${index}`,
                   value: (
                     <LinkText underline={true} onClick={() => goToTaskByUser(task.sender)}>
                       {task.sender}
@@ -222,17 +222,17 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
                 },
                 {
                   align: 'center',
-                  id: `${task.id}_${task.scAddr}_${index}`,
-                  value: task.scAddr && (
-                    <LinkText underline={true} onClick={() => goToSecretContract(task.scAddr)}>
+                  id: `${task.id}_${task.secretContract && task.secretContract.address}_sc_${index}`,
+                  value: task.secretContract && (
+                    <LinkText underline={true} onClick={() => goToSecretContract(task.secretContract.address)}>
                       <HexAddr start={8} end={8}>
-                        {task.scAddr}
+                        {task.secretContract.address}
                       </HexAddr>
                     </LinkText>
                   ),
                 },
-                { align: 'center', id: `${task.id}_${task.gasUsed}`, value: task.gasUsed },
-                { align: 'center', id: `${task.id}_${task.order}`, value: task.order },
+                { align: 'center', id: `${task.id}_${task.gasUsed}_gu_${index}`, value: task.gasUsed },
+                { align: 'center', id: `${task.id}_${task.order}_nr_${index}`, value: task.order },
               ],
             }
           })
