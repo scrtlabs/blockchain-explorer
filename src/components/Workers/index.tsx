@@ -17,17 +17,17 @@ enum Direction {
 enum FieldToGraph {
   'workerAddress' = 'id',
   'workerStackedEng' = 'balance',
-  'workerActiveVsTotal' = 'epochs',
-  'workerCompletedTasks' = 'completedTasks',
-  'workerEngReward' = 'engReward',
+  'workerActiveVsTotal' = 'epochCount',
+  'workerCompletedTasks' = 'completedTaskCount',
+  'workerEngReward' = 'reward',
 }
 
 enum GraphToField {
   'id' = 'workerAddress',
   'balance' = 'workerStackedEng',
-  'epochs' = 'workerActiveVsTotal',
-  'completedTasks' = 'workerCompletedTasks',
-  'engReward' = 'workerEngReward',
+  'epochCount' = 'workerActiveVsTotal',
+  'completedTaskCount' = 'workerCompletedTasks',
+  'reward' = 'workerEngReward',
 }
 
 const WORKERS_QUERY = gql`
@@ -35,13 +35,9 @@ const WORKERS_QUERY = gql`
     workers(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
       id
       balance
-      epochs {
-        id
-      }
-      taskCount
-      tasks {
-        id
-      }
+      epochCount
+      completedTaskCount
+      failedTaskCount
       reward
     }
     enigmaState(id: 0) {
@@ -127,9 +123,9 @@ const Workers: React.FC<WorkersProps> = ({ history }) => {
           data.workers &&
           // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
           // @ts-ignore
-          data.workers.map(worker => {
-            const epochsActiveIn = worker.epochs && worker.epochs.length
+          data.workers.map((worker, index) => {
             const totalEpochs = +data.enigmaState.latestEpoch.id + 1
+            const totalTasks = +worker.completedTaskCount + +worker.failedTaskCount
 
             return {
               id: worker.id,
@@ -148,15 +144,13 @@ const Workers: React.FC<WorkersProps> = ({ history }) => {
                 { align: 'center', id: `${worker.id}_${worker.balance}`, value: worker.balance },
                 {
                   align: 'center',
-                  id: `${worker.id}_${epochsActiveIn}_${totalEpochs}`,
-                  value: `${epochsActiveIn} of ${totalEpochs}`,
+                  id: `${worker.id}_${worker.epochCount}_${totalEpochs}`,
+                  value: `${worker.epochCount} of ${totalEpochs}`,
                 },
                 {
                   align: 'center',
-                  id: `${worker.id}_${worker.tasks.map(({ id }: { id: string }) => id).join('')}`,
-                  value: `${
-                    worker.tasks.length ? +(worker.taskCount / worker.tasks.length).toFixed(2) * 100 : 0
-                  }%`,
+                  id: `${worker.id}_${worker.completedTaskCount + worker.failedTaskCount}_t_${index}`,
+                  value: `${totalTasks ? +(+worker.completedTaskCount / totalTasks).toFixed(2) * 100 : 0}%`,
                 },
                 { align: 'center', id: `${worker.id}_${worker.reward}`, value: worker.reward },
               ],

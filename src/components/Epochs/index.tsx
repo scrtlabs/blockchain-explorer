@@ -82,6 +82,7 @@ const EPOCHS_BY_WORKER_QUERY = gql`
       epochs(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
         ...EpochsDetails
       }
+      epochCount
     }
     enigmaState(id: 0) {
       ...LatestEpoch
@@ -203,7 +204,12 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
         }
         paginatorProps={{
           colSpan: HEADER_CELLS.length,
-          count: data ? +data.enigmaState.latestEpoch.id + 1 : 0,
+          count:
+            data && data.epoches
+              ? +data.enigmaState.latestEpoch.id + 1
+              : data && data.worker
+              ? +data.worker.epochCount
+              : 0,
           onChangePage: handleChangePage,
           onChangeRowsPerPage: handleChangeRowsPerPage,
           page: Math.floor(skip / total),
