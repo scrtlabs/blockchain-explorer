@@ -24,7 +24,10 @@ const EpochsRow = styled.div`
 const EpochHomeBlocks = () => {
   const [epochs, setEpochs] = React.useState([])
   const [currentBlock, setCurrentBlock] = React.useState(0)
-  const { subscribeToMore, data, error, loading } = useQuery(GET_RECENT_EPOCHS, { variables: { total: 8 } })
+  const { subscribeToMore, data, error, loading } = useQuery(GET_RECENT_EPOCHS, {
+    variables: { total: 8 },
+    fetchPolicy: 'cache-and-network',
+  })
 
   const calculateEpochsValues = async (epochsHistory: Array<any>, epoch: any, index: number, epochs: Array<any>) => {
     const current = index === 0
