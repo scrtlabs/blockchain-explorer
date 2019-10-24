@@ -3,17 +3,25 @@
 ### Setup
 
 #### Local
-1- Update `.env.local` values to match your requirements
 
-2- Install dependencies
+1. Update `.env.local` values to match your requirements
+
+2. Install dependencies
 ```bash
 $ yarn
 ```
 
-3- Start the project
+3. Start the project
 ```bash
 $ yarn start
 ```
+
+#### Docker
+
+1. Update `.env.local` values to match your requirements
+
+2. Launch `docker-compose up`
+
 
 #### ENV variables
 
