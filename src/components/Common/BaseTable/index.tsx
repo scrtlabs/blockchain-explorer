@@ -46,7 +46,8 @@ const CardStyled = styled(Card)`
   padding: 0 0 5px 0;
 `
 
-const TableCellContent = styled.div`
+const TableCellContent = styled.div<{ align?: string }>`
+  justify-content: ${props => (props.align ? props.align : 'center')};
   display: flex;
 `
 
@@ -80,12 +81,11 @@ const BaseTable = ({ headerProps, rows = [], paginatorProps }: BaseTableProps) =
               {row.cells.map(cell => (
                 <TableCell
                   style={{ paddingRight: '16px', ...cell.style }}
-                  align={cell.align}
                   key={cell.id}
                   colSpan={cell.colSpan}
                   onClick={() => cell.onClick && cell.onClick()}
                 >
-                  <TableCellContent>
+                  <TableCellContent align={cell.align}>
                     <TableCellText status={cell.status}>{cell.value}</TableCellText>
                   </TableCellContent>
                 </TableCell>
