@@ -63,7 +63,7 @@ const EpochHomeBlocks = () => {
     return {
       values: {
         current,
-        progress: `${+epoch.taskCount !== 0 ? +(+epoch.taskCount / +epoch.taskCount).toFixed(2) * 100 : 0}`,
+        progress: `${+epoch.taskCount !== 0 ? +(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100 : 0}`,
         ...calculatedValues,
       },
       epoch,
