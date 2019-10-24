@@ -7,10 +7,12 @@ import { getMainDefinition } from 'apollo-utilities'
 
 const cache = new InMemoryCache()
 
-const httpLink = new HttpLink({ uri: 'http://localhost:8000/subgraphs/name/enigmampc/enigma' })
+const subgraphName = `subgraphs/name/${process.env.REACT_APP_SUBGRAPH_NAME}`
+
+const httpLink = new HttpLink({ uri: `${process.env.REACT_APP_SUBGRAPH_HTTP}/${subgraphName}` })
 
 const wsLink = new WebSocketLink({
-  uri: 'ws://localhost:8001/subgraphs/name/enigmampc/enigma',
+  uri: `${process.env.REACT_APP_SUBGRAPH_WS}/${subgraphName}`,
   options: { reconnect: true },
 })
 

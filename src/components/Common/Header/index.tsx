@@ -69,7 +69,12 @@ const MainMenuStyled = styled(MainMenu)`
 `
 
 const Header: React.FC = props => {
-  const { label: network } = getNetworkDetailsBy('id')(process.env.REACT_APP_ETH_NETWORK_ID)
+  let networkName = process.env.REACT_APP_ETH_NETWORK_NAME || 'Unknown'
+
+  if (process.env.REACT_APP_ETH_NETWORK_ID) {
+    const { label: network } = getNetworkDetailsBy('id')(process.env.REACT_APP_ETH_NETWORK_ID)
+    networkName = network
+  }
 
   const [isMenuOpen, setMenuState] = useState(false)
 
@@ -81,7 +86,7 @@ const Header: React.FC = props => {
         <Link to="/">
           <Logo />
         </Link>
-        <NetworkStyled network={network} />
+        <NetworkStyled network={networkName} />
         <MainMenuStyled />
         <MobileMenuStyled toggleMenu={toggleMenu} isMenuOpen={isMenuOpen} />
       </HeaderInner>

@@ -6,9 +6,12 @@ export const ENG_DECIMALS = 8
 
 class EthAPI {
   constructor() {
-    const { url } = getNetworkDetailsBy('id')(4447)
-    this.web3 = new Web3(new Web3.providers.HttpProvider(url))
-    global.web3 = this.web3
+    if (process.env.REACT_APP_ETH_NETWORK_ID) {
+      const { url } = getNetworkDetailsBy('id')(process.env.REACT_APP_ETH_NETWORK_ID)
+      this.web3 = new Web3(new Web3.providers.HttpProvider(url))
+    } else {
+      this.web3 = new Web3(new Web3.providers.HttpProvider(process.env.REACT_APP_ETH_URL))
+    }
   }
 
   getBlockNumber() {
