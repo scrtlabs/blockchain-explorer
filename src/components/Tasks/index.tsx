@@ -11,7 +11,6 @@ import FullLoading from '../Common/FullLoading'
 import { TaskStatus } from '../TaskBlock'
 import { Value } from '../Common/GridCell'
 import TaskDetailed, { TaskDetailedProps } from '../TaskDetailed'
-import { basicTaskDetailsFragment } from '../../utils/subgrah-queries'
 
 enum Direction {
   'ascending' = 'asc',
@@ -60,7 +59,26 @@ export const LinkText = styled.span<LinkTextProps>`
   white-space: nowrap;
 `
 
-const TASKS_QUERY = gql`
+const basicTaskDetailsFragment = gql`
+  fragment BasicTaskDetails on Task {
+    id
+    sender
+    createdAtTransaction
+    createdAt
+    modifiedAt
+    status
+    order
+    gasUsed
+    gasLimit
+    gasPrice
+    optionalEthereumContractAddress
+    secretContract {
+      address
+    }
+  }
+`
+
+export const TASKS_QUERY = gql`
   query Tasks($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
     tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
       ...BasicTaskDetails
@@ -70,6 +88,18 @@ const TASKS_QUERY = gql`
     }
     enigmaState(id: 0) {
       taskCount
+    }
+  }
+  ${basicTaskDetailsFragment}
+`
+
+export const TASKS_SUBSCRIBE = gql`
+  subscription TasksSubscribe($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
+    tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
+      ...BasicTaskDetails
+      epoch {
+        id
+      }
     }
   }
   ${basicTaskDetailsFragment}
@@ -100,7 +130,7 @@ const HEADER_CELLS = [
   { id: 'taskNumber', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'Task Number' },
 ]
 
-const INITIAL_VALUES = {
+export const TASKS_INITIAL_VALUES = {
   total: 10,
   skip: 0,
   orderBy: FieldToGraph.taskNumber,
@@ -112,7 +142,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
     params: { userAddress },
   } = match
   const query = userAddress ? TASKS_BY_USER_ADDRESS_QUERY : TASKS_QUERY
-  const queryVariables = userAddress ? { ...INITIAL_VALUES, sender: userAddress } : INITIAL_VALUES
+  const queryVariables = userAddress ? { ...TASKS_INITIAL_VALUES, sender: userAddress } : TASKS_INITIAL_VALUES
   const { data, error, loading, variables, refetch } = useQuery(query, {
     variables: queryVariables,
     fetchPolicy: 'cache-and-network',
@@ -127,7 +157,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
   ) => {
     refetch({
       total,
-      skip: INITIAL_VALUES.skip,
+      skip: TASKS_INITIAL_VALUES.skip,
       orderBy: FieldToGraph[sortField] === orderBy ? orderBy : FieldToGraph[sortField],
       orderDirection: orderDirection === Direction.descending ? Direction.ascending : Direction.descending,
     })
@@ -138,7 +168,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
   }
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    refetch({ ...variables, total: +event.target.value, skip: INITIAL_VALUES.skip })
+    refetch({ ...variables, total: +event.target.value, skip: TASKS_INITIAL_VALUES.skip })
   }
 
   const [modalIsOpen, setModalIsOpen] = React.useState(false)

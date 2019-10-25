@@ -40,12 +40,14 @@ const EpochBlockNumbersWrapper = styled.div`
   overflow: hidden;
 `
 
-const Cell = styled.span<{
+interface CellProps {
   current: boolean
   currentBackgroundColor: string
   lastBackgroundColor: string
   type: EpochBlockTypes
-}>`
+}
+
+const Cell = styled.span<CellProps>`
   background-color: ${props =>
     getCellBackgroundColor(props.type, props.current, props.currentBackgroundColor, props.lastBackgroundColor)};
   flex-grow: 1;

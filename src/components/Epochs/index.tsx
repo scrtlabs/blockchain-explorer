@@ -6,8 +6,9 @@ import { HeaderCellAlign } from '../Common/EnhancedTableHead'
 import SectionTitle from '../Common/SectionTitle'
 import FullLoading from '../Common/FullLoading'
 import { shortEngHumanizer } from '../../utils/humanizer'
-import EpochDetailed, { EpochDetailedProps, EpochProps } from '../EpochDetailed'
+import EpochDetailed, { EpochDetailedProps, WorkerType } from '../EpochDetailed'
 import { LinkText } from '../Tasks'
+import estimateCurrentEpochEnd from '../../utils/estimateCurrentEpochEnd'
 
 enum Direction {
   'ascending' = 'asc',
@@ -34,6 +35,24 @@ enum GraphToField {
   'reward' = 'epochEngReward',
 }
 
+export interface EpochProps {
+  id: string
+  completeBlockNumber: string
+  inclusionBlockNumber: string
+  startBlockNumber: string
+  endBlockNumber: string
+  startTime: string
+  endTime: string
+  workers: WorkerType[]
+  tasks: any[]
+  taskCount: string
+  completedTaskCount: string
+  workerCount: string
+  userCount: string
+  gasUsed: string
+  reward: string
+}
+
 interface EpochsProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string
   workerId?: string | null
@@ -45,6 +64,7 @@ const epochesDetailsFragment = gql`
     startTime
     endTime
     startBlockNumber
+    endBlockNumber
     workerCount
     completedTaskCount
     taskCount
@@ -63,7 +83,7 @@ const latestEpochFragment = gql`
   }
 `
 
-const EPOCHS_QUERY = gql`
+export const EPOCHS_QUERY = gql`
   query Epoches($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
     epoches(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
       ...EpochsDetails
@@ -112,7 +132,7 @@ const HEADER_CELLS = [
   { id: 'epochEngReward', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'ENG Reward' },
 ]
 
-const INITIAL_VALUES = {
+export const EPOCHS_INITIAL_VALUES = {
   total: 10,
   skip: 0,
   orderBy: FieldToGraph.epochId,
@@ -121,7 +141,7 @@ const INITIAL_VALUES = {
 
 const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: EpochsProps) => {
   const query = workerId ? EPOCHS_BY_WORKER_QUERY : EPOCHS_QUERY
-  const queryVariables = workerId ? { ...INITIAL_VALUES, workerId } : INITIAL_VALUES
+  const queryVariables = workerId ? { ...EPOCHS_INITIAL_VALUES, workerId } : EPOCHS_INITIAL_VALUES
   const { data, error, loading, variables, refetch } = useQuery(query, { variables: queryVariables })
   const { total, skip, orderBy, orderDirection } = variables
 
@@ -133,7 +153,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
   ) => {
     refetch({
       total,
-      skip: INITIAL_VALUES.skip,
+      skip: EPOCHS_INITIAL_VALUES.skip,
       orderBy: FieldToGraph[sortField] === orderBy ? orderBy : FieldToGraph[sortField],
       orderDirection: orderDirection === Direction.descending ? Direction.ascending : Direction.descending,
     })
@@ -144,15 +164,21 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
   }
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    refetch({ ...variables, total: +event.target.value, skip: INITIAL_VALUES.skip })
+    refetch({ ...variables, total: +event.target.value, skip: EPOCHS_INITIAL_VALUES.skip })
   }
 
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
   const [modalProps, setModalProps] = React.useState<EpochDetailedProps | {}>({})
   const closeModal = () => setModalIsOpen(false)
 
-  const openModal = (epochDetailedProps: EpochProps) => {
-    setModalProps({ epoch: { ...epochDetailedProps } })
+  const openModal = async (epoch: EpochProps) => {
+    // TODO: replace '0' with '-' to identify a non-task epoch
+    const progress =
+      +epoch.taskCount === 0 ? '0' : `${+(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100}`
+    const isCurrent: boolean = epoch.id === data.enigmaState.latestEpoch.id
+    const { pendingTime = undefined } = isCurrent ? await estimateCurrentEpochEnd(data.epoches) : {}
+
+    setModalProps({ epoch: { ...epoch }, progress, pendingTime })
     setModalIsOpen(true)
   }
 

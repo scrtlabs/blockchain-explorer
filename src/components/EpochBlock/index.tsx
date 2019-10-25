@@ -4,22 +4,18 @@ import Card from '../Common/Card'
 import ValueAndSubtitle from '../Common/ValueAndSubtitle'
 import TimeLeft from '../Common/TimeLeft'
 import ProgressCircle from '../ProgressCircle'
-import EpochBlockNumbers, { EpochBlockData } from '../EpochBlockNumbers'
-import ethApi from '../../utils/eth'
-import EpochDetailed, { EpochProps } from '../EpochDetailed'
+import EpochBlockNumbers, { EpochBlockTypes } from '../EpochBlockNumbers'
+import EpochDetailed from '../EpochDetailed'
+import { shortEngHumanizer } from '../../utils/humanizer'
+import { EpochProps } from 'components/Epochs'
 
-export interface ValuesProps {
-  blocks: EpochBlockData[]
-  current?: boolean
-  progress: string
-  time: string
-  finishTime?: number
-}
-
-interface EpochBlockProps extends HTMLAttributes<HTMLDivElement> {
+export interface EpochBlockProps extends HTMLAttributes<HTMLDivElement> {
+  isCurrent: boolean
+  currentBlockNumber: number
+  finishBlockNumber: number
+  pendingTime?: number
   epoch: EpochProps
-  theme: any
-  values: ValuesProps
+  theme?: any
 }
 
 interface BlockProps extends HTMLAttributes<HTMLDivElement> {
@@ -102,57 +98,62 @@ const TwoItemsGrid = styled.div`
   }
 `
 
+interface EpochBlocksInfoProps {
+  value: string | number
+  title: string
+  type: EpochBlockTypes
+}
+
 const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
-  const { values, theme, epoch, ...restProps } = props
-  const { current = false, progress, time, blocks = [] } = values
+  const { isCurrent, currentBlockNumber, finishBlockNumber, pendingTime, epoch, theme, ...restProps } = props
+
   const endedColor = 'rgba(28, 168, 248, 0.5)'
   const runningColor = 'rgba(231, 46, 157, 0.6)'
-  const borderColor: string = current ? theme.colors.secondary : endedColor
-  const [modalIsOpen, setModalIsOpen] = React.useState(false)
-  const [datesRange, setDatesRange] = React.useState({ start: '', end: '' })
+  const borderColor: string = isCurrent ? theme.colors.secondary : endedColor
 
-  const closeModal = () => setModalIsOpen(false)
-  const openModal = () => setModalIsOpen(true)
+  // TODO: replace '0' with '-' to identify a non-task epoch
+  const progress = +epoch.taskCount === 0 ? '0' : `${+(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100}`
 
-  const getEndTime = async () => {
-    if (current && values.finishTime) {
-      const currentBlockTimestamp = await ethApi.getBlockTimestamp(await ethApi.getBlockNumber())
-      return +currentBlockTimestamp * 1000 + values.finishTime
-    }
-    const [, { value: end }] = blocks
-    return +(await ethApi.getBlockTimestamp(end)) * 1000
+  const time = shortEngHumanizer(pendingTime !== undefined ? +pendingTime : Date.now() - +epoch.endTime * 1000)
+
+  const blocks: EpochBlocksInfoProps[] = [
+    { value: epoch.startBlockNumber, title: 'First Block', type: EpochBlockTypes.first },
+  ]
+
+  if (isCurrent) {
+    const value = finishBlockNumber > currentBlockNumber ? finishBlockNumber : currentBlockNumber
+    blocks.push({ value: currentBlockNumber, title: 'Current Block', type: EpochBlockTypes.current })
+    blocks.push({ value, title: 'Last Block', type: EpochBlockTypes.last })
+  } else {
+    blocks.push({ value: epoch.endBlockNumber, title: 'Last Block', type: EpochBlockTypes.last })
   }
 
-  React.useMemo(() => {
-    const updateDates = async () => {
-      const endTimeLocal = new Date(await getEndTime()).toLocaleString()
-      const startTimeLocal = new Date(+epoch.startTime * 1000).toLocaleString()
-      setDatesRange({ start: startTimeLocal, end: endTimeLocal })
-    }
-
-    if (values.blocks.length) {
-      updateDates()
-    }
-  }, [blocks.length])
+  const [modalIsOpen, setModalIsOpen] = React.useState(false)
+  const closeModal = () => setModalIsOpen(false)
+  const openModal = () => setModalIsOpen(true)
 
   return (
     <>
       <EpochBlockStyled borderColor={borderColor} onClick={openModal} {...restProps}>
-        <ProgressCircleStyled color={current ? runningColor : endedColor} title="Completed Tasks" progress={progress} />
+        <ProgressCircleStyled
+          color={isCurrent ? runningColor : endedColor}
+          title="Completed Tasks"
+          progress={progress}
+        />
         <Values>
           <TwoItemsGrid>
             <ValueAndSubtitle underlineValue={true} value={`#${epoch.id}`} subtitle="Epoch" />
             <ValueAndSubtitle value={epoch.taskCount} subtitle="Tasks" />
           </TwoItemsGrid>
-          <EpochBlockNumbers values={blocks} current={current} />
+          <EpochBlockNumbers values={blocks} current={isCurrent} />
         </Values>
-        <TimeLeftStyled current={current} value={time} />
+        <TimeLeftStyled current={isCurrent} value={time} />
       </EpochBlockStyled>
       <EpochDetailed
         modalIsOpen={modalIsOpen}
         closeModal={closeModal}
-        datesRange={datesRange}
         progress={progress}
+        pendingTime={pendingTime}
         epoch={epoch}
       />
     </>

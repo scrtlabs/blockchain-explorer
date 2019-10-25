@@ -34,21 +34,22 @@ const distanceAverage = range => {
   return Math.floor(sum / length)
 }
 
-const estimateEpochFinishTimes = async (epochs = [], average = false) => {
-  let finishTime = 0 // when the current epoch may end
-  let finishBlock = 0 // where the current epoch may end
-  const currentEpoch = epochs.slice(0, 1)[0] // currently active epoch
+const estimateCurrentEpochEnd = async (epochs = [], average = false) => {
+  let pendingTime = 0 // estimated life time for the current epoch
+  let finishBlock = 0 // estimated block for when the current epoch may end
+  const sortedEpochs = epochs.sort((a, b) => +b.id - +a.id)
+  const currentEpoch = sortedEpochs.slice(0, 1)[0] // currently active epoch
 
   // builds an array of the form [10, 1, 21, 11, 22, 40]
   // where 10 is the last block of the first epoch in the collection
   // and 1 is the first block of the first epoch in the collection
   // 21 is the last block of the second epoch and 11 is it's first block and so on
-  const blocksRange = epochs
+  const blocksRange = sortedEpochs
     .reduce((acc, epoch, index) => {
       const current = index === 0
       if (!current) {
         acc.push(+epoch.startBlockNumber) // start block number for current epoch
-        acc.push(+epochs[index - 1].startBlockNumber - 1) // finish block number for current epoch
+        acc.push(+sortedEpochs[index - 1].startBlockNumber - 1) // finish block number for current epoch
       }
       return acc
     }, [])
@@ -67,12 +68,12 @@ const estimateEpochFinishTimes = async (epochs = [], average = false) => {
     const currentBlocksLeft = finishBlock - +currentBlock
     const currentBlocksTimes = epochDuration / epochBlockCount
 
-    finishTime = Math.floor(currentBlocksLeft * currentBlocksTimes) * 1000 // milliseconds
+    pendingTime = Math.floor(currentBlocksLeft * currentBlocksTimes) * 1000 // milliseconds
   } catch (e) {
     console.error('Failed to retrieve blocks tiemstamps', e)
   }
 
-  return { finishTime, finishBlock }
+  return { pendingTime, finishBlock }
 }
 
-export default estimateEpochFinishTimes
+export default estimateCurrentEpochEnd

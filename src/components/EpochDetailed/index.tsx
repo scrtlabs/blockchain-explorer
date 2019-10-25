@@ -2,48 +2,35 @@ import React from 'react'
 import ModalWrapper from '../Common/ModalWrapper'
 import StrippedGrid, { StrippedGridRow } from '../Common/StrippedGrid'
 import GridCell from '../Common/GridCell'
+import { EpochProps } from '../Epochs'
 
 export type WorkerType = {
   balance: string
 }
 
-export interface EpochProps {
-  id: string
-  completeBlockNumber: string
-  inclusionBlockNumber: string
-  startBlockNumber: string
-  startTime: string
-  workers: WorkerType[]
-  tasks: any[]
-  taskCount: string
-  workerCount: string
-  userCount: string
-  gasUsed: string
-  reward: string
-}
-
 export interface EpochDetailedProps {
   modalIsOpen: boolean
   closeModal: () => void
-  datesRange?: {
-    start: string
-    end: string
-  }
   progress?: string
+  pendingTime?: number
   epoch?: EpochProps
 }
 
 const EpochDetailed: React.FC<EpochDetailedProps> = props => {
-  const { modalIsOpen, closeModal, datesRange, progress, epoch } = props
+  const { modalIsOpen, closeModal, progress, pendingTime, epoch } = props
 
-  if (datesRange === undefined || progress === undefined || epoch === undefined) return null
+  if (epoch === undefined) return null
+
+  // Dates Range
+  const start = new Date(+epoch.startTime * 1000).toLocaleString()
+  const end = new Date(pendingTime !== undefined ? Date.now() + +pendingTime : +epoch.endTime * 1000).toLocaleString()
 
   return (
     <ModalWrapper isOpen={modalIsOpen} title={`Epoch #${epoch.id}`} onRequestClose={closeModal}>
       <StrippedGrid>
         <StrippedGridRow columns={2}>
-          <GridCell title="Started On" value={datesRange.start} />
-          <GridCell title="Completed On" value={datesRange.end} />
+          <GridCell title="Started On" value={start} />
+          <GridCell title="Completed On" value={end} />
         </StrippedGridRow>
         <StrippedGridRow columns={2}>
           <GridCell title="Tasks Submitted to Epoch" value={epoch.taskCount} underlineValue={true} />

@@ -2,8 +2,8 @@ import React from 'react'
 import SectionTitle from '../Common/SectionTitle'
 import TaskBlock from '../TaskBlock'
 import { useQuery } from '@apollo/react-hooks'
-import { GET_RECENT_TASKS, SUBSCRIBE_RECENT_TASKS } from '../../utils/subgrah-queries'
 import { shortEngHumanizer } from '../../utils/humanizer'
+import { TASKS_INITIAL_VALUES, TASKS_QUERY, TASKS_SUBSCRIBE } from '../Tasks'
 
 export interface TaskBasicData {
   id: string
@@ -24,7 +24,9 @@ export interface TaskBasicData {
 }
 
 const TasksHome = (props: any) => {
-  const { subscribeToMore, data, error, loading } = useQuery(GET_RECENT_TASKS, { variables: { total: 5 } })
+  const { subscribeToMore, data, error, loading } = useQuery(TASKS_QUERY, {
+    variables: { ...TASKS_INITIAL_VALUES, total: 5 },
+  })
   const [tasks, setTasks] = React.useState<TaskBasicData[]>([])
 
   const extractTasks = () => {
@@ -42,8 +44,8 @@ const TasksHome = (props: any) => {
     }
 
     return subscribeToMore({
-      document: SUBSCRIBE_RECENT_TASKS,
-      variables: { total: 5 },
+      document: TASKS_SUBSCRIBE,
+      variables: { ...TASKS_INITIAL_VALUES, total: 5 },
       updateQuery: (prev, { subscriptionData }) => (subscriptionData.data ? subscriptionData.data : prev),
     })
   }, [])
