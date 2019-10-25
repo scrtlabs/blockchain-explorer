@@ -7,7 +7,7 @@ import ProgressCircle from '../ProgressCircle'
 import EpochBlockNumbers, { EpochBlockTypes } from '../EpochBlockNumbers'
 import EpochDetailed from '../EpochDetailed'
 import { shortEngHumanizer } from '../../utils/humanizer'
-import { EpochProps } from 'components/Epochs'
+import { EpochBlocksInfoProps, EpochProps } from 'components/Epochs'
 
 export interface EpochBlockProps extends HTMLAttributes<HTMLDivElement> {
   isCurrent: boolean
@@ -98,12 +98,6 @@ const TwoItemsGrid = styled.div`
   }
 `
 
-interface EpochBlocksInfoProps {
-  value: string | number
-  title: string
-  type: EpochBlockTypes
-}
-
 const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   const { isCurrent, currentBlockNumber, finishBlockNumber, pendingTime, epoch, theme, ...restProps } = props
 
@@ -115,6 +109,7 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   const progress = +epoch.taskCount === 0 ? '0' : `${+(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100}`
 
   const time = shortEngHumanizer(pendingTime !== undefined ? +pendingTime : Date.now() - +epoch.endTime * 1000)
+  console.log(time, pendingTime, epoch.endTime)
 
   const blocks: EpochBlocksInfoProps[] = [
     { value: epoch.startBlockNumber, title: 'First Block', type: EpochBlockTypes.first },
@@ -155,6 +150,7 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
         isCurrent={isCurrent}
         progress={progress}
         pendingTime={pendingTime}
+        blocks={blocks}
         epoch={epoch}
       />
     </>

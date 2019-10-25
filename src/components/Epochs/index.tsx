@@ -9,6 +9,8 @@ import { shortEngHumanizer } from '../../utils/humanizer'
 import EpochDetailed, { EpochDetailedProps, WorkerType } from '../EpochDetailed'
 import { LinkText } from '../Tasks'
 import estimateCurrentEpochEnd from '../../utils/estimateCurrentEpochEnd'
+import { EpochBlockTypes } from '../EpochBlockNumbers'
+import ethApi from '../../utils/eth'
 
 enum Direction {
   'ascending' = 'asc',
@@ -56,6 +58,12 @@ export interface EpochProps {
 interface EpochsProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string
   workerId?: string | null
+}
+
+export interface EpochBlocksInfoProps {
+  value: string | number
+  title: string
+  type: EpochBlockTypes
 }
 
 const epochesDetailsFragment = gql`
@@ -176,9 +184,24 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
     const progress =
       +epoch.taskCount === 0 ? '0' : `${+(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100}`
     const isCurrent: boolean = epoch.id === data.enigmaState.latestEpoch.id
-    const { pendingTime = undefined } = isCurrent ? await estimateCurrentEpochEnd(data.epoches) : {}
+    const currentEpochEstimates = estimateCurrentEpochEnd(data.epoches)
+    const currentBlockNumber = await ethApi.getBlockNumber()
 
-    setModalProps({ epoch: { ...epoch }, isCurrent, progress, pendingTime })
+    const blocks: EpochBlocksInfoProps[] = [
+      { value: epoch.startBlockNumber, title: 'First Block', type: EpochBlockTypes.first },
+    ]
+
+    if (isCurrent) {
+      const { finishBlockNumber = undefined } = await currentEpochEstimates
+      const value = finishBlockNumber && finishBlockNumber > currentBlockNumber ? finishBlockNumber : currentBlockNumber
+      blocks.push({ value: currentBlockNumber, title: 'Current Block', type: EpochBlockTypes.current })
+      blocks.push({ value, title: 'Last Block', type: EpochBlockTypes.last })
+    } else {
+      blocks.push({ value: epoch.endBlockNumber, title: 'Last Block', type: EpochBlockTypes.last })
+    }
+
+    const { pendingTime = undefined } = await currentEpochEstimates
+    setModalProps({ epoch: { ...epoch }, isCurrent, progress, pendingTime, blocks })
     setModalIsOpen(true)
   }
 
@@ -186,7 +209,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
   // @ts-ignore
   const extractEpochData = (epoch, index) => {
     const isCurrent: boolean = epoch.id === data.enigmaState.latestEpoch.id
-    const age = isCurrent ? 'isCurrent' : shortEngHumanizer(Date.now() - +epoch.endTime * 1000)
+    const age = isCurrent ? 'current' : shortEngHumanizer(Date.now() - +epoch.endTime * 1000)
 
     return {
       id: epoch.id,

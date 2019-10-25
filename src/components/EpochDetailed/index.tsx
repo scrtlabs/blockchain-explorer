@@ -2,7 +2,7 @@ import React from 'react'
 import ModalWrapper from '../Common/ModalWrapper'
 import StrippedGrid, { StrippedGridRow } from '../Common/StrippedGrid'
 import GridCell from '../Common/GridCell'
-import { EpochProps } from '../Epochs'
+import { EpochBlocksInfoProps, EpochProps } from '../Epochs'
 
 export type WorkerType = {
   balance: string
@@ -14,11 +14,12 @@ export interface EpochDetailedProps {
   isCurrent?: boolean
   progress?: string
   pendingTime?: number
+  blocks?: EpochBlocksInfoProps[]
   epoch?: EpochProps
 }
 
 const EpochDetailed: React.FC<EpochDetailedProps> = props => {
-  const { modalIsOpen, closeModal, isCurrent, progress, pendingTime, epoch } = props
+  const { modalIsOpen, closeModal, isCurrent, progress, pendingTime, blocks, epoch } = props
 
   if (epoch === undefined) return null
 
@@ -39,9 +40,20 @@ const EpochDetailed: React.FC<EpochDetailedProps> = props => {
         </StrippedGridRow>
         <StrippedGridRow columns={2}>
           <GridCell title="Registered Workers" value={epoch.workerCount || '-'} />
+          <GridCell title="Selected Workers" value={'-'} />
+        </StrippedGridRow>
+        <StrippedGridRow columns={1}>
           <GridCell title="Unique Users" value={epoch.userCount || '-'} />
         </StrippedGridRow>
-        <StrippedGridRow columns={2}>
+        {blocks && (
+          <StrippedGridRow columns={blocks.length}>
+            {blocks.map(block => (
+              <GridCell key={`${block.title}_${block.value}`} title={block.title} value={`${block.value}`} />
+            ))}
+          </StrippedGridRow>
+        )}
+        <StrippedGridRow columns={3}>
+          <GridCell title="ENG Staked" value={'-'} />
           <GridCell title="ENG Gas Used" value={epoch.gasUsed} />
           <GridCell title="ENG Reward" value={'-'} />
         </StrippedGridRow>
