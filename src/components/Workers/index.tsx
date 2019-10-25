@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
 import { History } from 'history'
 import BaseTable from '../Common/BaseTable'
-import { HeaderCellAlign } from '../Common/EnhancedTableHead'
+import { FlexAlign } from '../Common/EnhancedTableHead'
 import HexAddr from '../Common/HexAddr'
 import SectionTitle from 'components/Common/SectionTitle'
 import FullLoading from '../Common/FullLoading'
@@ -50,21 +50,21 @@ const WORKERS_QUERY = gql`
 `
 
 const HEADER_CELLS = [
-  { id: 'workerAddress', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'Address' },
-  { id: 'workerStackedEng', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'Staked ENG' },
+  { id: 'workerAddress', useClassShowOnDesktop: false, align: FlexAlign.flexStart, label: 'Address' },
+  { id: 'workerStackedEng', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'Staked ENG' },
   {
     id: 'workerActiveVsTotal',
     useClassShowOnDesktop: false,
-    align: HeaderCellAlign.flexStart,
+    align: FlexAlign.center,
     label: 'Epochs Active / Total Epochs',
   },
   {
     id: 'workerCompletedTasks',
     useClassShowOnDesktop: false,
-    align: HeaderCellAlign.flexStart,
+    align: FlexAlign.flexEnd,
     label: '% Of Completed Tasks',
   },
-  { id: 'workerEngReward', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'ENG Reward' },
+  { id: 'workerEngReward', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'ENG Reward' },
 ]
 
 const INITIAL_VALUES = {
@@ -131,7 +131,7 @@ const Workers: React.FC<WorkersProps> = ({ history }) => {
               id: worker.id,
               cells: [
                 {
-                  align: 'center',
+                  align: FlexAlign.flexStart,
                   id: `${worker.id}_${worker.id}`,
                   value: (
                     <Value underline={true} onClick={() => goToWorker(worker.id)}>
@@ -141,18 +141,18 @@ const Workers: React.FC<WorkersProps> = ({ history }) => {
                     </Value>
                   ),
                 },
-                { align: 'center', id: `${worker.id}_${worker.balance}`, value: worker.balance },
+                { align: FlexAlign.flexEnd, id: `${worker.id}_${worker.balance}`, value: worker.balance },
                 {
-                  align: 'center',
+                  align: FlexAlign.center,
                   id: `${worker.id}_${worker.epochCount}_${totalEpochs}`,
                   value: `${worker.epochCount} of ${totalEpochs}`,
                 },
                 {
-                  align: 'center',
+                  align: FlexAlign.flexEnd,
                   id: `${worker.id}_${worker.completedTaskCount + worker.failedTaskCount}_t_${index}`,
                   value: `${totalTasks ? +(+worker.completedTaskCount / totalTasks).toFixed(2) * 100 : 0}%`,
                 },
-                { align: 'center', id: `${worker.id}_${worker.reward}`, value: worker.reward },
+                { align: FlexAlign.flexEnd, id: `${worker.id}_${worker.reward}`, value: worker.reward || '-' },
               ],
             }
           })

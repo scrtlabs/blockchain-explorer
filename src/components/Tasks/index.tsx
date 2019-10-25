@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import { History } from 'history'
 import { useQuery } from '@apollo/react-hooks'
 import BaseTable from '../Common/BaseTable'
-import { HeaderCellAlign } from '../Common/EnhancedTableHead'
+import { FlexAlign } from '../Common/EnhancedTableHead'
 import HexAddr from '../Common/HexAddr'
 import SectionTitle from '../Common/SectionTitle'
 import FullLoading from '../Common/FullLoading'
@@ -121,13 +121,13 @@ const TASKS_BY_USER_ADDRESS_QUERY = gql`
 `
 
 const HEADER_CELLS = [
-  { id: 'taskId', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'Task ID' },
-  { id: 'taskStatus', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'Status' },
-  { id: 'taskEpochNumber', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'Epoch' },
-  { id: 'taskUserAddress', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'User' },
-  { id: 'taskScAddress', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'Secret Contract' },
-  { id: 'taskEngGasUsed', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'ENG Gas Used' },
-  { id: 'taskNumber', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'Task Number' },
+  { id: 'taskId', useClassShowOnDesktop: false, align: FlexAlign.flexStart, label: 'Task ID' },
+  { id: 'taskStatus', useClassShowOnDesktop: false, align: FlexAlign.center, label: 'Status' },
+  { id: 'taskEpochNumber', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'Epoch' },
+  { id: 'taskUserAddress', useClassShowOnDesktop: false, align: FlexAlign.flexStart, label: 'User' },
+  { id: 'taskScAddress', useClassShowOnDesktop: false, align: FlexAlign.flexStart, label: 'Secret Contract' },
+  { id: 'taskEngGasUsed', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'ENG Gas Used' },
+  { id: 'taskNumber', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'Task Number' },
 ]
 
 export const TASKS_INITIAL_VALUES = {
@@ -221,7 +221,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
               id: task.id,
               cells: [
                 {
-                  align: 'center',
+                  align: FlexAlign.flexStart,
                   id: `${task.id}_${task.id}_id_${index}`,
                   value: (
                     <LinkText underline={true} onClick={() => openModal(taskDetailedProps)}>
@@ -232,7 +232,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
                   ),
                 },
                 {
-                  align: 'center',
+                  align: FlexAlign.center,
                   id: `${task.id}_${taskStatus}_status_${index}`,
                   value: (
                     <Value underline={false} color={taskStatusColor}>
@@ -240,9 +240,9 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
                     </Value>
                   ),
                 },
-                { align: 'center', id: `${task.id}_${task.epoch.id}_epoch_${index}`, value: task.epoch.id },
+                { align: FlexAlign.flexEnd, id: `${task.id}_${task.epoch.id}_epoch_${index}`, value: task.epoch.id },
                 {
-                  align: 'center',
+                  align: FlexAlign.flexStart,
                   id: `${task.id}_${task.sender}_user_${index}`,
                   value: (
                     <LinkText underline={true} onClick={() => goToTaskByUser(task.sender)}>
@@ -251,7 +251,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
                   ),
                 },
                 {
-                  align: 'center',
+                  align: FlexAlign.flexStart,
                   id: `${task.id}_${task.secretContract && task.secretContract.address}_sc_${index}`,
                   value: task.secretContract && (
                     <LinkText underline={true} onClick={() => goToSecretContract(task.secretContract.address)}>
@@ -261,8 +261,8 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
                     </LinkText>
                   ),
                 },
-                { align: 'center', id: `${task.id}_${task.gasUsed}_gu_${index}`, value: task.gasUsed },
-                { align: 'center', id: `${task.id}_${task.order}_nr_${index}`, value: task.order },
+                { align: FlexAlign.flexEnd, id: `${task.id}_${task.gasUsed}_gu_${index}`, value: task.gasUsed },
+                { align: FlexAlign.flexEnd, id: `${task.id}_${task.order}_nr_${index}`, value: task.order },
               ],
             }
           })

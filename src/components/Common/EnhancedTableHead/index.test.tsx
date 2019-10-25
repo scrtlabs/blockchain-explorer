@@ -1,20 +1,20 @@
 import React from 'react'
 import { fireEvent, render } from '../../../utils/test-utils'
-import EnhancedTableHead, { HeaderCell, HeaderCellAlign } from './'
+import EnhancedTableHead, { HeaderCell, FlexAlign } from './'
 import Table from '@material-ui/core/Table'
 
 const HEADER_CELLS: HeaderCell[] = [
-  { id: '_id', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'Task ID' },
-  { id: 'secretContract', useClassShowOnDesktop: true, align: HeaderCellAlign.flexStart, label: 'Secret Contact Address' },
+  { id: '_id', useClassShowOnDesktop: false, align: FlexAlign.flexStart, label: 'Task ID' },
+  { id: 'secretContract', useClassShowOnDesktop: true, align: FlexAlign.flexStart, label: 'Secret Contact Address' },
   {
     id: 'workerAddress',
     useClassShowOnDesktop: true,
-    align: HeaderCellAlign.flexStart,
+    align: FlexAlign.flexStart,
     label: 'Worker Address (Ethereum)',
   },
-  { id: 'status', useClassShowOnDesktop: false, align: HeaderCellAlign.center, label: 'Status' },
-  { id: 'sentOn', useClassShowOnDesktop: true, align: HeaderCellAlign.center, label: 'Sent On' },
-  { id: 'completedOn', useClassShowOnDesktop: true, align: HeaderCellAlign.center, label: 'Completed On' },
+  { id: 'status', useClassShowOnDesktop: false, align: FlexAlign.center, label: 'Status' },
+  { id: 'sentOn', useClassShowOnDesktop: true, align: FlexAlign.center, label: 'Sent On' },
+  { id: 'completedOn', useClassShowOnDesktop: true, align: FlexAlign.center, label: 'Completed On' },
 ]
 
 it('renders EnhancedTableHead', () => {
