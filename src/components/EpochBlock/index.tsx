@@ -59,28 +59,6 @@ const TimeLeftStyled = styled(TimeLeft)`
   right: 3px;
 `
 
-const NoTasksSubmitted = styled.div`
-  align-items: center;
-  display: flex;
-  flex-shrink: 0;
-  font-size: 17px;
-  justify-content: center;
-  margin: 0 auto 20px;
-  min-width: 116px;
-  text-align: center;
-  > br {
-    display: none;
-  }
-
-  @media (min-width: ${props => props.theme.themeBreakPoints.xxl}) {
-    margin-bottom: 0;
-    margin-right: 15px;
-    > br {
-      display: block;
-    }
-  }
-`
-
 const ProgressCircleStyled = styled(ProgressCircle)`
   flex-shrink: 0;
   margin: 0 auto 20px;
