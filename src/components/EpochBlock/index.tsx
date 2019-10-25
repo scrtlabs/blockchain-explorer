@@ -152,6 +152,7 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
       <EpochDetailed
         modalIsOpen={modalIsOpen}
         closeModal={closeModal}
+        isCurrent={isCurrent}
         progress={progress}
         pendingTime={pendingTime}
         epoch={epoch}

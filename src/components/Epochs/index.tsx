@@ -178,15 +178,15 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
     const isCurrent: boolean = epoch.id === data.enigmaState.latestEpoch.id
     const { pendingTime = undefined } = isCurrent ? await estimateCurrentEpochEnd(data.epoches) : {}
 
-    setModalProps({ epoch: { ...epoch }, progress, pendingTime })
+    setModalProps({ epoch: { ...epoch }, isCurrent, progress, pendingTime })
     setModalIsOpen(true)
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
   const extractEpochData = (epoch, index) => {
-    const current = epoch.id === data.enigmaState.latestEpoch.id
-    const age = current ? 'current' : shortEngHumanizer(Date.now() - +epoch.endTime * 1000)
+    const isCurrent: boolean = epoch.id === data.enigmaState.latestEpoch.id
+    const age = isCurrent ? 'isCurrent' : shortEngHumanizer(Date.now() - +epoch.endTime * 1000)
 
     return {
       id: epoch.id,

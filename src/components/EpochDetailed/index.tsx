@@ -11,13 +11,14 @@ export type WorkerType = {
 export interface EpochDetailedProps {
   modalIsOpen: boolean
   closeModal: () => void
+  isCurrent?: boolean
   progress?: string
   pendingTime?: number
   epoch?: EpochProps
 }
 
 const EpochDetailed: React.FC<EpochDetailedProps> = props => {
-  const { modalIsOpen, closeModal, progress, pendingTime, epoch } = props
+  const { modalIsOpen, closeModal, isCurrent, progress, pendingTime, epoch } = props
 
   if (epoch === undefined) return null
 
@@ -30,7 +31,7 @@ const EpochDetailed: React.FC<EpochDetailedProps> = props => {
       <StrippedGrid>
         <StrippedGridRow columns={2}>
           <GridCell title="Started On" value={start} />
-          <GridCell title="Completed On" value={end} />
+          <GridCell title={isCurrent ? 'Estimated Completion Time' : 'Completed On'} value={end} />
         </StrippedGridRow>
         <StrippedGridRow columns={2}>
           <GridCell title="Tasks Submitted to Epoch" value={epoch.taskCount} underlineValue={true} />
