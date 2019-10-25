@@ -209,7 +209,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
         },
         { align: 'center', id: `${epoch.id}_${epoch.workerCount}_w_${index}`, value: epoch.workerCount },
         { align: 'center', id: `${epoch.id}_${epoch.gasUsed}_gu_${index}`, value: epoch.gasUsed },
-        { align: 'center', id: `${epoch.id}_${epoch.reward}_rw_${index}`, value: epoch.reward },
+        { align: 'center', id: `${epoch.id}_${epoch.reward}_rw_${index}`, value: '-' },
       ],
     }
   }

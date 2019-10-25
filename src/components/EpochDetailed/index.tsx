@@ -43,7 +43,7 @@ const EpochDetailed: React.FC<EpochDetailedProps> = props => {
         </StrippedGridRow>
         <StrippedGridRow columns={2}>
           <GridCell title="ENG Gas Used" value={epoch.gasUsed} />
-          <GridCell title="ENG Reward" value={epoch.reward} />
+          <GridCell title="ENG Reward" value={'-'} />
         </StrippedGridRow>
       </StrippedGrid>
     </ModalWrapper>
