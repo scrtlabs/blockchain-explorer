@@ -130,8 +130,8 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
       <EpochBlockStyled borderColor={borderColor} onClick={openModal} {...restProps}>
         <ProgressCircleStyled
           color={isCurrent ? runningColor : endedColor}
-          title={epoch.taskCount ? 'Completed Tasks' : 'No Tasks Submitted'}
-          progress={epoch.taskCount ? progress : null}
+          title={+epoch.taskCount ? 'Completed Tasks' : 'No Tasks Submitted'}
+          progress={+epoch.taskCount ? progress : null}
         />
         <Values>
           <TwoItemsGrid>
