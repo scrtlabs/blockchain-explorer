@@ -147,6 +147,9 @@ export const EPOCHS_INITIAL_VALUES = {
   orderDirection: Direction.descending,
 }
 
+const calculateProgress = (epoch: EpochProps) =>
+  +epoch.taskCount === 0 ? null : `${+(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100}`
+
 const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: EpochsProps) => {
   const query = workerId ? EPOCHS_BY_WORKER_QUERY : EPOCHS_QUERY
   const queryVariables = workerId ? { ...EPOCHS_INITIAL_VALUES, workerId } : EPOCHS_INITIAL_VALUES
@@ -180,9 +183,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
   const closeModal = () => setModalIsOpen(false)
 
   const openModal = async (epoch: EpochProps) => {
-    // TODO: replace '0' with '-' to identify a non-task epoch
-    const progress =
-      +epoch.taskCount === 0 ? '0' : `${+(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100}`
+    const progress = calculateProgress(epoch)
     const isCurrent: boolean = epoch.id === data.enigmaState.latestEpoch.id
     const currentEpochEstimates = estimateCurrentEpochEnd(data.epoches)
     const currentBlockNumber = await ethApi.getBlockNumber()
@@ -210,6 +211,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
   const extractEpochData = (epoch, index) => {
     const isCurrent: boolean = epoch.id === data.enigmaState.latestEpoch.id
     const age = isCurrent ? 'current' : shortEngHumanizer(Date.now() - +epoch.endTime * 1000)
+    const progress = calculateProgress(epoch)
 
     return {
       id: epoch.id,
@@ -228,7 +230,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
         {
           align: 'center',
           id: `${epoch.id}_${epoch.completedTaskCount + epoch.taskCount + epoch.failedTaskCount}_${index}`,
-          value: `${+epoch.taskCount !== 0 ? +(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100 : 0}%`,
+          value: progress === null ? '-' : `${progress}%`,
         },
         { align: 'center', id: `${epoch.id}_${epoch.workerCount}_w_${index}`, value: epoch.workerCount || '-' },
         { align: 'center', id: `${epoch.id}_${epoch.gasUsed}_gu_${index}`, value: epoch.gasUsed || '-' },

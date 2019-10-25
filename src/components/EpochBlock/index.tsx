@@ -59,6 +59,28 @@ const TimeLeftStyled = styled(TimeLeft)`
   right: 3px;
 `
 
+const NoTasksSubmitted = styled.div`
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  font-size: 17px;
+  justify-content: center;
+  margin: 0 auto 20px;
+  min-width: 116px;
+  text-align: center;
+  > br {
+    display: none;
+  }
+
+  @media (min-width: ${props => props.theme.themeBreakPoints.xxl}) {
+    margin-bottom: 0;
+    margin-right: 15px;
+    > br {
+      display: block;
+    }
+  }
+`
+
 const ProgressCircleStyled = styled(ProgressCircle)`
   flex-shrink: 0;
   margin: 0 auto 20px;
@@ -105,8 +127,7 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   const runningColor = 'rgba(231, 46, 157, 0.6)'
   const borderColor: string = isCurrent ? theme.colors.secondary : endedColor
 
-  // TODO: replace '0' with '-' to identify a non-task epoch
-  const progress = +epoch.taskCount === 0 ? '0' : `${+(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100}`
+  const progress = +epoch.taskCount === 0 ? null : `${+(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100}`
 
   const time = shortEngHumanizer(pendingTime !== undefined ? +pendingTime : Date.now() - +epoch.endTime * 1000)
   console.log(time, pendingTime, epoch.endTime)
@@ -132,8 +153,8 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
       <EpochBlockStyled borderColor={borderColor} onClick={openModal} {...restProps}>
         <ProgressCircleStyled
           color={isCurrent ? runningColor : endedColor}
-          title="Completed Tasks"
-          progress={progress}
+          title={epoch.taskCount ? 'Completed Tasks' : 'No Tasks Submitted'}
+          progress={epoch.taskCount ? progress : null}
         />
         <Values>
           <TwoItemsGrid>

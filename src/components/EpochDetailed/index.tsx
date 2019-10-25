@@ -12,7 +12,7 @@ export interface EpochDetailedProps {
   modalIsOpen: boolean
   closeModal: () => void
   isCurrent?: boolean
-  progress?: string
+  progress?: string | null
   pendingTime?: number
   blocks?: EpochBlocksInfoProps[]
   epoch?: EpochProps
@@ -36,7 +36,7 @@ const EpochDetailed: React.FC<EpochDetailedProps> = props => {
         </StrippedGridRow>
         <StrippedGridRow columns={2}>
           <GridCell title="Tasks Submitted to Epoch" value={epoch.taskCount} underlineValue={true} />
-          <GridCell title="Completed Tasks" value={`${progress}%`} />
+          <GridCell title="Completed Tasks" value={progress === null ? '-' : `${progress}%`} />
         </StrippedGridRow>
         <StrippedGridRow columns={2}>
           <GridCell title="Registered Workers" value={epoch.workerCount || '-'} />
