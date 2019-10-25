@@ -130,7 +130,6 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   const progress = +epoch.taskCount === 0 ? null : `${+(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100}`
 
   const time = shortEngHumanizer(pendingTime !== undefined ? +pendingTime : Date.now() - +epoch.endTime * 1000)
-  console.log(time, pendingTime, epoch.endTime)
 
   const blocks: EpochBlocksInfoProps[] = [
     { value: epoch.startBlockNumber, title: 'First Block', type: EpochBlockTypes.first },

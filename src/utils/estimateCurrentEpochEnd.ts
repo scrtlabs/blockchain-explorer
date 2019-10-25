@@ -64,8 +64,6 @@ const estimateCurrentEpochEnd = async (epochs?: EpochProps[], average = false): 
     }, [])
     .reverse()
 
-  console.log(blocksRange)
-
   try {
     const [currentBlock, epochsRangesTimestamps] = await Promise.all([
       ethApi.getBlockNumber(),
