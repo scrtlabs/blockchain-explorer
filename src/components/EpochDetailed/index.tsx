@@ -38,8 +38,8 @@ const EpochDetailed: React.FC<EpochDetailedProps> = props => {
           <GridCell title="Completed Tasks" value={`${progress}%`} />
         </StrippedGridRow>
         <StrippedGridRow columns={2}>
-          <GridCell title="Registered Workers" value={epoch.workerCount} />
-          <GridCell title="Unique Users" value={epoch.userCount} />
+          <GridCell title="Registered Workers" value={epoch.workerCount || '-'} />
+          <GridCell title="Unique Users" value={epoch.userCount || '-'} />
         </StrippedGridRow>
         <StrippedGridRow columns={2}>
           <GridCell title="ENG Gas Used" value={epoch.gasUsed} />

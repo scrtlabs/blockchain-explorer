@@ -207,8 +207,8 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
           id: `${epoch.id}_${epoch.completedTaskCount + epoch.taskCount + epoch.failedTaskCount}_${index}`,
           value: `${+epoch.taskCount !== 0 ? +(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100 : 0}%`,
         },
-        { align: 'center', id: `${epoch.id}_${epoch.workerCount}_w_${index}`, value: epoch.workerCount },
-        { align: 'center', id: `${epoch.id}_${epoch.gasUsed}_gu_${index}`, value: epoch.gasUsed },
+        { align: 'center', id: `${epoch.id}_${epoch.workerCount}_w_${index}`, value: epoch.workerCount || '-' },
+        { align: 'center', id: `${epoch.id}_${epoch.gasUsed}_gu_${index}`, value: epoch.gasUsed || '-' },
         { align: 'center', id: `${epoch.id}_${epoch.reward}_rw_${index}`, value: '-' },
       ],
     }
