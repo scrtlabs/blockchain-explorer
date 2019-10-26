@@ -124,22 +124,22 @@ const HEADER_CELLS = [
   { id: 'taskId', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexStart, label: 'Task ID' },
   { id: 'taskStatus', useClassShowOnDesktop: false, sortable: false, align: FlexAlign.center, label: 'Status' },
   { id: 'taskEpochNumber', useClassShowOnDesktop: false, sortable: false, align: FlexAlign.flexEnd, label: 'Epoch' },
-  { id: 'taskUserAddress', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexStart, label: 'User' },
+  { id: 'taskUserAddress', useClassShowOnDesktop: true, sortable: true, align: FlexAlign.flexStart, label: 'User' },
   {
     id: 'taskScAddress',
-    useClassShowOnDesktop: false,
+    useClassShowOnDesktop: true,
     sortable: false,
     align: FlexAlign.flexStart,
     label: 'Secret Contract',
   },
   {
     id: 'taskEngGasUsed',
-    useClassShowOnDesktop: false,
+    useClassShowOnDesktop: true,
     sortable: true,
     align: FlexAlign.flexEnd,
     label: 'ENG Gas Used',
   },
-  { id: 'taskNumber', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexEnd, label: 'Task Number' },
+  { id: 'taskNumber', useClassShowOnDesktop: true, sortable: true, align: FlexAlign.flexEnd, label: 'Task Number' },
 ]
 
 export const TASKS_INITIAL_VALUES = {
@@ -233,6 +233,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
               cells: [
                 {
                   align: FlexAlign.flexStart,
+                  useClassShowOnDesktop: false,
                   id: `${task.id}_${task.id}_id_${index}`,
                   value: (
                     <LinkText underline={true} onClick={() => openModal(taskDetailedProps)}>
@@ -244,6 +245,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
                 },
                 {
                   align: FlexAlign.center,
+                  useClassShowOnDesktop: false,
                   id: `${task.id}_${taskStatus}_status_${index}`,
                   value: (
                     <Value underline={false} color={taskStatusColor}>
@@ -251,9 +253,15 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
                     </Value>
                   ),
                 },
-                { align: FlexAlign.flexEnd, id: `${task.id}_${task.epoch.id}_epoch_${index}`, value: task.epoch.id },
+                {
+                  align: FlexAlign.flexEnd,
+                  useClassShowOnDesktop: false,
+                  id: `${task.id}_${task.epoch.id}_epoch_${index}`,
+                  value: task.epoch.id,
+                },
                 {
                   align: FlexAlign.flexStart,
+                  useClassShowOnDesktop: true,
                   id: `${task.id}_${task.sender}_user_${index}`,
                   value: (
                     <LinkText underline={true} onClick={() => goToTaskByUser(task.sender)}>
@@ -263,6 +271,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
                 },
                 {
                   align: FlexAlign.flexStart,
+                  useClassShowOnDesktop: true,
                   id: `${task.id}_${task.secretContract && task.secretContract.address}_sc_${index}`,
                   value: task.secretContract && (
                     <LinkText underline={true} onClick={() => goToSecretContract(task.secretContract.address)}>
@@ -272,8 +281,18 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
                     </LinkText>
                   ),
                 },
-                { align: FlexAlign.flexEnd, id: `${task.id}_${task.gasUsed}_gu_${index}`, value: task.gasUsed },
-                { align: FlexAlign.flexEnd, id: `${task.id}_${task.order}_nr_${index}`, value: task.order },
+                {
+                  align: FlexAlign.flexEnd,
+                  useClassShowOnDesktop: true,
+                  id: `${task.id}_${task.gasUsed}_gu_${index}`,
+                  value: task.gasUsed,
+                },
+                {
+                  align: FlexAlign.flexEnd,
+                  useClassShowOnDesktop: true,
+                  id: `${task.id}_${task.order}_nr_${index}`,
+                  value: task.order,
+                },
               ],
             }
           })

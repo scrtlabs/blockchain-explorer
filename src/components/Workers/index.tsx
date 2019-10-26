@@ -60,14 +60,14 @@ const HEADER_CELLS = [
   },
   {
     id: 'workerActiveVsTotal',
-    useClassShowOnDesktop: false,
+    useClassShowOnDesktop: true,
     sortable: false,
     align: FlexAlign.center,
     label: 'Epochs Active / Total Epochs',
   },
   {
     id: 'workerCompletedTasks',
-    useClassShowOnDesktop: false,
+    useClassShowOnDesktop: true,
     sortable: false,
     align: FlexAlign.flexEnd,
     label: '% Of Completed Tasks',
@@ -146,6 +146,7 @@ const Workers: React.FC<WorkersProps> = ({ history }) => {
               cells: [
                 {
                   align: FlexAlign.flexStart,
+                  useClassShowOnDesktop: false,
                   id: `${worker.id}_${worker.id}`,
                   value: (
                     <Value underline={true} onClick={() => goToWorker(worker.id)}>
@@ -155,18 +156,30 @@ const Workers: React.FC<WorkersProps> = ({ history }) => {
                     </Value>
                   ),
                 },
-                { align: FlexAlign.flexEnd, id: `${worker.id}_${worker.balance}`, value: worker.balance },
+                {
+                  align: FlexAlign.flexEnd,
+                  useClassShowOnDesktop: false,
+                  id: `${worker.id}_${worker.balance}`,
+                  value: worker.balance,
+                },
                 {
                   align: FlexAlign.center,
+                  useClassShowOnDesktop: true,
                   id: `${worker.id}_${worker.epochCount}_${totalEpochs}`,
                   value: `${worker.epochCount} of ${totalEpochs}`,
                 },
                 {
                   align: FlexAlign.flexEnd,
+                  useClassShowOnDesktop: true,
                   id: `${worker.id}_${worker.completedTaskCount + worker.failedTaskCount}_t_${index}`,
                   value: `${totalTasks ? +(+worker.completedTaskCount / totalTasks).toFixed(2) * 100 : 0}%`,
                 },
-                { align: FlexAlign.flexEnd, id: `${worker.id}_${worker.reward}`, value: worker.reward || '-' },
+                {
+                  align: FlexAlign.flexEnd,
+                  useClassShowOnDesktop: false,
+                  id: `${worker.id}_${worker.reward}`,
+                  value: worker.reward || '-',
+                },
               ],
             }
           })

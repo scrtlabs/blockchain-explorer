@@ -132,21 +132,21 @@ const HEADER_CELLS = [
   },
   {
     id: 'epochCompleteTasks',
-    useClassShowOnDesktop: false,
+    useClassShowOnDesktop: true,
     sortable: false,
     align: FlexAlign.flexEnd,
     label: '% Of Completed Tasks',
   },
   {
     id: 'epochWorkers',
-    useClassShowOnDesktop: false,
+    useClassShowOnDesktop: true,
     sortable: true,
     align: FlexAlign.flexEnd,
     label: 'Number Of Selected Workers',
   },
   {
     id: 'epochEngGasUsed',
-    useClassShowOnDesktop: false,
+    useClassShowOnDesktop: true,
     sortable: true,
     align: FlexAlign.flexEnd,
     label: 'ENG Gas Used',
@@ -232,6 +232,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
       cells: [
         {
           align: FlexAlign.flexEnd,
+          useClassShowOnDesktop: false,
           id: `${epoch.id}_${epoch.id}`,
           value: (
             <LinkText underline={true} onClick={() => openModal(epoch)}>
@@ -239,20 +240,37 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
             </LinkText>
           ),
         },
-        { align: FlexAlign.flexEnd, id: `${epoch.id}_${age}_age`, value: age },
-        { align: FlexAlign.flexEnd, id: `${epoch.id}_${epoch.taskCount}_tasks_${index}`, value: epoch.taskCount },
+        { align: FlexAlign.flexEnd, useClassShowOnDesktop: false, id: `${epoch.id}_${age}_age`, value: age },
         {
           align: FlexAlign.flexEnd,
+          useClassShowOnDesktop: false,
+          id: `${epoch.id}_${epoch.taskCount}_tasks_${index}`,
+          value: epoch.taskCount,
+        },
+        {
+          align: FlexAlign.flexEnd,
+          useClassShowOnDesktop: true,
           id: `${epoch.id}_${epoch.completedTaskCount + epoch.taskCount + epoch.failedTaskCount}_${index}`,
           value: progress === null ? '-' : `${progress}%`,
         },
         {
           align: FlexAlign.flexEnd,
+          useClassShowOnDesktop: true,
           id: `${epoch.id}_${epoch.workerCount}_w_${index}`,
           value: epoch.workerCount || '-',
         },
-        { align: FlexAlign.flexEnd, id: `${epoch.id}_${epoch.gasUsed}_gu_${index}`, value: epoch.gasUsed || '-' },
-        { align: FlexAlign.flexEnd, id: `${epoch.id}_${epoch.reward}_rw_${index}`, value: '-' },
+        {
+          align: FlexAlign.flexEnd,
+          useClassShowOnDesktop: true,
+          id: `${epoch.id}_${epoch.gasUsed}_gu_${index}`,
+          value: epoch.gasUsed || '-',
+        },
+        {
+          align: FlexAlign.flexEnd,
+          useClassShowOnDesktop: false,
+          id: `${epoch.id}_${epoch.reward}_rw_${index}`,
+          value: '-',
+        },
       ],
     }
   }
