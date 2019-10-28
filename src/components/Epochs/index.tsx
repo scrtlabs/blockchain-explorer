@@ -2,7 +2,7 @@ import React from 'react'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
 import BaseTable from '../Common/BaseTable'
-import { HeaderCellAlign } from '../Common/EnhancedTableHead'
+import { FlexAlign } from '../Common/EnhancedTableHead'
 import SectionTitle from '../Common/SectionTitle'
 import FullLoading from '../Common/FullLoading'
 import { shortEngHumanizer } from '../../utils/humanizer'
@@ -121,23 +121,23 @@ const EPOCHS_BY_WORKER_QUERY = gql`
 `
 
 const HEADER_CELLS = [
-  { id: 'epochId', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'Number' },
-  { id: 'epochAge', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'Age' },
-  { id: 'epochTotalTasks', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'Number Of Tasks' },
+  { id: 'epochId', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'Number' },
+  { id: 'epochAge', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'Age' },
+  { id: 'epochTotalTasks', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'Number Of Tasks' },
   {
     id: 'epochCompleteTasks',
     useClassShowOnDesktop: false,
-    align: HeaderCellAlign.flexStart,
+    align: FlexAlign.flexEnd,
     label: '% Of Completed Tasks',
   },
   {
     id: 'epochWorkers',
     useClassShowOnDesktop: false,
-    align: HeaderCellAlign.flexStart,
+    align: FlexAlign.flexEnd,
     label: 'Number Of Selected Workers',
   },
-  { id: 'epochEngGasUsed', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'ENG Gas Used' },
-  { id: 'epochEngReward', useClassShowOnDesktop: false, align: HeaderCellAlign.flexStart, label: 'ENG Reward' },
+  { id: 'epochEngGasUsed', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'ENG Gas Used' },
+  { id: 'epochEngReward', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'ENG Reward' },
 ]
 
 export const EPOCHS_INITIAL_VALUES = {
@@ -217,7 +217,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
       id: epoch.id,
       cells: [
         {
-          align: 'center',
+          align: FlexAlign.flexEnd,
           id: `${epoch.id}_${epoch.id}`,
           value: (
             <LinkText underline={true} onClick={() => openModal(epoch)}>
@@ -225,16 +225,20 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
             </LinkText>
           ),
         },
-        { align: 'center', id: `${epoch.id}_${age}_age`, value: age },
-        { align: 'center', id: `${epoch.id}_${epoch.taskCount}_tasks_${index}`, value: epoch.taskCount },
+        { align: FlexAlign.flexEnd, id: `${epoch.id}_${age}_age`, value: age },
+        { align: FlexAlign.flexEnd, id: `${epoch.id}_${epoch.taskCount}_tasks_${index}`, value: epoch.taskCount },
         {
-          align: 'center',
+          align: FlexAlign.flexEnd,
           id: `${epoch.id}_${epoch.completedTaskCount + epoch.taskCount + epoch.failedTaskCount}_${index}`,
           value: progress === null ? '-' : `${progress}%`,
         },
-        { align: 'center', id: `${epoch.id}_${epoch.workerCount}_w_${index}`, value: epoch.workerCount || '-' },
-        { align: 'center', id: `${epoch.id}_${epoch.gasUsed}_gu_${index}`, value: epoch.gasUsed || '-' },
-        { align: 'center', id: `${epoch.id}_${epoch.reward}_rw_${index}`, value: '-' },
+        {
+          align: FlexAlign.flexEnd,
+          id: `${epoch.id}_${epoch.workerCount}_w_${index}`,
+          value: epoch.workerCount || '-',
+        },
+        { align: FlexAlign.flexEnd, id: `${epoch.id}_${epoch.gasUsed}_gu_${index}`, value: epoch.gasUsed || '-' },
+        { align: FlexAlign.flexEnd, id: `${epoch.id}_${epoch.reward}_rw_${index}`, value: '-' },
       ],
     }
   }

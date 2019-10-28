@@ -5,7 +5,7 @@ import TableCell from '@material-ui/core/TableCell'
 import TableSortLabel from '@material-ui/core/TableSortLabel'
 import styled from 'styled-components'
 
-export enum HeaderCellAlign {
+export enum FlexAlign {
   'flexStart' = 'flex-start',
   'flexEnd' = 'flex-end',
   'center' = 'center',
@@ -14,7 +14,7 @@ export enum HeaderCellAlign {
 export type HeaderCell = {
   id: string
   useClassShowOnDesktop: boolean
-  align: HeaderCellAlign
+  align: FlexAlign
   label: string
 }
 
