@@ -207,7 +207,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
     const taskStatusColor = theme.taskStatus[taskStatus.toLowerCase() as keyof typeof theme.taskStatus]
     const taskDetailedProps: TaskDetailedProps = { ...task, taskStatus, taskStatusColor }
 
-    setModalProps({ ...taskDetailedProps })
+    setModalProps({ ...taskDetailedProps, history })
     setModalIsOpen(true)
   }
 
@@ -217,6 +217,10 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
 
   const goToSecretContractDetails = (scAddress: string) => {
     history.push(`/contract/${scAddress}`)
+  }
+
+  const goToEpochDetailed = (epochId: string) => {
+    history.push(`/epochs/${epochId}`)
   }
 
   return (
@@ -276,7 +280,11 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
                   align: FlexAlign.flexEnd,
                   useClassShowOnDesktop: false,
                   id: `${task.id}_${task.epoch.id}_epoch_${index}`,
-                  value: task.epoch.id,
+                  value: (
+                    <LinkText underline={true} onClick={() => goToEpochDetailed(task.epoch.id)}>
+                      {task.epoch.id}
+                    </LinkText>
+                  ),
                 },
                 {
                   align: FlexAlign.flexStart,
