@@ -3,25 +3,7 @@ import SectionTitle from '../Common/SectionTitle'
 import TaskBlock from '../TaskBlock'
 import { useQuery } from '@apollo/react-hooks'
 import { shortEngHumanizer } from '../../utils/humanizer'
-import { TASKS_INITIAL_VALUES, TASKS_QUERY, TASKS_SUBSCRIBE } from '../Tasks'
-
-export interface TaskBasicData {
-  id: string
-  status: string
-  sender: string
-  createdAt: string
-  modifiedAt: string | null
-  createdAtTransaction: string
-  order: string
-  gasUsed: string
-  gasLimit: string
-  gasPrice: string
-  secretContract: {
-    address: string
-  } | null
-  optionalEthereumContractAddress: string | null
-  time: string
-}
+import { TaskBasicData, TASKS_INITIAL_VALUES, TASKS_QUERY, TASKS_SUBSCRIBE } from '../Tasks'
 
 const TasksHome = (props: any) => {
   const { subscribeToMore, data, error, loading } = useQuery(TASKS_QUERY, {

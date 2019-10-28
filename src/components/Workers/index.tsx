@@ -118,7 +118,7 @@ const Workers: React.FC<WorkersProps> = ({ history }) => {
     refetch({ ...variables, total: +event.target.value, skip: INITIAL_VALUES.skip })
   }
 
-  const goToWorker = (workerId: string) => {
+  const goToWorkerDetails = (workerId: string) => {
     history.push(`/worker/${workerId}`)
   }
 
@@ -149,7 +149,7 @@ const Workers: React.FC<WorkersProps> = ({ history }) => {
                   useClassShowOnDesktop: false,
                   id: `${worker.id}_${worker.id}`,
                   value: (
-                    <Value underline={true} onClick={() => goToWorker(worker.id)}>
+                    <Value underline={true} onClick={() => goToWorkerDetails(worker.id)}>
                       <HexAddr start={8} end={8}>
                         {worker.id}
                       </HexAddr>
