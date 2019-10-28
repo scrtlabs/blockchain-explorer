@@ -5,7 +5,7 @@ import TableCell from '@material-ui/core/TableCell'
 import TableRow from '@material-ui/core/TableRow'
 import { TablePaginationProps } from '@material-ui/core/TablePagination'
 import styled from 'styled-components'
-import EnhancedTableHead, { EnhancedTableHeadProps } from '../EnhancedTableHead'
+import EnhancedTableHead, { EnhancedTableHeadProps, FlexAlign } from '../EnhancedTableHead'
 import Paginator from '../Paginator'
 import Card from '../Card'
 import TableOverflow from '../TableOverflow'
@@ -21,7 +21,8 @@ export enum CellStatuses {
 
 type CellProps = {
   id: string
-  align: 'left' | 'right' | 'center'
+  align: FlexAlign
+  useClassShowOnDesktop?: boolean
   value: React.ReactNode | string
   status?: CellStatuses
   colSpan?: number
@@ -80,7 +81,12 @@ const BaseTable = ({ headerProps, rows = [], paginatorProps }: BaseTableProps) =
             <TableRow key={row.id} style={row.style} onClick={() => row.onClick && row.onClick()}>
               {row.cells.map(cell => (
                 <TableCell
-                  style={{ paddingRight: '16px', ...cell.style }}
+                  className={cell.useClassShowOnDesktop ? 'showOnDesktop' : ''}
+                  style={{
+                    paddingRight: '16px',
+                    ...cell.style,
+                    display: cell.useClassShowOnDesktop ? 'none' : 'table-cell',
+                  }}
                   key={cell.id}
                   colSpan={cell.colSpan}
                   onClick={() => cell.onClick && cell.onClick()}
