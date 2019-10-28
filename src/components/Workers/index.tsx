@@ -180,7 +180,7 @@ const Workers: React.FC<WorkersProps> = ({ history }) => {
           rowsPerPage: total,
         }}
       />
-      {loading && <FullLoading />}
+      {loading && !data && <FullLoading />}
     </>
   )
 }
