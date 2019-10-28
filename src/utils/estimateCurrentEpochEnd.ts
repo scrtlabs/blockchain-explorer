@@ -1,6 +1,7 @@
 import ethApi from './eth'
+import { EpochProps } from '../components/Epochs'
 
-const calculateRangesDurations = range => {
+const calculateRangesDurations = (range: number[]) => {
   const acc = []
 
   for (let i = 0; i < range.length; i += 2) {
@@ -11,7 +12,7 @@ const calculateRangesDurations = range => {
   return acc
 }
 
-const distanceMedian = range => {
+const distanceMedian = (range: number[]) => {
   const durations = calculateRangesDurations(range)
   const length = durations.length
 
@@ -24,7 +25,7 @@ const distanceMedian = range => {
   return length % 2 ? durations[half] : Math.floor((durations[half - 1] + durations[half]) / 2)
 }
 
-const distanceAverage = range => {
+const distanceAverage = (range: number[]) => {
   const durations = calculateRangesDurations(range)
   const length = durations.length
 
@@ -34,23 +35,31 @@ const distanceAverage = range => {
   return Math.floor(sum / length)
 }
 
-const estimateCurrentEpochEnd = async (epochs = [], average = false) => {
+export interface EstimatesCurrentEpochEnd {
+  pendingTime: number
+  finishBlockNumber: number
+}
+
+const estimateCurrentEpochEnd = async (epochs?: EpochProps[], average = false): Promise<EstimatesCurrentEpochEnd> => {
   let pendingTime = 0 // estimated life time for the current epoch
-  let finishBlock = 0 // estimated block for when the current epoch may end
+  let finishBlockNumber = 0 // estimated block for when the current epoch may end
+
+  if (!epochs) return { pendingTime, finishBlockNumber }
+
   const sortedEpochs = epochs.sort((a, b) => +b.id - +a.id)
   const currentEpoch = sortedEpochs.slice(0, 1)[0] // currently active epoch
 
-  // builds an array of the form [10, 1, 21, 11, 22, 40]
+  // builds an array of the form [10, 1, 21, 11, 40, 22]
   // where 10 is the last block of the first epoch in the collection
   // and 1 is the first block of the first epoch in the collection
   // 21 is the last block of the second epoch and 11 is it's first block and so on
   const blocksRange = sortedEpochs
-    .reduce((acc, epoch, index) => {
-      const current = index === 0
-      if (!current) {
-        acc.push(+epoch.startBlockNumber) // start block number for current epoch
-        acc.push(+sortedEpochs[index - 1].startBlockNumber - 1) // finish block number for current epoch
+    .reduce((acc: number[], epoch, index) => {
+      if (index !== 0) {
+        acc.push(+epoch.startBlockNumber)
+        acc.push(+epoch.endBlockNumber)
       }
+
       return acc
     }, [])
     .reverse()
@@ -60,20 +69,17 @@ const estimateCurrentEpochEnd = async (epochs = [], average = false) => {
       ethApi.getBlockNumber(),
       ethApi.getBatchBlocksTimestamps(blocksRange),
     ])
-
     const epochBlockCount = average ? distanceAverage(blocksRange) : distanceMedian(blocksRange)
     const epochDuration = average ? distanceAverage(epochsRangesTimestamps) : distanceMedian(epochsRangesTimestamps)
-
-    finishBlock = +currentEpoch.startBlockNumber + epochBlockCount
-    const currentBlocksLeft = finishBlock - +currentBlock
+    finishBlockNumber = +currentEpoch.startBlockNumber + epochBlockCount
+    const currentBlocksLeft = finishBlockNumber - +currentBlock
     const currentBlocksTimes = epochDuration / epochBlockCount
-
     pendingTime = Math.floor(currentBlocksLeft * currentBlocksTimes) * 1000 // milliseconds
   } catch (e) {
     console.error('Failed to retrieve blocks tiemstamps', e)
   }
 
-  return { pendingTime, finishBlock }
+  return { pendingTime, finishBlockNumber }
 }
 
 export default estimateCurrentEpochEnd

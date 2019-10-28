@@ -31,14 +31,14 @@ const EpochHomeBlocks = () => {
 
   const calculateEpochsValues = async (epochsHistory: Array<any>, epoch: any) => {
     const isCurrent: boolean = epoch.id === data.enigmaState.latestEpoch.id
-    const calculatedValues: { finishBlockNumber: number; pendingTime: number } = {
-      finishBlockNumber: 0,
-      pendingTime: 0,
+    const calculatedValues: { finishBlockNumber?: number; pendingTime?: number } = {
+      finishBlockNumber: undefined,
+      pendingTime: undefined,
     }
 
     if (isCurrent) {
-      const { finishBlock, pendingTime } = await estimateCurrentEpochEnd(epochsHistory)
-      calculatedValues.finishBlockNumber = finishBlock
+      const { finishBlockNumber, pendingTime } = await estimateCurrentEpochEnd(epochsHistory)
+      calculatedValues.finishBlockNumber = finishBlockNumber
       calculatedValues.pendingTime = pendingTime
     }
 

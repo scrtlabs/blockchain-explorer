@@ -43,6 +43,11 @@ const Title = styled.p`
   text-transform: uppercase;
 `
 
+const BigTitle = styled(Title)`
+  font-size: 12px;
+  text-align: center;
+`
+
 const ProgressBar = styled.svg<CircleProps>`
   height: ${props => props.height}px;
   left: 0;
@@ -62,7 +67,7 @@ export interface ProgressCircleProps extends HTMLAttributes<HTMLDivElement> {
   borderWidth?: string
   color?: string
   dimensions?: string
-  progress: string
+  progress: string | null
   theme: any
   title: string
 }
@@ -74,8 +79,13 @@ interface CircleProps {
 
 const ProgressCircleWrapper: React.FC<ProgressCircleProps> = (props: ProgressCircleProps) => {
   const { borderWidth = '16', color, dimensions = '116', progress, title, theme, ...restProps } = props
+  let progressValue = '0'
 
-  const currentProgress: string = (+progress < 0 ? 0 : +progress > 100 ? 100 : progress).toString()
+  if (progress !== null) {
+    progressValue = progress
+  }
+
+  const currentProgress: string = (+progressValue < 0 ? 0 : +progressValue > 100 ? 100 : progressValue).toString()
   const innerCircleDimensions: string = (+dimensions - +borderWidth).toString()
   const svgCXY: string = (+dimensions / 2).toString()
   const svgCircleRadius: string = (+innerCircleDimensions / 2).toString()
@@ -86,8 +96,14 @@ const ProgressCircleWrapper: React.FC<ProgressCircleProps> = (props: ProgressCir
   return (
     <ProgressCircleStyled width={dimensions} height={dimensions} {...restProps}>
       <InnerCircle width={innerCircleDimensions} height={innerCircleDimensions}>
-        <ProgressValue>{currentProgress}%</ProgressValue>
-        <Title>{title}</Title>
+        {progress !== null ? (
+          <>
+            <ProgressValue>{currentProgress}%</ProgressValue>
+            <Title>{title}</Title>
+          </>
+        ) : (
+          <BigTitle>{title}</BigTitle>
+        )}
       </InnerCircle>
       <ProgressBar width={dimensions} height={dimensions}>
         <ProgressBarColor

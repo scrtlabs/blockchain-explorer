@@ -7,7 +7,7 @@ import ProgressCircle from '../ProgressCircle'
 import EpochBlockNumbers, { EpochBlockTypes } from '../EpochBlockNumbers'
 import EpochDetailed from '../EpochDetailed'
 import { shortEngHumanizer } from '../../utils/humanizer'
-import { EpochProps } from 'components/Epochs'
+import { EpochBlocksInfoProps, EpochProps } from 'components/Epochs'
 
 export interface EpochBlockProps extends HTMLAttributes<HTMLDivElement> {
   isCurrent: boolean
@@ -98,12 +98,6 @@ const TwoItemsGrid = styled.div`
   }
 `
 
-interface EpochBlocksInfoProps {
-  value: string | number
-  title: string
-  type: EpochBlockTypes
-}
-
 const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   const { isCurrent, currentBlockNumber, finishBlockNumber, pendingTime, epoch, theme, ...restProps } = props
 
@@ -111,8 +105,7 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   const runningColor = 'rgba(231, 46, 157, 0.6)'
   const borderColor: string = isCurrent ? theme.colors.secondary : endedColor
 
-  // TODO: replace '0' with '-' to identify a non-task epoch
-  const progress = +epoch.taskCount === 0 ? '0' : `${+(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100}`
+  const progress = +epoch.taskCount === 0 ? null : `${+(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100}`
 
   const time = shortEngHumanizer(pendingTime !== undefined ? +pendingTime : Date.now() - +epoch.endTime * 1000)
 
@@ -137,8 +130,8 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
       <EpochBlockStyled borderColor={borderColor} onClick={openModal} {...restProps}>
         <ProgressCircleStyled
           color={isCurrent ? runningColor : endedColor}
-          title="Completed Tasks"
-          progress={progress}
+          title={+epoch.taskCount ? 'Completed Tasks' : 'No Tasks Submitted'}
+          progress={+epoch.taskCount ? progress : null}
         />
         <Values>
           <TwoItemsGrid>
@@ -152,8 +145,10 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
       <EpochDetailed
         modalIsOpen={modalIsOpen}
         closeModal={closeModal}
+        isCurrent={isCurrent}
         progress={progress}
         pendingTime={pendingTime}
+        blocks={blocks}
         epoch={epoch}
       />
     </>
