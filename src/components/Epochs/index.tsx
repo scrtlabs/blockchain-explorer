@@ -304,7 +304,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
         }}
       />
       <EpochDetailed {...modalProps} modalIsOpen={modalIsOpen} closeModal={closeModal} />
-      {loading && <FullLoading />}
+      {loading && !data && <FullLoading />}
     </>
   )
 }
