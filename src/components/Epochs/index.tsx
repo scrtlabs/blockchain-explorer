@@ -21,7 +21,7 @@ enum FieldToGraph {
   'epochId' = 'order',
   'epochAge' = 'age',
   'epochTotalTasks' = 'taskCount',
-  'epochCompleteTask' = 'completedTaskCount',
+  'epochCompleteTasks' = 'completedTaskCount',
   'epochWorkers' = 'workerCount',
   'epochEngGasUsed' = 'gasUsed',
   'epochEngReward' = 'reward',
@@ -31,7 +31,7 @@ enum GraphToField {
   'order' = 'epochId',
   'age' = 'epochAge',
   'taskCount' = 'epochTotalTasks',
-  'completedTaskCount' = 'epochCompleteTask',
+  'completedTaskCount' = 'epochCompleteTasks',
   'workerCount' = 'epochWorkers',
   'gasUsed' = 'epochEngGasUsed',
   'reward' = 'epochEngReward',
@@ -121,23 +121,37 @@ const EPOCHS_BY_WORKER_QUERY = gql`
 `
 
 const HEADER_CELLS = [
-  { id: 'epochId', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'Number' },
-  { id: 'epochAge', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'Age' },
-  { id: 'epochTotalTasks', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'Number Of Tasks' },
+  { id: 'epochId', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexEnd, label: 'Number' },
+  { id: 'epochAge', useClassShowOnDesktop: false, sortable: false, align: FlexAlign.center, label: 'Age' },
+  {
+    id: 'epochTotalTasks',
+    useClassShowOnDesktop: false,
+    sortable: true,
+    align: FlexAlign.flexEnd,
+    label: 'Number Of Tasks',
+  },
   {
     id: 'epochCompleteTasks',
     useClassShowOnDesktop: false,
+    sortable: false,
     align: FlexAlign.flexEnd,
     label: '% Of Completed Tasks',
   },
   {
     id: 'epochWorkers',
     useClassShowOnDesktop: false,
+    sortable: true,
     align: FlexAlign.flexEnd,
     label: 'Number Of Selected Workers',
   },
-  { id: 'epochEngGasUsed', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'ENG Gas Used' },
-  { id: 'epochEngReward', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'ENG Reward' },
+  {
+    id: 'epochEngGasUsed',
+    useClassShowOnDesktop: false,
+    sortable: true,
+    align: FlexAlign.flexEnd,
+    label: 'ENG Gas Used',
+  },
+  { id: 'epochEngReward', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexEnd, label: 'ENG Reward' },
 ]
 
 export const EPOCHS_INITIAL_VALUES = {
@@ -272,7 +286,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
         }}
       />
       <EpochDetailed {...modalProps} modalIsOpen={modalIsOpen} closeModal={closeModal} />
-      {loading && <FullLoading />}
+      {loading && !data && <FullLoading />}
     </>
   )
 }

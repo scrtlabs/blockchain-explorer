@@ -8,12 +8,12 @@ import Footer from '../Common/Footer'
 import Home from '../Home'
 import Tasks from '../Tasks'
 import theme from '../../theme'
-import '../../assets/styles/index.css'
 import Workers from '../Workers'
 import Worker from '../Worker'
 import Contract from '../Contract'
 import NotFound from '../NotFound'
 import Epochs from '../Epochs'
+import '../../assets/styles/index.css'
 
 const NonExistent = () => <NotFound message="404 Not Found" />
 

@@ -121,13 +121,25 @@ const TASKS_BY_USER_ADDRESS_QUERY = gql`
 `
 
 const HEADER_CELLS = [
-  { id: 'taskId', useClassShowOnDesktop: false, align: FlexAlign.flexStart, label: 'Task ID' },
-  { id: 'taskStatus', useClassShowOnDesktop: false, align: FlexAlign.center, label: 'Status' },
-  { id: 'taskEpochNumber', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'Epoch' },
-  { id: 'taskUserAddress', useClassShowOnDesktop: false, align: FlexAlign.flexStart, label: 'User' },
-  { id: 'taskScAddress', useClassShowOnDesktop: false, align: FlexAlign.flexStart, label: 'Secret Contract' },
-  { id: 'taskEngGasUsed', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'ENG Gas Used' },
-  { id: 'taskNumber', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'Task Number' },
+  { id: 'taskId', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexStart, label: 'Task ID' },
+  { id: 'taskStatus', useClassShowOnDesktop: false, sortable: false, align: FlexAlign.center, label: 'Status' },
+  { id: 'taskEpochNumber', useClassShowOnDesktop: false, sortable: false, align: FlexAlign.flexEnd, label: 'Epoch' },
+  { id: 'taskUserAddress', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexStart, label: 'User' },
+  {
+    id: 'taskScAddress',
+    useClassShowOnDesktop: false,
+    sortable: false,
+    align: FlexAlign.flexStart,
+    label: 'Secret Contract',
+  },
+  {
+    id: 'taskEngGasUsed',
+    useClassShowOnDesktop: false,
+    sortable: true,
+    align: FlexAlign.flexEnd,
+    label: 'ENG Gas Used',
+  },
+  { id: 'taskNumber', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexEnd, label: 'Task Number' },
 ]
 
 export const TASKS_INITIAL_VALUES = {
@@ -162,7 +174,6 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
       orderDirection: orderDirection === Direction.descending ? Direction.ascending : Direction.descending,
     })
   }
-
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, page: number) => {
     refetch({ ...variables, skip: page * total })
   }

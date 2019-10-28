@@ -50,21 +50,35 @@ const WORKERS_QUERY = gql`
 `
 
 const HEADER_CELLS = [
-  { id: 'workerAddress', useClassShowOnDesktop: false, align: FlexAlign.flexStart, label: 'Address' },
-  { id: 'workerStackedEng', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'Staked ENG' },
+  { id: 'workerAddress', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexStart, label: 'Address' },
+  {
+    id: 'workerStackedEng',
+    useClassShowOnDesktop: false,
+    sortable: true,
+    align: FlexAlign.flexEnd,
+    label: 'Staked ENG',
+  },
   {
     id: 'workerActiveVsTotal',
     useClassShowOnDesktop: false,
+    sortable: false,
     align: FlexAlign.center,
     label: 'Epochs Active / Total Epochs',
   },
   {
     id: 'workerCompletedTasks',
     useClassShowOnDesktop: false,
+    sortable: false,
     align: FlexAlign.flexEnd,
     label: '% Of Completed Tasks',
   },
-  { id: 'workerEngReward', useClassShowOnDesktop: false, align: FlexAlign.flexEnd, label: 'ENG Reward' },
+  {
+    id: 'workerEngReward',
+    useClassShowOnDesktop: false,
+    sortable: true,
+    align: FlexAlign.flexEnd,
+    label: 'ENG Reward',
+  },
 ]
 
 const INITIAL_VALUES = {
@@ -166,7 +180,7 @@ const Workers: React.FC<WorkersProps> = ({ history }) => {
           rowsPerPage: total,
         }}
       />
-      {loading && <FullLoading />}
+      {loading && !data && <FullLoading />}
     </>
   )
 }
