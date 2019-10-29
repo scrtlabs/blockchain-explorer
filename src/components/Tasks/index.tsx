@@ -137,7 +137,7 @@ export const TASKS_BY_USER_ADDRESS_QUERY = gql`
 
 const HEADER_CELLS = [
   { id: 'taskId', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexStart, label: 'Task ID' },
-  { id: 'taskStatus', useClassShowOnDesktop: false, sortable: false, align: FlexAlign.center, label: 'Status' },
+  { id: 'taskStatus', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.center, label: 'Status' },
   { id: 'taskEpochNumber', useClassShowOnDesktop: false, sortable: false, align: FlexAlign.flexEnd, label: 'Epoch' },
   { id: 'taskUserAddress', useClassShowOnDesktop: true, sortable: true, align: FlexAlign.flexStart, label: 'User' },
   {
