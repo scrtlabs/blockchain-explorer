@@ -40,16 +40,14 @@ enum GraphToField {
 
 export interface EpochProps {
   id: string
-  completeBlockNumber: string
-  inclusionBlockNumber: string
   startBlockNumber: string
   endBlockNumber: string
   startTime: string
   endTime: string
-  workers: WorkerType[]
-  tasks: any[]
+  stakes: string[]
   taskCount: string
   completedTaskCount: string
+  failedTaskCount: string
   workerCount: string
   userCount: string
   gasUsed: string
@@ -76,15 +74,16 @@ export interface EpochBlocksInfoProps {
 const epochesDetailsFragment = gql`
   fragment EpochsDetails on Epoch {
     id
-    startTime
-    endTime @client
     startBlockNumber
     endBlockNumber
-    workerCount
-    completedTaskCount
-    taskCount
+    startTime
+    endTime @client
+    stakes
     userCount
+    taskCount
+    completedTaskCount
     failedTaskCount
+    workerCount
     gasUsed
     reward
   }

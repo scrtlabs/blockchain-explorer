@@ -53,7 +53,7 @@ const EpochDetailed: React.FC<EpochDetailedProps> = props => {
           </StrippedGridRow>
         )}
         <StrippedGridRow columns={3}>
-          <GridCell title="ENG Staked" value={'-'} />
+          <GridCell title="ENG Staked" value={epoch.stakes.reduce((acc, stake) => acc + +stake, 0).toString()} />
           <GridCell title="ENG Gas Used" value={epoch.gasUsed} />
           <GridCell title="ENG Reward" value={'-'} />
         </StrippedGridRow>

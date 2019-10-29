@@ -61,11 +61,13 @@ export interface TaskBasicData {
 interface TasksProps {
   theme?: any
   history: History
-  match: {
+  match?: {
     params: {
-      userAddress: string | undefined
+      userAddress?: string
     }
   }
+  scAddr?: string
+  scTasks?: string
 }
 
 interface LinkTextProps extends React.HTMLAttributes<HTMLSpanElement> {
@@ -135,6 +137,24 @@ export const TASKS_BY_USER_ADDRESS_QUERY = gql`
   ${basicTaskDetailsFragment}
 `
 
+export const TASKS_BY_SECRET_CONTRACT_QUERY = gql`
+  query Tasks($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $scAddr: String) {
+    tasks(
+      first: $total
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: { id_not: $scAddr, secretContract: $scAddr }
+    ) {
+      ...BasicTaskDetails
+    }
+    enigmaState(id: 0) {
+      taskCount
+    }
+  }
+  ${basicTaskDetailsFragment}
+`
+
 const HEADER_CELLS = [
   { id: 'taskId', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexStart, label: 'Task ID' },
   { id: 'taskStatus', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.center, label: 'Status' },
@@ -164,12 +184,12 @@ export const TASKS_INITIAL_VALUES = {
   orderDirection: Direction.descending,
 }
 
-const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
+const Tasks: React.FC<TasksProps> = ({ theme, history, match = { params: {} }, scAddr, scTasks }: TasksProps) => {
   const {
-    params: { userAddress },
+    params: { userAddress: sender },
   } = match
-  const query = userAddress ? TASKS_BY_USER_ADDRESS_QUERY : TASKS_QUERY
-  const queryVariables = userAddress ? { ...TASKS_INITIAL_VALUES, sender: userAddress } : TASKS_INITIAL_VALUES
+  const query = scAddr ? TASKS_BY_SECRET_CONTRACT_QUERY : sender ? TASKS_BY_USER_ADDRESS_QUERY : TASKS_QUERY
+  const queryVariables = sender || scAddr ? { ...TASKS_INITIAL_VALUES, sender, scAddr } : TASKS_INITIAL_VALUES
   const { data, error, loading, variables, refetch } = useQuery(query, {
     variables: queryVariables,
     fetchPolicy: 'cache-and-network',
@@ -226,10 +246,10 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
     <>
       <SectionTitle>
         Tasks
-        {userAddress && (
+        {sender && (
           <span>
             {' '}
-            From User <LinkText underline={false}>{userAddress}</LinkText>
+            From User <LinkText underline={false}>{sender}</LinkText>
           </span>
         )}
       </SectionTitle>
@@ -327,7 +347,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
         }
         paginatorProps={{
           colSpan: HEADER_CELLS.length,
-          count: data ? +data.enigmaState.taskCount : 0,
+          count: scTasks ? +scTasks : data ? +data.enigmaState.taskCount : 0,
           onChangePage: handleChangePage,
           onChangeRowsPerPage: handleChangeRowsPerPage,
           page: Math.floor(skip / total),
