@@ -189,7 +189,6 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
       orderDirection: orderDirection === Direction.descending ? Direction.ascending : Direction.descending,
     })
   }
-
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, page: number) => {
     refetch({ ...variables, skip: page * total })
   }
