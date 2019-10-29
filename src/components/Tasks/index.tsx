@@ -37,6 +37,27 @@ enum GraphToField {
   'order' = 'taskNumber',
 }
 
+export interface TaskBasicData {
+  id: string
+  status: string
+  sender: string
+  createdAt: string
+  modifiedAt: string | null
+  createdAtTransaction: string
+  order: string
+  gasUsed: string
+  gasLimit: string
+  gasPrice: string
+  optionalEthereumContractAddress: string | null
+  time: string
+  secretContract: {
+    address: string
+  } | null
+  epoch: {
+    id: string
+  }
+}
+
 interface TasksProps {
   theme?: any
   history: History
@@ -75,6 +96,9 @@ const basicTaskDetailsFragment = gql`
     secretContract {
       address
     }
+    epoch {
+      id
+    }
   }
 `
 
@@ -82,9 +106,6 @@ export const TASKS_QUERY = gql`
   query Tasks($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
     tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
       ...BasicTaskDetails
-      epoch {
-        id
-      }
     }
     enigmaState(id: 0) {
       taskCount
@@ -97,21 +118,15 @@ export const TASKS_SUBSCRIBE = gql`
   subscription TasksSubscribe($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
     tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
       ...BasicTaskDetails
-      epoch {
-        id
-      }
     }
   }
   ${basicTaskDetailsFragment}
 `
 
-const TASKS_BY_USER_ADDRESS_QUERY = gql`
+export const TASKS_BY_USER_ADDRESS_QUERY = gql`
   query Tasks($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $sender: String) {
     tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection, where: { sender: $sender }) {
       ...BasicTaskDetails
-      epoch {
-        id
-      }
     }
     enigmaState(id: 0) {
       taskCount
@@ -186,16 +201,20 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
   const [modalProps, setModalProps] = React.useState<TaskDetailedProps | null>(null)
   const closeModal = () => setModalIsOpen(false)
 
-  const openModal = (taskDetailedProps: TaskDetailedProps) => {
+  const openModal = (task: TaskDetailedProps) => {
+    const taskStatus = TaskStatus[task.status as keyof typeof TaskStatus] || 'Success'
+    const taskStatusColor = theme.taskStatus[taskStatus.toLowerCase() as keyof typeof theme.taskStatus]
+    const taskDetailedProps: TaskDetailedProps = { ...task, taskStatus, taskStatusColor }
+
     setModalProps({ ...taskDetailedProps })
     setModalIsOpen(true)
   }
 
-  const goToTaskByUser = (userAddress: string) => {
+  const goToUserDetails = (userAddress: string) => {
     history.push(`/tasks/${userAddress}`)
   }
 
-  const goToSecretContract = (scAddress: string) => {
+  const goToSecretContractDetails = (scAddress: string) => {
     history.push(`/contract/${scAddress}`)
   }
 
@@ -225,7 +244,6 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
           data.tasks.map((task, index) => {
             const taskStatus = TaskStatus[task.status as keyof typeof TaskStatus] || 'Success'
             const taskStatusColor = theme.taskStatus[taskStatus.toLowerCase() as keyof typeof theme.taskStatus]
-
             const taskDetailedProps: TaskDetailedProps = { ...task, taskStatus, taskStatusColor }
 
             return {
@@ -264,7 +282,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
                   useClassShowOnDesktop: true,
                   id: `${task.id}_${task.sender}_user_${index}`,
                   value: (
-                    <LinkText underline={true} onClick={() => goToTaskByUser(task.sender)}>
+                    <LinkText underline={true} onClick={() => goToUserDetails(task.sender)}>
                       {task.sender}
                     </LinkText>
                   ),
@@ -273,12 +291,14 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
                   align: FlexAlign.flexStart,
                   useClassShowOnDesktop: true,
                   id: `${task.id}_${task.secretContract && task.secretContract.address}_sc_${index}`,
-                  value: task.secretContract && (
-                    <LinkText underline={true} onClick={() => goToSecretContract(task.secretContract.address)}>
+                  value: task.secretContract ? (
+                    <LinkText underline={true} onClick={() => goToSecretContractDetails(task.secretContract.address)}>
                       <HexAddr start={8} end={8}>
                         {task.secretContract.address}
                       </HexAddr>
                     </LinkText>
+                  ) : (
+                    '-'
                   ),
                 },
                 {
@@ -306,7 +326,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
           rowsPerPage: total,
         }}
       />
-      <TaskDetailed {...modalProps} modalIsOpen={modalIsOpen} closeModal={closeModal} />
+      {modalProps !== null && <TaskDetailed {...modalProps} modalIsOpen={modalIsOpen} closeModal={closeModal} />}
       {loading && !data && <FullLoading />}
     </>
   )

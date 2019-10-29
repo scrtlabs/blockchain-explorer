@@ -5,7 +5,7 @@ import theme from 'theme'
 import { darken, rgba } from 'polished'
 import Card from '../Common/Card'
 import TaskDetailed, { TaskDetailedProps } from '../TaskDetailed'
-import { TaskBasicData } from '../TasksHome'
+import { TaskBasicData } from '../Tasks'
 import ArrowIcon from './img/right.svg'
 import TimeIcon from './img/time.svg'
 
@@ -195,8 +195,16 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
   const closeModal = () => setModalIsOpen(false)
   const openModal = () => setModalIsOpen(true)
 
-  const viewSenderTasks = (sender: string) => {
-    history.push(`/tasks/${sender}`)
+  const goToUserDetails = () => {
+    if (sender) {
+      history.push(`/tasks/${sender}`)
+    }
+  }
+
+  const goToSecretContractDetails = () => {
+    if (task && task.secretContract && task.secretContract.address) {
+      history.push(`/contract/${task.secretContract.address}`)
+    }
   }
 
   const taskDetailedProps: TaskDetailedProps = { ...task, taskStatus, taskStatusColor, modalIsOpen, closeModal }
@@ -212,14 +220,18 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
           <TaskInfo>
             <InfoItem>
               <InfoLabel>Submitted By</InfoLabel>
-              <InfoValue onClick={() => viewSenderTasks(sender)}>{sender}</InfoValue>
+              <InfoValue onClick={goToUserDetails}>{sender}</InfoValue>
             </InfoItem>
             <ArrowContainer>
               <img src={ArrowIcon} alt="" />
             </ArrowContainer>
             <InfoItem>
               <InfoLabel>Secret Contract</InfoLabel>
-              <InfoValue>{task.secretContract ? task.secretContract.address : '...'}</InfoValue>
+              {task.secretContract ? (
+                <InfoValue onClick={goToSecretContractDetails}>{task.secretContract.address}</InfoValue>
+              ) : (
+                <InfoValueClean>-</InfoValueClean>
+              )}
             </InfoItem>
             <InfoItem>
               <InfoLabel>Tx Hash</InfoLabel>
@@ -236,7 +248,7 @@ const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
           <img src={TimeIcon} alt="" /> {time}
         </TaskTime>
       </TaskItem>
-      <TaskDetailed {...taskDetailedProps} />
+      <TaskDetailed {...taskDetailedProps} history={history} />
     </>
   )
 }
