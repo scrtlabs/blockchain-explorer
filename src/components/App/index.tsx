@@ -27,7 +27,7 @@ const App: React.FC = () => {
             <Switch>
               <Route exact path="/home" component={Home} />
               <Route exact path="/tasks/:userAddress?" component={Tasks} />
-              <Route exact path="/epochs/:epochNumber?" component={Epochs} />
+              <Route exact path="/epochs/:epochId?" component={Epochs} />
               <Route exact path="/workers" component={Workers} />
               <Route exact path="/worker/:workerAddress?" component={Worker} />
               <Route exact path="/contract/:contractAddress?" component={Contract} />

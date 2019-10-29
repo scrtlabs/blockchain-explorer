@@ -1,6 +1,7 @@
 import React from 'react'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
+import { History } from 'history'
 import BaseTable from '../Common/BaseTable'
 import { FlexAlign } from '../Common/EnhancedTableHead'
 import SectionTitle from '../Common/SectionTitle'
@@ -58,6 +59,12 @@ export interface EpochProps {
 interface EpochsProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string
   workerId?: string | null
+  match?: {
+    params?: {
+      epochId?: string
+    }
+  }
+  history?: History
 }
 
 export interface EpochBlocksInfoProps {
@@ -104,7 +111,20 @@ export const EPOCHS_QUERY = gql`
   ${latestEpochFragment}
 `
 
-const EPOCHS_BY_WORKER_QUERY = gql`
+export const EPOCHS_BY_ID_QUERY = gql`
+  query Epoch($epochId: String) {
+    epoch(id: $epochId) {
+      ...EpochsDetails
+    }
+    enigmaState(id: 0) {
+      ...LatestEpoch
+    }
+  }
+  ${epochesDetailsFragment}
+  ${latestEpochFragment}
+`
+
+export const EPOCHS_BY_WORKER_QUERY = gql`
   query EpochesByWorker($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $workerId: String) {
     worker(id: $workerId) {
       epochs(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
@@ -164,9 +184,11 @@ export const EPOCHS_INITIAL_VALUES = {
 const calculateProgress = (epoch: EpochProps) =>
   +epoch.taskCount === 0 ? null : `${+(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100}`
 
-const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: EpochsProps) => {
-  const query = workerId ? EPOCHS_BY_WORKER_QUERY : EPOCHS_QUERY
-  const queryVariables = workerId ? { ...EPOCHS_INITIAL_VALUES, workerId } : EPOCHS_INITIAL_VALUES
+const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null, match, history }: EpochsProps) => {
+  const epochId = match && match.params && match.params.epochId
+  const query = workerId ? EPOCHS_BY_WORKER_QUERY : epochId ? EPOCHS_BY_ID_QUERY : EPOCHS_QUERY
+  const queryVariables = workerId || epochId ? { ...EPOCHS_INITIAL_VALUES, workerId, epochId } : EPOCHS_INITIAL_VALUES
+
   const { data, error, loading, variables, refetch } = useQuery(query, { variables: queryVariables })
   const { total, skip, orderBy, orderDirection } = variables
 
@@ -194,7 +216,14 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
 
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
   const [modalProps, setModalProps] = React.useState<EpochDetailedProps | {}>({})
-  const closeModal = () => setModalIsOpen(false)
+
+  const closeModal = () => {
+    setModalIsOpen(false)
+
+    if (epochId && history) {
+      history.replace(`/epochs`)
+    }
+  }
 
   const openModal = async (epoch: EpochProps) => {
     const progress = calculateProgress(epoch)
@@ -275,6 +304,12 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
     }
   }
 
+  React.useMemo(() => {
+    if (data && data.epoch) {
+      openModal(data.epoch)
+    }
+  }, [data && data.epoch && data.epoch.id])
+
   return (
     <>
       <SectionTitle>{title}</SectionTitle>
@@ -286,6 +321,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
           onRequestSort: handleRequestSort,
         }}
         rows={
+          (data && data.epoch && [data.epoch].map(extractEpochData)) ||
           (data && data.epoches && data.epoches.map(extractEpochData)) ||
           (data && data.worker && data.worker.epochs && data.worker.epochs.map(extractEpochData))
         }
