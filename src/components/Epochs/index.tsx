@@ -240,7 +240,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null }: Ep
             </LinkText>
           ),
         },
-        { align: FlexAlign.flexEnd, useClassShowOnDesktop: false, id: `${epoch.id}_${age}_age`, value: age },
+        { align: FlexAlign.center, useClassShowOnDesktop: false, id: `${epoch.id}_${age}_age`, value: age },
         {
           align: FlexAlign.flexEnd,
           useClassShowOnDesktop: false,
