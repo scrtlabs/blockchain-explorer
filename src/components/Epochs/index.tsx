@@ -70,7 +70,7 @@ const epochesDetailsFragment = gql`
   fragment EpochsDetails on Epoch {
     id
     startTime
-    endTime
+    endTime @client
     startBlockNumber
     endBlockNumber
     workerCount

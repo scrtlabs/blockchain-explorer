@@ -4,8 +4,23 @@ import { split } from 'apollo-link'
 import { HttpLink } from 'apollo-link-http'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
+import gql from 'graphql-tag'
+import ethApi from './utils/eth'
+import { EpochProps } from './components/Epochs'
 
 const cache = new InMemoryCache()
+
+const typeDefs = gql`
+  extend type Epoch {
+    endTime: String!
+  }
+`
+
+const resolvers = {
+  Epoch: {
+    endTime: (epoch: EpochProps) => ethApi.getBlockTimestamp(epoch.endBlockNumber),
+  },
+}
 
 const subgraphName = `subgraphs/name/${process.env.REACT_APP_SUBGRAPH_NAME}`
 
@@ -25,6 +40,6 @@ const link = split(
   httpLink,
 )
 
-const client = new ApolloClient({ link, cache })
+const client = new ApolloClient({ link, cache, typeDefs, resolvers })
 
 export default client
