@@ -18,6 +18,7 @@ interface Props extends SelectWrapper {
   onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => any
   onClick?: (event: React.MouseEvent<HTMLSelectElement>) => any
   options: Array<OptionsProps>
+  defaultValue: string
 }
 
 const SelectWrapper = styled.div<SelectWrapper>`
@@ -61,14 +62,14 @@ const FormSelect = styled.select`
 `
 
 const Select = (props: Props) => {
-  const { options, disabled, name, onChange, onClick, className } = props
+  const { options, disabled, name, onChange, onClick, className, defaultValue } = props
 
   return (
     <SelectWrapper className={className} disabled={disabled}>
-      <FormSelect disabled={disabled} name={name} onChange={onChange} onClick={onClick}>
+      <FormSelect defaultValue={defaultValue} disabled={disabled} name={name} onChange={onChange} onClick={onClick}>
         {options.map((item, index) => {
           return (
-            <option selected={item.selected} key={index} value={item.value}>
+            <option key={index} value={item.value}>
               {item.text}
             </option>
           )
