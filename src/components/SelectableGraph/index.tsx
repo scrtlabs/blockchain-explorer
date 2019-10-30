@@ -64,11 +64,10 @@ const TimeRange: Array<OptionsProps> = [
   },
 ]
 
-const EPOCHS_QUERY = gql`
-  query Epochs($total: Int, $since: Int) {
-    epoches(first: $total, skip: 0, orderBy: order, orderDirection: asc, where: { startTime_gte: $since }) {
+const STATISTICS_QUERY = gql`
+  query Epochs($total: Int, $since: Int, $type: String) {
+    statistics(first: $total, skip: 0, orderBy: order, orderDirection: asc, where: { type: $type }) {
       id
-      startTime
       taskCount
       workerCount
       userCount
@@ -85,60 +84,47 @@ const lastDay = () => lastNDays(1)
 const getMillisecondsFor = (timePeriod: string) => {
   if (timePeriod === 'lastDay') return lastDay()
   if (timePeriod === 'lastWeek') return lastWeek()
-  if (timePeriod === 'lastSixMonth') return lastMonth()
+  if (timePeriod === 'lastMonth') return lastMonth()
   return lastYear()
 }
 
 const getSecondsFor = (timePeriod: string) => Math.floor(getMillisecondsFor(timePeriod) / 1000)
 
-const INITIAL_VALUES = {
+const STATISTICS_INITIAL_VALUES = {
   total: 1000,
   since: getSecondsFor('lastYear'),
+  type: 'DAY',
 }
 
 const SelectableGraph = ({ ...restProps }) => {
-  const { data, error, refetch, variables } = useQuery(EPOCHS_QUERY, { variables: INITIAL_VALUES })
   const [dataKey, setDataKey] = React.useState('taskCount')
-
-  if (error) console.error(error.message)
+  const [lineChartParams, setLineChartParams] = React.useState({
+    query: STATISTICS_QUERY,
+    queryVariables: STATISTICS_INITIAL_VALUES,
+  })
 
   const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setDataKey(event.target.value)
   }
 
   const handleRangeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    refetch({ ...variables, since: getSecondsFor(event.target.value) })
+    const {
+      target: { value },
+    } = event
+
+    setLineChartParams(({ query, queryVariables }) => ({
+      query,
+      queryVariables: {
+        ...queryVariables,
+        since: getSecondsFor(value),
+        type: ['lastYear', 'lastMonth'].includes(value) ? 'DAY' : 'HOUR',
+      },
+    }))
   }
 
   const findDefault = (options: OptionsProps[]): string => {
     const selected = options.find(({ selected }) => !!selected)
     return selected ? selected.value : 'none'
-  }
-
-  interface TickLegendProps {
-    index: number
-    x: number
-    y: number
-    payload: {
-      value: string
-    }
-  }
-  const TickLegend: React.FC<TickLegendProps> = props => {
-    const { index, x, y, payload } = props
-    console.log(props)
-    const tickDate = new Date(1000 * data.epoches[index].startTime)
-    const hm = `${tickDate.getHours()}:${tickDate
-      .getSeconds()
-      .toString()
-      .padStart(2, '0')}`
-
-    return (
-      <g transform={`translate(${x},${y})`}>
-        <text x={0} y={0} dy={16} textAnchor="end" fontSize={14} fill="#ccc" transform="rotate(-35)">
-          #{payload.value}
-        </text>
-      </g>
-    )
   }
 
   // interface CustomTooltipProps {
@@ -177,27 +163,53 @@ const SelectableGraph = ({ ...restProps }) => {
           onChange={handleRangeChange}
         />
       </OptionsContainer>
-      <div style={{ maxWidth: '100%', height: 200 }}>
-        <ResponsiveContainer>
-          <LineChart
-            width={900}
-            height={200}
-            data={data ? data.epoches : []}
-            margin={{ top: 15, right: 30, left: 20, bottom: 20 }}
-          >
-            <XAxis
-              dataKey="id"
-              stroke="#cccccc"
-              interval="preserveStartEnd"
-              label={{ value: 'Epochs', position: 'bottom', color: '#ccc' }}
-            />
-            <YAxis allowDecimals={false} hide={true} />
-            <Tooltip />
-            <Line type="linear" dataKey={dataKey} stroke="#1ca8f8" strokeWidth={2} activeDot={true} />
-          </LineChart>
-        </ResponsiveContainer>
+      <div style={{ maxWidth: '100%', height: 300 }}>
+        <LineChartGraph {...lineChartParams} dataKey={dataKey} />
       </div>
     </Card>
+  )
+}
+
+const LineChartGraph: React.FC<any> = ({ dataKey, query, queryVariables }) => {
+  const { data, error } = useQuery(query, { variables: queryVariables })
+
+  if (error) console.error(error.message)
+
+  interface TickLegendProps {
+    x: number
+    y: number
+    payload: {
+      value: string
+    }
+  }
+  const TickLegend: React.FC<TickLegendProps> = ({ x, y, payload }) => (
+    <g transform={`translate(${x},${y})`}>
+      <text x={0} y={0} dy={16} textAnchor="end" fontSize={10} fill="#ccc" transform="rotate(-35)">
+        #{payload.value}
+      </text>
+    </g>
+  )
+
+  return (
+    <ResponsiveContainer>
+      <LineChart
+        width={900}
+        height={200}
+        data={data ? data.statistics : []}
+        margin={{ top: 15, right: 30, left: 20, bottom: 20 }}
+      >
+        <XAxis
+          dataKey="id"
+          stroke="#cccccc"
+          interval="preserveStartEnd"
+          label={{ value: 'Epochs', position: 'bottom', color: '#ccc' }}
+          tick={TickLegend}
+        />
+        <YAxis allowDecimals={false} hide={true} />
+        <Tooltip />
+        <Line type="linear" dataKey={dataKey} stroke="#1ca8f8" strokeWidth={2} activeDot={true} />
+      </LineChart>
+    </ResponsiveContainer>
   )
 }
 
