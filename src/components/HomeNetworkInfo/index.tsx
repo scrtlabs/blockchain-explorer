@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import NetworkInfoCard from '../NetworkInfoCard'
 import SelectableGraph from '../SelectableGraph'
 import SectionTitle from '../Common/SectionTitle'
-import SearchBar from '../Common/SearchBar'
 
 const TopRow = styled.div`
   display: grid;
@@ -20,20 +19,7 @@ const TopRow = styled.div`
 const HomeNetworkInfo = () => {
   return (
     <>
-      <SectionTitle
-        right={
-          <SearchBar
-            onRequestSearch={() => {
-              console.log('request search...')
-            }}
-            onClearSearch={() => {
-              console.log('clear search...')
-            }}
-          />
-        }
-      >
-        Network
-      </SectionTitle>
+      <SectionTitle>Network</SectionTitle>
       <TopRow>
         <NetworkInfoCard />
         <SelectableGraph />

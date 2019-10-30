@@ -3,15 +3,14 @@ import { History } from 'history'
 import ModalWrapper from '../Common/ModalWrapper'
 import StrippedGrid, { StrippedGridRow } from '../Common/StrippedGrid'
 import GridCell from '../Common/GridCell'
-import { TaskStatus } from '../TaskBlock'
-import { TaskBasicData } from '../Tasks'
 import ethApi from '../../utils/eth'
+import { TaskBasicData, TaskStatus } from 'components/Tasks/types'
 
 export interface TaskDetailedProps extends TaskBasicData {
-  modalIsOpen: boolean
-  closeModal: () => void
   taskStatusColor: string
   taskStatus: TaskStatus
+  closeModal?: () => void
+  modalIsOpen?: boolean
   history?: History
 }
 

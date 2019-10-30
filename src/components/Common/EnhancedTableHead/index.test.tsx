@@ -4,12 +4,12 @@ import EnhancedTableHead, { HeaderCell, FlexAlign } from './'
 import Table from '@material-ui/core/Table'
 
 const HEADER_CELLS: HeaderCell[] = [
-  { id: '_id', useClassShowOnDesktop: false, align: FlexAlign.flexStart, label: 'Task ID' },
-  { id: 'secretContract', useClassShowOnDesktop: true, align: FlexAlign.flexStart, label: 'Secret Contact Address' },
+  { id: '_id', useClassShowOnDesktop: false, align: FlexAlign.start, label: 'Task ID' },
+  { id: 'secretContract', useClassShowOnDesktop: true, align: FlexAlign.start, label: 'Secret Contact Address' },
   {
     id: 'workerAddress',
     useClassShowOnDesktop: true,
-    align: FlexAlign.flexStart,
+    align: FlexAlign.start,
     label: 'Worker Address (Ethereum)',
   },
   { id: 'status', useClassShowOnDesktop: false, align: FlexAlign.center, label: 'Status' },

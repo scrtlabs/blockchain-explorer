@@ -5,9 +5,9 @@ import theme from 'theme'
 import { darken, rgba } from 'polished'
 import Card from '../Common/Card'
 import TaskDetailed, { TaskDetailedProps } from '../TaskDetailed'
-import { TaskBasicData } from '../Tasks'
 import ArrowIcon from './img/right.svg'
 import TimeIcon from './img/time.svg'
+import { TaskBasicData, TaskStatus } from '../Tasks/types'
 
 const TaskItem = styled.div`
   display: flex;
@@ -165,15 +165,6 @@ const TaskTime = styled.div`
     margin-top: 2px;
   }
 `
-
-export enum TaskStatus {
-  'RecordCreated' = 'Submitted',
-  'ReceiptVerified' = 'Success',
-  'ReceiptFailedENG' = 'Failed',
-  'ReceiptFailedETH' = 'Failed',
-  'ReceiptFailedReturn' = 'Failed',
-  'ReceiptFailed' = 'Failed',
-}
 
 interface StatusProps {
   color: string
