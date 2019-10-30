@@ -1,5 +1,5 @@
 import ethApi from './eth'
-import { EpochProps } from '../components/Epochs'
+import { EpochBasicData } from '../components/Epochs/types'
 
 const calculateRangesDurations = (range: number[]) => {
   const acc = []
@@ -40,7 +40,10 @@ export interface EstimatesCurrentEpochEnd {
   finishBlockNumber: number
 }
 
-const estimateCurrentEpochEnd = async (epochs?: EpochProps[], average = false): Promise<EstimatesCurrentEpochEnd> => {
+const estimateCurrentEpochEnd = async (
+  epochs?: EpochBasicData[],
+  average = false,
+): Promise<EstimatesCurrentEpochEnd> => {
   let pendingTime = 0 // estimated life time for the current epoch
   let finishBlockNumber = 0 // estimated block for when the current epoch may end
 

@@ -6,7 +6,7 @@ import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 import gql from 'graphql-tag'
 import ethApi from './utils/eth'
-import { EpochProps } from './components/Epochs'
+import { EpochBasicData } from './components/Epochs/types'
 
 const cache = new InMemoryCache()
 
@@ -18,7 +18,7 @@ const typeDefs = gql`
 
 const resolvers = {
   Epoch: {
-    endTime: (epoch: EpochProps) => ethApi.getBlockTimestamp(epoch.endBlockNumber),
+    endTime: (epoch: EpochBasicData) => ethApi.getBlockTimestamp(epoch.endBlockNumber),
   },
 }
 

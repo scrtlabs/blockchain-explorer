@@ -5,7 +5,7 @@ import SectionTitle from '../Common/SectionTitle'
 import EpochBlock, { EpochBlockProps } from '../EpochBlock'
 import ethApi from '../../utils/eth'
 import estimateCurrentEpochEnd from '../../utils/estimateCurrentEpochEnd'
-import { EPOCHS_INITIAL_VALUES, EPOCHS_QUERY } from '../Epochs'
+import { EPOCHS_INITIAL_VALUES, EPOCHS_QUERY } from '../Epochs/queries'
 
 const EpochsRow = styled.div`
   display: grid;

@@ -2,7 +2,7 @@ import React from 'react'
 import ModalWrapper from '../Common/ModalWrapper'
 import StrippedGrid, { StrippedGridRow } from '../Common/StrippedGrid'
 import GridCell from '../Common/GridCell'
-import { EpochBlocksInfoProps, EpochProps } from '../Epochs'
+import { EpochBlocksInfoProps, EpochBasicData } from '../Epochs/types'
 
 export type WorkerType = {
   balance: string
@@ -15,7 +15,7 @@ export interface EpochDetailedProps {
   progress?: string | null
   pendingTime?: number
   blocks?: EpochBlocksInfoProps[]
-  epoch?: EpochProps
+  epoch?: EpochBasicData
 }
 
 const EpochDetailed: React.FC<EpochDetailedProps> = props => {
