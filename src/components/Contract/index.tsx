@@ -171,7 +171,9 @@ const Contract: React.FC<ContractProps> = ({ history, match = { params: {} } }) 
         <ButtonView onClick={openEthContractsModal} disabled={ethContractCount === '0'}>
           Contracts Called ({ethContractCount})
         </ButtonView>
-        <ButtonExpand onClick={openBytecodeModal}>Expand Bytecode</ButtonExpand>
+        <ButtonExpand onClick={openBytecodeModal} disabled={true}>
+          Expand Bytecode
+        </ButtonExpand>
       </DetailsCard>
       <Tasks scAddr={contractAddress} scTasks={taskCount} history={history} />
       <ModalWrapper
