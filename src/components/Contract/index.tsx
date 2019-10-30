@@ -13,6 +13,7 @@ import HexAddr from '../Common/HexAddr'
 import { useQuery } from '@apollo/react-hooks'
 import FullLoading from '../Common/FullLoading'
 import gql from 'graphql-tag'
+import ChevronOpen from './img/chevron-closed.svg'
 
 const DetailsCard = styled(Card)`
   margin-bottom: 35px;
@@ -72,6 +73,41 @@ const ContractSRC = styled.textarea`
   white-space: pre;
   width: 100%;
   z-index: 1;
+`
+
+const EthContractWrapper = styled(ContractWrapper)`
+  padding: 0;
+  overflow-y: auto;
+`
+
+const EthContractItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid ${props => props.theme.borders.borderColor};
+  padding: 0 14px 0 18px;
+  height: 52px;
+
+  &:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+`
+
+const EthContractText = styled.div`
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 1.38;
+  color: #000000;
+  padding-right: 15px;
+`
+
+const Chevron = styled.div`
+  background-image: url(${() => ChevronOpen});
+  background-position: 0 50%;
+  background-repeat: no-repeat;
+  height: 12px;
+  width: 12px;
 `
 
 const CONTRACT_VALUE = '...'
@@ -144,15 +180,15 @@ const Contract: React.FC<ContractProps> = ({ history, match = { params: {} } }) 
         title="Contracts Called"
         onRequestClose={closeEthContractsModal}
       >
-        <ContractWrapper>
+        <EthContractWrapper>
           {ethContractCount !== '0' &&
             data.secretContract.ethContracts.map((ethContract: string) => (
-              <div key={ethContract}>
-                <div>{ethContract}</div>
-                <div>&gt;</div>
-              </div>
+              <EthContractItem key={ethContract}>
+                <EthContractText>{ethContract}</EthContractText>
+                <Chevron />
+              </EthContractItem>
             ))}
-        </ContractWrapper>
+        </EthContractWrapper>
       </ModalWrapper>
       <ModalWrapper
         ariaHideApp={false}
