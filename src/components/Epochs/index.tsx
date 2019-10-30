@@ -7,7 +7,7 @@ import { FlexAlign } from '../Common/EnhancedTableHead'
 import SectionTitle from '../Common/SectionTitle'
 import FullLoading from '../Common/FullLoading'
 import { shortEngHumanizer } from '../../utils/humanizer'
-import EpochDetailed, { EpochDetailedProps, WorkerType } from '../EpochDetailed'
+import EpochDetailed, { EpochDetailedProps } from '../EpochDetailed'
 import { LinkText } from '../Tasks'
 import estimateCurrentEpochEnd from '../../utils/estimateCurrentEpochEnd'
 import { EpochBlockTypes } from '../EpochBlockNumbers'
@@ -140,7 +140,7 @@ export const EPOCHS_BY_WORKER_QUERY = gql`
 `
 
 const HEADER_CELLS = [
-  { id: 'epochId', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexEnd, label: 'Number' },
+  { id: 'epochId', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexStart, label: 'Number' },
   { id: 'epochAge', useClassShowOnDesktop: false, sortable: false, align: FlexAlign.center, label: 'Age' },
   {
     id: 'epochTotalTasks',
@@ -259,12 +259,12 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null, matc
       id: epoch.id,
       cells: [
         {
-          align: FlexAlign.flexEnd,
+          align: FlexAlign.flexStart,
           useClassShowOnDesktop: false,
           id: `${epoch.id}_${epoch.id}`,
           value: (
             <LinkText underline={true} onClick={() => openModal(epoch)}>
-              {epoch.id}
+              #{epoch.id}
             </LinkText>
           ),
         },
