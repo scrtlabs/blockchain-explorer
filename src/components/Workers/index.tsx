@@ -1,5 +1,4 @@
 import React from 'react'
-import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
 import { History } from 'history'
 import BaseTable from '../Common/BaseTable'
@@ -8,54 +7,30 @@ import HexAddr from '../Common/HexAddr'
 import SectionTitle from 'components/Common/SectionTitle'
 import FullLoading from '../Common/FullLoading'
 import { Value } from 'components/Common/GridCell'
+import SearchBar from '../Common/SearchBar'
+import { Direction, GraphToField, FieldToGraph, WorkerBasicData } from './types'
+import { WORKERS_INITIAL_VALUES, WORKERS_QUERY, WORKERS_BY_ID_QUERY } from './queries'
+import { DocumentNode } from 'graphql'
 
-enum Direction {
-  'ascending' = 'asc',
-  'descending' = 'desc',
+interface WorkerIdProps {
+  onClick: () => void
+  id: string
 }
-
-enum FieldToGraph {
-  'workerAddress' = 'id',
-  'workerStackedEng' = 'balance',
-  'workerActiveVsTotal' = 'epochCount',
-  'workerCompletedTasks' = 'completedTaskCount',
-  'workerEngReward' = 'reward',
-}
-
-enum GraphToField {
-  'id' = 'workerAddress',
-  'balance' = 'workerStackedEng',
-  'epochCount' = 'workerActiveVsTotal',
-  'completedTaskCount' = 'workerCompletedTasks',
-  'reward' = 'workerEngReward',
-}
-
-const WORKERS_QUERY = gql`
-  query Workers($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
-    workers(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
-      id
-      balance
-      epochCount
-      completedTaskCount
-      failedTaskCount
-      reward
-    }
-    enigmaState(id: 0) {
-      latestEpoch {
-        id
-      }
-      workerCount
-    }
-  }
-`
+const WorkerId: React.FC<WorkerIdProps> = ({ id, onClick }) => (
+  <Value underline={true} onClick={onClick}>
+    <HexAddr start={8} end={8}>
+      {id}
+    </HexAddr>
+  </Value>
+)
 
 const HEADER_CELLS = [
-  { id: 'workerAddress', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexStart, label: 'Address' },
+  { id: 'workerAddress', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.start, label: 'Address' },
   {
     id: 'workerStackedEng',
     useClassShowOnDesktop: false,
     sortable: true,
-    align: FlexAlign.flexEnd,
+    align: FlexAlign.end,
     label: 'Staked ENG',
   },
   {
@@ -69,31 +44,55 @@ const HEADER_CELLS = [
     id: 'workerCompletedTasks',
     useClassShowOnDesktop: true,
     sortable: false,
-    align: FlexAlign.flexEnd,
+    align: FlexAlign.end,
     label: '% Of Completed Tasks',
   },
   {
     id: 'workerEngReward',
     useClassShowOnDesktop: false,
     sortable: true,
-    align: FlexAlign.flexEnd,
+    align: FlexAlign.end,
     label: 'ENG Reward',
   },
 ]
 
-const INITIAL_VALUES = {
-  total: 10,
-  skip: 0,
-  orderBy: FieldToGraph.workerAddress,
-  orderDirection: Direction.descending,
-}
-
 interface WorkersProps {
   history: History
+  query: DocumentNode
+  queryVariables: any
 }
 
-const Workers: React.FC<WorkersProps> = ({ history }) => {
-  const { data, error, loading, variables, refetch } = useQuery(WORKERS_QUERY, { variables: INITIAL_VALUES })
+const WorkersWrapper: React.FC<any> = ({ history }) => {
+  const [workerParams, setWorkerParams] = React.useState({
+    query: WORKERS_QUERY,
+    queryVariables: WORKERS_INITIAL_VALUES,
+  })
+
+  const handleRequestSearch = async (event: React.SyntheticEvent<React.FormEvent>, id: any) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    if (!id) return
+
+    setWorkerParams({ query: WORKERS_BY_ID_QUERY, queryVariables: { ...WORKERS_INITIAL_VALUES, id } })
+  }
+
+  const handleClearSearch = () => {
+    setWorkerParams({ query: WORKERS_QUERY, queryVariables: WORKERS_INITIAL_VALUES })
+  }
+
+  const right = <SearchBar onRequestSearch={handleRequestSearch} onClearSearch={handleClearSearch} />
+
+  return (
+    <>
+      <SectionTitle right={right}>Workers</SectionTitle>
+      <Workers {...workerParams} history={history} />
+    </>
+  )
+}
+
+const Workers: React.FC<WorkersProps> = ({ history, query, queryVariables }) => {
+  const { data, error, loading, variables, refetch } = useQuery(query, { variables: queryVariables })
   const { total, skip, orderBy, orderDirection } = variables
 
   if (error) console.error(error.message)
@@ -103,8 +102,8 @@ const Workers: React.FC<WorkersProps> = ({ history }) => {
     sortField: keyof typeof FieldToGraph,
   ) => {
     refetch({
+      ...WORKERS_INITIAL_VALUES,
       total,
-      skip: INITIAL_VALUES.skip,
       orderBy: FieldToGraph[sortField] === orderBy ? orderBy : FieldToGraph[sortField],
       orderDirection: orderDirection === Direction.descending ? Direction.ascending : Direction.descending,
     })
@@ -115,16 +114,56 @@ const Workers: React.FC<WorkersProps> = ({ history }) => {
   }
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    refetch({ ...variables, total: +event.target.value, skip: INITIAL_VALUES.skip })
+    refetch({ ...variables, total: +event.target.value, skip: WORKERS_INITIAL_VALUES.skip })
   }
 
   const goToWorkerDetails = (workerId: string) => {
     history.push(`/worker/${workerId}`)
   }
 
+  const extractWorkerData = (worker: WorkerBasicData, index: number) => {
+    const totalEpochs = +data.enigmaState.latestEpoch.id + 1
+    const totalTasks = +worker.completedTaskCount + +worker.failedTaskCount
+
+    const id = {
+      align: HEADER_CELLS[0].align,
+      useClassShowOnDesktop: false,
+      id: `${worker.id}_${worker.id}`,
+      value: <WorkerId id={worker.id} onClick={() => goToWorkerDetails(worker.id)} />,
+    }
+    const balance = {
+      align: HEADER_CELLS[1].align,
+      useClassShowOnDesktop: false,
+      id: `${worker.id}_${worker.balance}`,
+      value: worker.balance,
+    }
+    const epochCount = {
+      align: HEADER_CELLS[2].align,
+      useClassShowOnDesktop: true,
+      id: `${worker.id}_${worker.epochCount}_${totalEpochs}`,
+      value: `${worker.epochCount} of ${totalEpochs}`,
+    }
+    const percentage = {
+      align: HEADER_CELLS[3].align,
+      useClassShowOnDesktop: true,
+      id: `${worker.id}_${worker.completedTaskCount + worker.failedTaskCount}_t_${index}`,
+      value: `${totalTasks ? +(+worker.completedTaskCount / totalTasks).toFixed(2) * 100 : 0}%`,
+    }
+    const reward = {
+      align: HEADER_CELLS[4].align,
+      useClassShowOnDesktop: false,
+      id: `${worker.id}_${worker.reward}`,
+      value: worker.reward || '-',
+    }
+
+    return {
+      id: worker.id,
+      cells: [id, balance, epochCount, percentage, reward],
+    }
+  }
+
   return (
     <>
-      <SectionTitle>Workers</SectionTitle>
       <BaseTable
         headerProps={{
           headerCells: HEADER_CELLS,
@@ -132,58 +171,7 @@ const Workers: React.FC<WorkersProps> = ({ history }) => {
           orderBy: GraphToField[orderBy as keyof typeof GraphToField],
           onRequestSort: handleRequestSort,
         }}
-        rows={
-          data &&
-          data.workers &&
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-          // @ts-ignore
-          data.workers.map((worker, index) => {
-            const totalEpochs = +data.enigmaState.latestEpoch.id + 1
-            const totalTasks = +worker.completedTaskCount + +worker.failedTaskCount
-
-            return {
-              id: worker.id,
-              cells: [
-                {
-                  align: FlexAlign.flexStart,
-                  useClassShowOnDesktop: false,
-                  id: `${worker.id}_${worker.id}`,
-                  value: (
-                    <Value underline={true} onClick={() => goToWorkerDetails(worker.id)}>
-                      <HexAddr start={8} end={8}>
-                        {worker.id}
-                      </HexAddr>
-                    </Value>
-                  ),
-                },
-                {
-                  align: FlexAlign.flexEnd,
-                  useClassShowOnDesktop: false,
-                  id: `${worker.id}_${worker.balance}`,
-                  value: worker.balance,
-                },
-                {
-                  align: FlexAlign.center,
-                  useClassShowOnDesktop: true,
-                  id: `${worker.id}_${worker.epochCount}_${totalEpochs}`,
-                  value: `${worker.epochCount} of ${totalEpochs}`,
-                },
-                {
-                  align: FlexAlign.flexEnd,
-                  useClassShowOnDesktop: true,
-                  id: `${worker.id}_${worker.completedTaskCount + worker.failedTaskCount}_t_${index}`,
-                  value: `${totalTasks ? +(+worker.completedTaskCount / totalTasks).toFixed(2) * 100 : 0}%`,
-                },
-                {
-                  align: FlexAlign.flexEnd,
-                  useClassShowOnDesktop: false,
-                  id: `${worker.id}_${worker.reward}`,
-                  value: worker.reward || '-',
-                },
-              ],
-            }
-          })
-        }
+        rows={data && data.workers && data.workers.map(extractWorkerData)}
         paginatorProps={{
           colSpan: HEADER_CELLS.length,
           count: data ? +data.enigmaState.workerCount : 0,
@@ -198,4 +186,4 @@ const Workers: React.FC<WorkersProps> = ({ history }) => {
   )
 }
 
-export default Workers
+export default WorkersWrapper
