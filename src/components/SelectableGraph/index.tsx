@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { AxisDomain, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import Card from '../Common/Card'
 import Select, { OptionsProps } from '../Common/Select'
 
@@ -47,10 +47,6 @@ const TimeRange: Array<OptionsProps> = [
     value: 'lastYear',
   },
   {
-    text: 'Last 6 Months',
-    value: 'lastSixMonths',
-  },
-  {
     text: 'Last Month',
     value: 'lastMonth',
   },
@@ -64,16 +60,54 @@ const TimeRange: Array<OptionsProps> = [
   },
 ]
 
-const STATISTICS_QUERY = gql`
-  query Statistics($total: Int, $since: Int, $type: String) {
-    statistics(first: $total, skip: 0, orderBy: order, orderDirection: asc, where: { type: $type, order_gte: $since }) {
+const statisticsCommonFragment = gql`
+  fragment StatisticsCommonFragment on Statistic {
+    id
+    startedEpochCount
+    endedEpochCount
+    startedEpochs {
       id
-      order
-      taskCount
-      workerCount
-      userCount
+    }
+    endedEpochs {
+      id
     }
   }
+`
+
+const STATISTICS_TASK_QUERY = gql`
+  query Statistics($total: Int, $since: Int, $type: String) {
+    statistics(first: $total, skip: 0, orderBy: order, orderDirection: asc, where: { type: $type, order_gte: $since }) {
+      ...StatisticsCommonFragment
+      taskCount
+      completedTaskCount
+      failedTaskCount
+    }
+  }
+  ${statisticsCommonFragment}
+`
+
+const STATISTICS_USER_QUERY = gql`
+  query Statistics($total: Int, $since: Int, $type: String) {
+    statistics(first: $total, skip: 0, orderBy: order, orderDirection: asc, where: { type: $type, order_gte: $since }) {
+      ...StatisticsCommonFragment
+      userCount
+      users
+    }
+  }
+  ${statisticsCommonFragment}
+`
+
+const STATISTICS_WORKER_QUERY = gql`
+  query Statistics($total: Int, $since: Int, $type: String) {
+    statistics(first: $total, skip: 0, orderBy: order, orderDirection: asc, where: { type: $type, order_gte: $since }) {
+      ...StatisticsCommonFragment
+      workerCount
+      workers {
+        id
+      }
+    }
+  }
+  ${statisticsCommonFragment}
 `
 
 const SECONDS_IN = {
@@ -102,15 +136,28 @@ const STATISTICS_INITIAL_VALUES = {
   type: 'DAY',
 }
 
+const QUERY_BY_KEY = {
+  taskCount: STATISTICS_TASK_QUERY,
+  userCount: STATISTICS_USER_QUERY,
+  workerCount: STATISTICS_WORKER_QUERY,
+}
+
 const SelectableGraph = ({ ...restProps }) => {
   const [dataKey, setDataKey] = React.useState('taskCount')
   const [lineChartParams, setLineChartParams] = React.useState({
-    query: STATISTICS_QUERY,
+    query: STATISTICS_TASK_QUERY,
     queryVariables: STATISTICS_INITIAL_VALUES,
   })
 
   const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setDataKey(event.target.value)
+    const key = event.target.value
+
+    setDataKey(key)
+
+    setLineChartParams(({ queryVariables }) => ({
+      query: QUERY_BY_KEY[key as keyof typeof QUERY_BY_KEY],
+      queryVariables,
+    }))
   }
 
   const handleRangeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -133,26 +180,6 @@ const SelectableGraph = ({ ...restProps }) => {
     const selected = options.find(({ selected }) => !!selected)
     return selected ? selected.value : 'none'
   }
-
-  // interface CustomTooltipProps {
-  //   payload: any[]
-  //   dataKey: string
-  //   value: string
-  // }
-  // const CustomTooltip: React.FC<CustomTooltipProps> = props => {
-  //   console.log(props.payload[0])
-  //   // if (active) {
-  //   //   return (
-  //   //     <div className="custom-tooltip">
-  //   //       <p className="label">Epoch #{label}</p>
-  //   //       <p className="intro">{getIntroOfPage(label)}</p>
-  //   //       <p className="desc">Anything you want can be displayed here.</p>
-  //   //     </div>
-  //   //   );
-  //   // }
-  //
-  //   return null;
-  // };
 
   return (
     <Card {...restProps}>
@@ -201,22 +228,117 @@ const TickLegend: React.FC<TickLegendProps> = ({ x, y, payload }) => {
   )
 }
 
+interface PayloadProps {
+  dataKey: string
+  name: string
+  value: string
+  payload: any
+}
+interface CustomTooltipProps {
+  active: boolean
+  label: string
+  payload: PayloadProps[]
+}
+const CustomTooltipContent = styled.div`
+  width: 200px;
+  margin: 0;
+  line-height: 24px;
+  border: 1px solid #f5f5f5;
+  background-color: hsla(0, 0%, 100%, 0.8);
+  padding: 10px;
+
+  > .label {
+    margin: 0;
+    color: #666;
+    font-weight: 700;
+  }
+
+  > .desc {
+    margin: 0;
+    color: #999;
+
+    > .title {
+      color: cornflowerblue;
+    }
+  }
+
+  > .intro {
+    border-top: 1px solid #f5f5f5;
+    margin: 0;
+  }
+`
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
+  if (active && payload[0]) {
+    const { payload: entity, dataKey } = payload[0]
+    const [unit, value] = entity.id.split('-')
+    const unixTimestamp = +value * SECONDS_IN[unit as keyof typeof SECONDS_IN] * 1000
+    const date = new Date(unixTimestamp).toLocaleString()
+    const startedEpochs = entity.startedEpochs
+
+    const values = []
+
+    if (dataKey === 'taskCount') {
+      values.push({ title: 'Total Tasks', value: entity.taskCount })
+      values.push({ title: 'Completed Tasks', value: entity.completedTaskCount })
+      values.push({ title: 'Failed Tasks', value: entity.failedTaskCount })
+    }
+
+    if (dataKey === 'userCount') {
+      values.push({ title: 'Total Users', value: entity.userCount })
+    }
+
+    if (dataKey === 'workerCount') {
+      values.push({ title: 'Total Workers', value: entity.workerCount })
+    }
+
+    return (
+      <CustomTooltipContent>
+        <p className="label">{date}</p>
+        <p className="intro">Epochs: {`${startedEpochs[0].id}-${startedEpochs[startedEpochs.length - 1].id}`}</p>
+        {!!values.length &&
+          values.map(({ title, value }, index) => (
+            <p className="desc" key={`${title}_${value}_${index}`}>
+              <span>{title}</span>: <span>{value}</span>
+            </p>
+          ))}
+      </CustomTooltipContent>
+    )
+  }
+
+  return null
+}
+
 const LineChartGraph: React.FC<any> = ({ dataKey, query, queryVariables }) => {
-  const { data, error } = useQuery(query, { variables: queryVariables })
+  const { data, error, loading } = useQuery(query, { variables: queryVariables })
+  const [domain, setDomain] = React.useState<[AxisDomain, AxisDomain]>([0, 0])
 
   if (error) console.error(error.message)
 
+  // We're forcing domain for the y-axis, as for some reason line will be drawn outside of the chart
+  // See: https://github.com/recharts/recharts/issues/1080
+  React.useMemo(() => {
+    const newDomain = (data &&
+      data.statistics &&
+      data.statistics.reduce(
+        (acc: [AxisDomain, AxisDomain], stat: any) => {
+          if (stat && stat[dataKey] !== undefined) {
+            if (acc[0] === null || acc[0] > +stat[dataKey]) acc[0] = +stat[dataKey]
+            if (acc[1] === null || acc[1] < +stat[dataKey]) acc[1] = +stat[dataKey]
+          }
+          return acc
+        },
+        [null, null],
+      )) || [0, 0]
+    const numbers: [AxisDomain, AxisDomain] = [newDomain[0] * 0.95, newDomain[1] * 1.05]
+    setDomain(numbers)
+  }, [dataKey, data && data.statistics && data.statistics.length, loading])
+
   return (
     <ResponsiveContainer>
-      <LineChart
-        width={900}
-        height={200}
-        data={data ? data.statistics : []}
-        margin={{ top: 15, right: 30, left: 20, bottom: 20 }}
-      >
+      <LineChart data={data ? data.statistics : []} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
         <XAxis dataKey="id" stroke="#cccccc" interval="preserveStartEnd" tick={TickLegend} />
-        <YAxis allowDecimals={false} hide={true} />
-        <Tooltip />
+        <YAxis tick={false} width={1} stroke="#cccccc" domain={domain} />
+        <Tooltip content={CustomTooltip} animationDuration={800} />
         <Line type="linear" dataKey={dataKey} stroke="#1ca8f8" strokeWidth={2} activeDot={true} />
       </LineChart>
     </ResponsiveContainer>
