@@ -65,8 +65,8 @@ const TimeRange: Array<OptionsProps> = [
 ]
 
 const STATISTICS_QUERY = gql`
-  query Epochs($total: Int, $since: Int, $type: String) {
-    statistics(first: $total, skip: 0, orderBy: order, orderDirection: asc, where: { type: $type }) {
+  query Statistics($total: Int, $since: Int, $type: String) {
+    statistics(first: $total, skip: 0, orderBy: order, orderDirection: asc, where: { type: $type, order_gte: $since }) {
       id
       taskCount
       workerCount
@@ -74,6 +74,11 @@ const STATISTICS_QUERY = gql`
     }
   }
 `
+
+const SECONDS_IN = {
+  DAY: 86400,
+  HOUR: 3600,
+}
 
 const lastYear = () => new Date().setFullYear(new Date().getFullYear() - 1)
 const lastMonth = () => new Date().setMonth(new Date().getMonth() - 1)
@@ -92,7 +97,7 @@ const getSecondsFor = (timePeriod: string) => Math.floor(getMillisecondsFor(time
 
 const STATISTICS_INITIAL_VALUES = {
   total: 1000,
-  since: getSecondsFor('lastYear'),
+  since: Math.floor(getSecondsFor('lastYear') / SECONDS_IN.DAY),
   type: 'DAY',
 }
 
@@ -111,13 +116,14 @@ const SelectableGraph = ({ ...restProps }) => {
     const {
       target: { value },
     } = event
+    const type = ['lastYear', 'lastMonth'].includes(value) ? 'DAY' : 'HOUR'
 
     setLineChartParams(({ query, queryVariables }) => ({
       query,
       queryVariables: {
         ...queryVariables,
-        since: getSecondsFor(value),
-        type: ['lastYear', 'lastMonth'].includes(value) ? 'DAY' : 'HOUR',
+        since: Math.floor(getSecondsFor(value) / SECONDS_IN[type]),
+        type,
       },
     }))
   }
