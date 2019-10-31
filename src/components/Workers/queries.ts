@@ -22,7 +22,7 @@ const globalWorkerStatsFragment = gql`
 `
 
 export const WORKERS_QUERY = gql`
-  query Workers($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
+  query Workers($total: Int, $skip: Int, $orderBy: Worker_orderBy, $orderDirection: OrderDirection) {
     workers(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
       ...BasicWorkerFragment
     }
@@ -35,7 +35,7 @@ export const WORKERS_QUERY = gql`
 `
 
 export const WORKERS_BY_ID_QUERY = gql`
-  query Workers($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $id: String) {
+  query Workers($total: Int, $skip: Int, $orderBy: Worker_orderBy, $orderDirection: OrderDirection, $id: ID!) {
     workers(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection, where: { id: $id }) {
       ...BasicWorkerFragment
     }

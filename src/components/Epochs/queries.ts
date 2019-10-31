@@ -54,9 +54,22 @@ export const EPOCH_BY_ID_QUERY = gql`
 `
 
 export const EPOCHS_BY_WORKER_QUERY = gql`
-  query EpochesByWorker($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $workerId: String) {
+  query EpochesByWorker(
+    $total: Int
+    $skip: Int
+    $orderBy: String
+    $orderDirection: String
+    $workerId: String
+    $epoches: [ID!]
+  ) {
     worker(id: $workerId) {
-      epochs(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
+      epochs(
+        first: $total
+        skip: $skip
+        orderBy: $orderBy
+        orderDirection: $orderDirection
+        where: { id_in: $epoches }
+      ) {
         ...EpochsDetails
       }
       epochCount
@@ -76,4 +89,5 @@ export const EPOCHS_INITIAL_VALUES = {
   orderDirection: Direction.descending,
   workerId: undefined,
   epochId: undefined,
+  epoches: [],
 }

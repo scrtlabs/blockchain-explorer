@@ -294,7 +294,9 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
     return (
       <CustomTooltipContent>
         <p className="label">{date}</p>
-        <p className="intro">Epochs: {`${startedEpochs[0].id}-${startedEpochs[startedEpochs.length - 1].id}`}</p>
+        <p className="intro">
+          Epochs: {startedEpochs.length && `${startedEpochs[0].id}-${startedEpochs[startedEpochs.length - 1].id}`}
+        </p>
         {!!values.length &&
           values.map(({ title, value }, index) => (
             <p className="desc" key={`${title}_${value}_${index}`}>

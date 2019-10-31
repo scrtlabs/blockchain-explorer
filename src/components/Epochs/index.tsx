@@ -64,19 +64,23 @@ const HEADER_CELLS = [
   { id: 'epochEngReward', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.end, label: 'ENG Reward' },
 ]
 
-const EpochsWrapper: React.FC<any> = ({ title = 'Epochs', workerId, match = { params: {} }, history }) => {
+const EpochsWrapper: React.FC<any> = ({ title = 'Epochs', workerId, epoches, match = { params: {} }, history }) => {
   const {
     params: { epochId },
   } = match
   const [epochParams, setEpochParams] = React.useState({ query: EPOCHS_QUERY, queryVariables: EPOCHS_INITIAL_VALUES })
 
   React.useEffect(() => {
-    if (workerId) {
-      setEpochParams({ query: EPOCHS_BY_WORKER_QUERY, queryVariables: { ...EPOCHS_INITIAL_VALUES, workerId } })
-    } else if (epochId) {
+    if (epochId) {
       setEpochParams({ query: EPOCH_BY_ID_QUERY, queryVariables: { ...EPOCHS_INITIAL_VALUES, epochId } })
     }
   }, [])
+
+  React.useMemo(() => {
+    if (workerId && epoches.length) {
+      setEpochParams({ query: EPOCHS_BY_WORKER_QUERY, queryVariables: { ...EPOCHS_INITIAL_VALUES, workerId, epoches } })
+    }
+  }, [workerId, epoches.length])
 
   React.useMemo(() => {
     if (!epochId) {
@@ -249,7 +253,7 @@ const Epochs: React.FC<EpochsProps> = ({ byParam, history, query, queryVariables
             data && data.epoches
               ? +data.enigmaState.latestEpoch.id + 1
               : data && data.worker
-              ? +data.worker.epochCount
+              ? variables.epoches.length
               : 0,
           onChangePage: handleChangePage,
           onChangeRowsPerPage: handleChangeRowsPerPage,

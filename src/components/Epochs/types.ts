@@ -1,4 +1,5 @@
 import { EpochBlockTypes } from '../EpochBlockNumbers'
+import { WorkerBasicData } from '../Workers/types'
 
 export enum Direction {
   'ascending' = 'asc',
@@ -33,6 +34,7 @@ export interface EpochBlocksInfoProps {
 
 export interface EpochBasicData {
   id: string
+  order: string
   startBlockNumber: string
   endBlockNumber: string
   startTime: string
@@ -45,4 +47,8 @@ export interface EpochBasicData {
   userCount: string
   gasUsed: string
   reward: string
+  deployedSecretContracts: string[]
+  seed: string
+  workers: WorkerBasicData[]
+  selectedWorkers: string[]
 }
