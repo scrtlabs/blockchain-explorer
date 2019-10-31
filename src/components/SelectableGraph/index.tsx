@@ -68,6 +68,7 @@ const STATISTICS_QUERY = gql`
   query Statistics($total: Int, $since: Int, $type: String) {
     statistics(first: $total, skip: 0, orderBy: order, orderDirection: asc, where: { type: $type, order_gte: $since }) {
       id
+      order
       taskCount
       workerCount
       userCount
@@ -169,10 +170,34 @@ const SelectableGraph = ({ ...restProps }) => {
           onChange={handleRangeChange}
         />
       </OptionsContainer>
-      <div style={{ maxWidth: '100%', height: 300 }}>
+      <div style={{ maxWidth: '100%', height: 280 }}>
         <LineChartGraph {...lineChartParams} dataKey={dataKey} />
       </div>
     </Card>
+  )
+}
+
+interface TickLegendProps {
+  x: number
+  y: number
+  payload: {
+    value: string
+  }
+}
+const TickLegend: React.FC<TickLegendProps> = ({ x, y, payload }) => {
+  const [unit, value] = payload.value.split('-')
+  const unixTimestamp = +value * SECONDS_IN[unit as keyof typeof SECONDS_IN] * 1000
+  const [date, hour] = new Date(unixTimestamp).toLocaleString().split(',')
+
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text x={0} y={0} dy={16} textAnchor="middle" fontSize={10} fill="#ccc">
+        {hour}
+      </text>
+      <text x={0} y={0} dy={32} textAnchor="middle" fontSize={10} fill="#ccc">
+        {date}
+      </text>
+    </g>
   )
 }
 
@@ -180,21 +205,6 @@ const LineChartGraph: React.FC<any> = ({ dataKey, query, queryVariables }) => {
   const { data, error } = useQuery(query, { variables: queryVariables })
 
   if (error) console.error(error.message)
-
-  interface TickLegendProps {
-    x: number
-    y: number
-    payload: {
-      value: string
-    }
-  }
-  const TickLegend: React.FC<TickLegendProps> = ({ x, y, payload }) => (
-    <g transform={`translate(${x},${y})`}>
-      <text x={0} y={0} dy={16} textAnchor="end" fontSize={10} fill="#ccc" transform="rotate(-35)">
-        #{payload.value}
-      </text>
-    </g>
-  )
 
   return (
     <ResponsiveContainer>
@@ -204,13 +214,7 @@ const LineChartGraph: React.FC<any> = ({ dataKey, query, queryVariables }) => {
         data={data ? data.statistics : []}
         margin={{ top: 15, right: 30, left: 20, bottom: 20 }}
       >
-        <XAxis
-          dataKey="id"
-          stroke="#cccccc"
-          interval="preserveStartEnd"
-          label={{ value: 'Epochs', position: 'bottom', color: '#ccc' }}
-          tick={TickLegend}
-        />
+        <XAxis dataKey="id" stroke="#cccccc" interval="preserveStartEnd" tick={TickLegend} />
         <YAxis allowDecimals={false} hide={true} />
         <Tooltip />
         <Line type="linear" dataKey={dataKey} stroke="#1ca8f8" strokeWidth={2} activeDot={true} />
