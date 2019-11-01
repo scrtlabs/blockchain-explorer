@@ -80,7 +80,7 @@ const EpochsWrapper: React.FC<any> = ({ title = 'Epochs', workerId, epoches, mat
     if (workerId && epoches.length) {
       setEpochParams({ query: EPOCHS_BY_WORKER_QUERY, queryVariables: { ...EPOCHS_INITIAL_VALUES, workerId, epoches } })
     }
-  }, [workerId, epoches.length])
+  }, [workerId, epoches && epoches.length])
 
   React.useMemo(() => {
     if (!epochId) {
