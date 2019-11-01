@@ -61,6 +61,12 @@ Enigma p2p network address for RPC calls
 _Local Value_: `http://localhost:3346`
 
 ---
+### `REACT_APP_COINMARKET_CAP_API_KEY`
+Coinmarket Cap API KEY
+
+_Local Value_: _not set_
+
+---
 #### `REACT_APP_ETH_URL`
 Blockchain RPC host.
 

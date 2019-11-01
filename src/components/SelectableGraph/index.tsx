@@ -268,7 +268,7 @@ const CustomTooltipContent = styled.div`
   }
 `
 const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
-  if (active && payload[0]) {
+  if (active && payload && payload[0]) {
     const { payload: entity, dataKey } = payload[0]
     const [unit, value] = entity.id.split('-')
     const unixTimestamp = +value * SECONDS_IN[unit as keyof typeof SECONDS_IN] * 1000

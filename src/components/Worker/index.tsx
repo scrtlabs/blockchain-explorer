@@ -74,7 +74,7 @@ const Worker = (props: any) => {
   const { data, error, loading } = useQuery(WORKER_BY_ID_QUERY, { variables: { workerId: workerAddress } })
   const worker = data ? data.worker : { completedTaskCount: 0, reward: 0, balance: 0, epochs: [] }
   const totalEpochs = +(data && data.enigmaState.latestEpoch.id) + 1 || 0
-  const totalTasks = +worker.completedTaskCount + +worker.failedTaskCount
+  const totalTasks = (worker && +worker.completedTaskCount + +worker.failedTaskCount) || 0
   const { epoches = [], selected = 0 } =
     worker &&
     worker.epochs
