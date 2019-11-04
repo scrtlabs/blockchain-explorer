@@ -237,7 +237,7 @@ const Epochs: React.FC<EpochsProps> = ({ byParam, history, query, queryVariables
     if (byParam && data && data.epoch) {
       openModal(data.epoch)
     }
-  }, [byParam])
+  }, [byParam, data])
 
   return (
     <>

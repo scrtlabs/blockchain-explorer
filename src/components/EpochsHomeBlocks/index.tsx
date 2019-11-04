@@ -66,7 +66,7 @@ const EpochHomeBlocks = () => {
     }, 1000)
 
     return () => clearInterval(intervalPtr)
-  }, [])
+  }, [currentBlockNumber])
 
   React.useMemo(() => {
     refetch({ ...EPOCHS_INITIAL_VALUES })
