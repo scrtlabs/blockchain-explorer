@@ -66,37 +66,14 @@ const ENIGMA_STATE_QUERY = gql`
   subscription EnigmaState {
     enigmaState(id: 0) {
       workerCount
+      userCount
+      staked
     }
   }
 `
-
-const WORKERS_BALANCE_QUERY = gql`
-  subscription WorkersBalance {
-    workers {
-      balance
-    }
-  }
-`
-
-const USERS_PER_EPOCH_QUERY = gql`
-  subscription UsersPerEpoch($total: Int, $skip: Int) {
-    epoches(total: $total, skip: $skip, orderBy: order, orderDirection: desc) {
-      users
-    }
-  }
-`
-
-const USERS_PER_EPOCH_INITIAL_VALUES = {
-  total: 1000,
-  skip: 0,
-}
 
 const NetworkInfoCard = ({ ...restProps }) => {
-  const { data: users, error: usersError } = useSubscription(USERS_PER_EPOCH_QUERY, {
-    variables: USERS_PER_EPOCH_INITIAL_VALUES,
-  })
-  const { data: workers, error: workersError } = useSubscription(WORKERS_BALANCE_QUERY)
-  const { data: state, error: stateError } = useSubscription(ENIGMA_STATE_QUERY)
+  const { data, error, loading } = useSubscription(ENIGMA_STATE_QUERY)
   const [stats, setStats] = React.useState({
     marketCap: '0',
     price: '0',
@@ -105,9 +82,7 @@ const NetworkInfoCard = ({ ...restProps }) => {
     stake: '0',
   })
 
-  if (usersError) console.error(usersError.message)
-  if (workersError) console.error(workersError.message)
-  if (stateError) console.error(stateError.message)
+  if (error) console.error(error.message)
 
   React.useMemo(() => {
     const partialStats = {
@@ -116,22 +91,14 @@ const NetworkInfoCard = ({ ...restProps }) => {
       stake: stats.stake,
     }
 
-    if (users && users.epoches) {
-      partialStats.users = `${
-        Array.from(new Set(users.epoches.map((epoch: any) => epoch.users).flat())).filter((user: any) => user).length
-      }`
-    }
-
-    if (workers && workers.workers) {
-      partialStats.stake = `${workers.workers.reduce((acc: number, worker: any) => acc + +worker.balance, 0)}`
-    }
-
-    if (state && state.enigmaState) {
-      partialStats.workers = state.enigmaState.workerCount
+    if (data && data.enigmaState) {
+      partialStats.users = data.enigmaState.userCount
+      partialStats.workers = data.enigmaState.workerCount
+      partialStats.stake = data.enigmaState.staked
     }
 
     setStats(prev => ({ ...prev, ...partialStats }))
-  }, [users, workers, state])
+  }, [data && data.enigmaState, loading])
 
   React.useEffect(() => {
     const retrieveMarketStats = async () => {
