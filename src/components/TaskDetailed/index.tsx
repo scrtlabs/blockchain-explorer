@@ -5,6 +5,7 @@ import StrippedGrid, { StrippedGridRow } from '../Common/StrippedGrid'
 import GridCell from '../Common/GridCell'
 import ethApi from '../../utils/eth'
 import { TaskBasicData, TaskStatus } from 'components/Tasks/types'
+import getExternalLink from '../../utils/getExternalLink'
 
 export interface TaskDetailedProps extends TaskBasicData {
   taskStatusColor: string
@@ -55,7 +56,7 @@ const TaskDetailed: React.FC<TaskDetailedProps> = props => {
 
   const openEthContractDetails = () => {
     if (optionalEthereumContractAddress) {
-      // TODO: open new tab with etherscan details
+      window.open(getExternalLink(optionalEthereumContractAddress), '_blank')
     }
   }
   return (

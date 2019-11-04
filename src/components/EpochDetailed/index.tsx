@@ -35,7 +35,7 @@ const EpochDetailed: React.FC<EpochDetailedProps> = props => {
           <GridCell title={isCurrent ? 'Estimated Completion Time' : 'Completed On'} value={end} />
         </StrippedGridRow>
         <StrippedGridRow columns={2}>
-          <GridCell title="Tasks Submitted to Epoch" value={epoch.taskCount} underlineValue={true} />
+          <GridCell title="Tasks Submitted to Epoch" value={epoch.taskCount} underlineValue={false} />
           <GridCell title="Completed Tasks" value={progress === null ? '-' : `${progress}%`} />
         </StrippedGridRow>
         <StrippedGridRow columns={2}>

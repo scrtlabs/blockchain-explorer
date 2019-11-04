@@ -14,7 +14,7 @@ import { useQuery } from '@apollo/react-hooks'
 import FullLoading from '../Common/FullLoading'
 import gql from 'graphql-tag'
 import ChevronOpen from './img/chevron-closed.svg'
-import getNetworkDetailsBy from '../../utils/networks'
+import getExternalLink from 'utils/getExternalLink'
 
 const DetailsCard = styled(Card)`
   margin-bottom: 35px;
@@ -157,13 +157,6 @@ const Contract: React.FC<ContractProps> = ({ history, match = { params: {} } }) 
   const taskCount = data && data.secretContract && data.secretContract.taskCount
   const userCount = data && data.secretContract && data.secretContract.userCount
   const ethContractCount = (data && data.secretContract && data.secretContract.ethContractCount) || '0'
-
-  const { name: networkName } = getNetworkDetailsBy('id')(process.env.REACT_APP_ETH_NETWORK_ID)
-
-  const getExternalLink = (ethContract: string) => {
-    const subdomain = ['mainnet', 'local', 'unknown'].includes(networkName) ? '' : `${networkName}.`
-    return `https://${subdomain}${process.env.REACT_APP_ETHERSCAN_URL}/${ethContract}`
-  }
 
   return (
     <>
