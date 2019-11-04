@@ -42,7 +42,6 @@ const InfoType: Array<OptionsProps> = [
 
 const TimeRange: Array<OptionsProps> = [
   {
-    selected: true,
     text: 'Last Year',
     value: 'lastYear',
   },
@@ -55,6 +54,7 @@ const TimeRange: Array<OptionsProps> = [
     value: 'lastWeek',
   },
   {
+    selected: true,
     text: 'Last Day',
     value: 'lastDay',
   },
@@ -65,10 +65,10 @@ const statisticsCommonFragment = gql`
     id
     startedEpochCount
     endedEpochCount
-    startedEpochs {
+    startedEpochs(orderBy: order, orderDirection: asc) {
       id
     }
-    endedEpochs {
+    endedEpochs(orderBy: order, orderDirection: asc) {
       id
     }
   }
@@ -132,8 +132,8 @@ const getSecondsFor = (timePeriod: string) => Math.floor(getMillisecondsFor(time
 
 const STATISTICS_INITIAL_VALUES = {
   total: 1000,
-  since: Math.floor(getSecondsFor('lastYear') / SECONDS_IN.DAY),
-  type: 'DAY',
+  since: Math.floor(getSecondsFor('lastDay') / SECONDS_IN.HOUR),
+  type: 'HOUR',
 }
 
 const QUERY_BY_KEY = {
@@ -331,15 +331,15 @@ const LineChartGraph: React.FC<any> = ({ dataKey, query, queryVariables }) => {
         },
         [null, null],
       )) || [0, 0]
-    const numbers: [AxisDomain, AxisDomain] = [newDomain[0] * 0.95, newDomain[1] * 1.05]
+    const numbers: [AxisDomain, AxisDomain] = [Math.floor(newDomain[0] * 0.95), Math.floor(newDomain[1] * 1.05)]
     setDomain(numbers)
   }, [dataKey, data && data.statistics && data.statistics.length, loading])
 
   return (
     <ResponsiveContainer>
-      <LineChart data={data ? data.statistics : []} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+      <LineChart data={data ? data.statistics : []} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
         <XAxis dataKey="id" stroke="#cccccc" interval="preserveStartEnd" tick={TickLegend} />
-        <YAxis tick={false} width={1} stroke="#cccccc" domain={domain} />
+        <YAxis interval="preserveStartEnd" stroke="#cccccc" domain={domain} />
         <Tooltip content={CustomTooltip} animationDuration={800} />
         <Line type="linear" dataKey={dataKey} stroke="#1ca8f8" strokeWidth={2} activeDot={true} />
       </LineChart>
