@@ -283,7 +283,7 @@ const Tasks: React.FC<TasksProps> = withTheme(({ theme, history, scTasks, query,
         rows={data && data.tasks && data.tasks.map(extractTaskData)}
         paginatorProps={{
           colSpan: HEADER_CELLS.length,
-          count: scTasks ? +scTasks : data ? +data.enigmaState.taskCount : 0,
+          count: scTasks ? +scTasks : data && data.enigmaState ? +data.enigmaState.taskCount : 0,
           onChangePage: handleChangePage,
           onChangeRowsPerPage: handleChangeRowsPerPage,
           page: Math.floor(skip / total),

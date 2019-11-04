@@ -1,6 +1,5 @@
 import Web3 from 'web3'
 import { Enigma } from 'enigma-js/node'
-import numeral from 'numeral'
 import getNetworkDetailsBy from './networks'
 
 export const ENG_DECIMALS = 8

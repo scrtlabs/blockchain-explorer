@@ -67,6 +67,12 @@ Coinmarket Cap API KEY
 _Local Value_: _not set_
 
 ---
+### `REACT_APP_ETHERSCAN_URL`
+Etherscan address detail link
+
+_Local Value_: `etherscan.io/address`
+
+---
 #### `REACT_APP_ETH_URL`
 Blockchain RPC host.
 
