@@ -33,6 +33,11 @@ class EthAPI {
     return (block && block.timestamp) || '0'
   }
 
+  /**
+   * Request timestamp for all the blocks in a list of block numbers
+   * @param { number[] } range
+   * @returns {Promise<number[]>}
+   */
   async getBatchBlocksTimestamps(range) {
     const batch = new this.web3.BatchRequest()
 
