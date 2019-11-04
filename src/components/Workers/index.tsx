@@ -81,7 +81,13 @@ const WorkersWrapper: React.FC<any> = ({ history }) => {
     setWorkerParams({ query: WORKERS_QUERY, queryVariables: WORKERS_INITIAL_VALUES })
   }
 
-  const right = <SearchBar onRequestSearch={handleRequestSearch} onClearSearch={handleClearSearch} />
+  const right = (
+    <SearchBar
+      placeholder="Search by Worker address..."
+      onRequestSearch={handleRequestSearch}
+      onClearSearch={handleClearSearch}
+    />
+  )
 
   return (
     <>

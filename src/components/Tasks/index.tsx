@@ -139,7 +139,13 @@ const TasksWrapper: React.FC<any> = ({ history, match = { params: {} }, scAddr, 
   }
 
   const right =
-    !scAddr && !sender ? <SearchBar onRequestSearch={handleRequestSearch} onClearSearch={handleClearSearch} /> : null
+    !scAddr && !sender ? (
+      <SearchBar
+        placeholder="Search by Task ID..."
+        onRequestSearch={handleRequestSearch}
+        onClearSearch={handleClearSearch}
+      />
+    ) : null
 
   return (
     <>

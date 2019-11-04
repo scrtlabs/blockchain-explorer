@@ -102,7 +102,13 @@ const EpochsWrapper: React.FC<any> = ({ title = 'Epochs', workerId, epoches, mat
   }
 
   const right =
-    !workerId && !epochId ? <SearchBar onRequestSearch={handleRequestSearch} onClearSearch={handleClearSearch} /> : null
+    !workerId && !epochId ? (
+      <SearchBar
+        placeholder="Search by Epoch number..."
+        onRequestSearch={handleRequestSearch}
+        onClearSearch={handleClearSearch}
+      />
+    ) : null
 
   return (
     <>
