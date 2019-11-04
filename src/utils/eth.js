@@ -1,17 +1,27 @@
 import Web3 from 'web3'
-// import EnigmaContract from './Enigma.json'
+import { Enigma } from 'enigma-js/node'
 import getNetworkDetailsBy from './networks'
 
 export const ENG_DECIMALS = 8
 
 class EthAPI {
   constructor() {
+    // web3
     if (process.env.REACT_APP_ETH_NETWORK_ID) {
       const { url } = getNetworkDetailsBy('id')(process.env.REACT_APP_ETH_NETWORK_ID)
       this.web3 = new Web3(new Web3.providers.HttpProvider(url))
     } else {
       this.web3 = new Web3(new Web3.providers.HttpProvider(process.env.REACT_APP_ETH_URL))
     }
+
+    // enigma
+    this.enigma = new Enigma(
+      this.web3,
+      process.env.REACT_APP_ENIGMA_CONTRACT_ADDRESS,
+      process.env.REACT_APP_ENIGMA_TOKEN_ADDRESS,
+      process.env.REACT_APP_ENIGMA_RPC_URL,
+    )
+    this.enigma.admin()
   }
 
   getBlockNumber() {
@@ -23,6 +33,11 @@ class EthAPI {
     return (block && block.timestamp) || '0'
   }
 
+  /**
+   * Request timestamp for all the blocks in a list of block numbers
+   * @param { number[] } range
+   * @returns {Promise<number[]>}
+   */
   async getBatchBlocksTimestamps(range) {
     const batch = new this.web3.BatchRequest()
 

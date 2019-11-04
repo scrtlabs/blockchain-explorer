@@ -9,8 +9,6 @@ import EnhancedTableHead, { EnhancedTableHeadProps, FlexAlign } from '../Enhance
 import Paginator from '../Paginator'
 import Card from '../Card'
 import TableOverflow from '../TableOverflow'
-import ChevronOpen from './img/chevron-open.svg'
-import ChevronClosed from './img/chevron-closed.svg'
 
 export enum CellStatuses {
   success = 'success',
@@ -58,17 +56,6 @@ const TableCellText = styled.span<{ status?: CellStatuses }>`
   font-weight: normal;
   line-height: 1.2;
   white-space: nowrap;
-`
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Chevron = styled.div<{ isOpen: boolean }>`
-  background-image: url(${props => (props.isOpen ? ChevronOpen : ChevronClosed)});
-  background-position: 0 50%;
-  background-repeat: no-repeat;
-  height: 12px;
-  margin: 0 12px 0 0;
-  transition: all 0.15s linear;
-  width: 12px;
 `
 
 const BaseTable = ({ headerProps, rows = [], paginatorProps }: BaseTableProps) => (

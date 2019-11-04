@@ -49,7 +49,7 @@ const InputBase = styled.input`
   text-align: left;
 `
 
-const SearchBar = ({ onRequestSearch, onClearSearch }) => {
+const SearchBar = ({ onRequestSearch, onClearSearch, placeholder = 'Search by hash...' }) => {
   const [searchValue, setSearchValue] = useState('')
 
   const handleClear = () => {
@@ -65,7 +65,7 @@ const SearchBar = ({ onRequestSearch, onClearSearch }) => {
       <InputBase
         id="ethAddress"
         onChange={event => setSearchValue(event.target.value)}
-        placeholder="Search by hash..."
+        placeholder={placeholder}
         type="text"
         value={searchValue}
       />

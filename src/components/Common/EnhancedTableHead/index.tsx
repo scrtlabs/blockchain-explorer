@@ -7,8 +7,8 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 import styled from 'styled-components'
 
 export enum FlexAlign {
-  'flexStart' = 'flex-start',
-  'flexEnd' = 'flex-end',
+  'start' = 'flex-start',
+  'end' = 'flex-end',
   'center' = 'center',
 }
 

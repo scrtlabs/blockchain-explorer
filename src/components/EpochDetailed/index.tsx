@@ -2,7 +2,7 @@ import React from 'react'
 import ModalWrapper from '../Common/ModalWrapper'
 import StrippedGrid, { StrippedGridRow } from '../Common/StrippedGrid'
 import GridCell from '../Common/GridCell'
-import { EpochBlocksInfoProps, EpochProps } from '../Epochs'
+import { EpochBlocksInfoProps, EpochBasicData } from '../Epochs/types'
 
 export type WorkerType = {
   balance: string
@@ -15,7 +15,7 @@ export interface EpochDetailedProps {
   progress?: string | null
   pendingTime?: number
   blocks?: EpochBlocksInfoProps[]
-  epoch?: EpochProps
+  epoch?: EpochBasicData
 }
 
 const EpochDetailed: React.FC<EpochDetailedProps> = props => {
@@ -35,7 +35,7 @@ const EpochDetailed: React.FC<EpochDetailedProps> = props => {
           <GridCell title={isCurrent ? 'Estimated Completion Time' : 'Completed On'} value={end} />
         </StrippedGridRow>
         <StrippedGridRow columns={2}>
-          <GridCell title="Tasks Submitted to Epoch" value={epoch.taskCount} underlineValue={true} />
+          <GridCell title="Tasks Submitted to Epoch" value={epoch.taskCount} underlineValue={false} />
           <GridCell title="Completed Tasks" value={progress === null ? '-' : `${progress}%`} />
         </StrippedGridRow>
         <StrippedGridRow columns={2}>
@@ -53,7 +53,7 @@ const EpochDetailed: React.FC<EpochDetailedProps> = props => {
           </StrippedGridRow>
         )}
         <StrippedGridRow columns={3}>
-          <GridCell title="ENG Staked" value={'-'} />
+          <GridCell title="ENG Staked" value={epoch.stakes.reduce((acc, stake) => acc + +stake, 0).toString()} />
           <GridCell title="ENG Gas Used" value={epoch.gasUsed} />
           <GridCell title="ENG Reward" value={'-'} />
         </StrippedGridRow>

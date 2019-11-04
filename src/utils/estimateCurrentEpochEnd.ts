@@ -1,19 +1,24 @@
 import ethApi from './eth'
-import { EpochProps } from '../components/Epochs'
+import { EpochBasicData } from '../components/Epochs/types'
 
-const calculateRangesDurations = (range: number[]) => {
+/**
+ * Calculates the distance in ranges values
+ * @param { [number, number][] } ranges - list of ranges in ascending order
+ * @returns { number[] }
+ */
+const calculateRangesDurations = (ranges: [number, number][]) => {
   const acc = []
 
-  for (let i = 0; i < range.length; i += 2) {
-    const rangeElement = range[i]
-    acc.push(rangeElement - range[i + 1])
+  for (let i = 0; i < ranges.length; i++) {
+    const range = ranges[i]
+    acc.push(range[1] - range[0])
   }
 
   return acc
 }
 
-const distanceMedian = (range: number[]) => {
-  const durations = calculateRangesDurations(range)
+const distanceMedian = (ranges: [number, number][]) => {
+  const durations = calculateRangesDurations(ranges)
   const length = durations.length
 
   if (length === 0) return length
@@ -25,8 +30,8 @@ const distanceMedian = (range: number[]) => {
   return length % 2 ? durations[half] : Math.floor((durations[half - 1] + durations[half]) / 2)
 }
 
-const distanceAverage = (range: number[]) => {
-  const durations = calculateRangesDurations(range)
+const distanceAverage = (ranges: [number, number][]) => {
+  const durations = calculateRangesDurations(ranges)
   const length = durations.length
 
   if (!length) return 0
@@ -40,24 +45,32 @@ export interface EstimatesCurrentEpochEnd {
   finishBlockNumber: number
 }
 
-const estimateCurrentEpochEnd = async (epochs?: EpochProps[], average = false): Promise<EstimatesCurrentEpochEnd> => {
+/**
+ * Calculates the estimate finish time and block for the current Epoch, based on historic data.
+ * @param { EpochBasicData[] } epochs - list of Epochs (Entity returned by the Subgraph)
+ * @param { boolean } average
+ * @returns Promise<EstimatesCurrentEpochEnd>
+ */
+const estimateCurrentEpochEnd = async (
+  epochs?: EpochBasicData[],
+  average = false,
+): Promise<EstimatesCurrentEpochEnd> => {
   let pendingTime = 0 // estimated life time for the current epoch
   let finishBlockNumber = 0 // estimated block for when the current epoch may end
 
   if (!epochs) return { pendingTime, finishBlockNumber }
 
-  const sortedEpochs = epochs.sort((a, b) => +b.id - +a.id)
+  const sortedEpochs = epochs.sort((a, b) => +b.id - +a.id) // sort from newest to oldest
   const currentEpoch = sortedEpochs.slice(0, 1)[0] // currently active epoch
 
-  // builds an array of the form [10, 1, 21, 11, 40, 22]
+  // builds an array of the form [1, 10, 11, 21, 22, 40]
   // where 10 is the last block of the first epoch in the collection
   // and 1 is the first block of the first epoch in the collection
   // 21 is the last block of the second epoch and 11 is it's first block and so on
   const blocksRange = sortedEpochs
-    .reduce((acc: number[], epoch, index) => {
+    .reduce((acc: [number, number][], epoch, index) => {
       if (index !== 0) {
-        acc.push(+epoch.startBlockNumber)
-        acc.push(+epoch.endBlockNumber)
+        acc.push([+epoch.startBlockNumber, +epoch.endBlockNumber])
       }
 
       return acc
@@ -65,10 +78,18 @@ const estimateCurrentEpochEnd = async (epochs?: EpochProps[], average = false): 
     .reverse()
 
   try {
-    const [currentBlock, epochsRangesTimestamps] = await Promise.all([
+    const [currentBlock, epochsTimestamps]: [number, number[]] = await Promise.all([
       ethApi.getBlockNumber(),
-      ethApi.getBatchBlocksTimestamps(blocksRange),
+      ethApi.getBatchBlocksTimestamps(blocksRange.flat()),
     ])
+
+    const epochsRangesTimestamps = epochsTimestamps.reduce((acc: [number, number][], block, index, blocks) => {
+      if (index % 2) {
+        acc.push([blocks[index - 1], block])
+      }
+      return acc
+    }, [])
+
     const epochBlockCount = average ? distanceAverage(blocksRange) : distanceMedian(blocksRange)
     const epochDuration = average ? distanceAverage(epochsRangesTimestamps) : distanceMedian(epochsRangesTimestamps)
     finishBlockNumber = +currentEpoch.startBlockNumber + epochBlockCount
@@ -76,7 +97,7 @@ const estimateCurrentEpochEnd = async (epochs?: EpochProps[], average = false): 
     const currentBlocksTimes = epochDuration / epochBlockCount
     pendingTime = Math.floor(currentBlocksLeft * currentBlocksTimes) * 1000 // milliseconds
   } catch (e) {
-    console.error('Failed to retrieve blocks tiemstamps', e)
+    console.error('Failed to retrieve blocks timestamps', e)
   }
 
   return { pendingTime, finishBlockNumber }

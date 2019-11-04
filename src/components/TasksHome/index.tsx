@@ -3,7 +3,8 @@ import SectionTitle from '../Common/SectionTitle'
 import TaskBlock from '../TaskBlock'
 import { useQuery } from '@apollo/react-hooks'
 import { shortEngHumanizer } from '../../utils/humanizer'
-import { TaskBasicData, TASKS_INITIAL_VALUES, TASKS_QUERY, TASKS_SUBSCRIBE } from '../Tasks'
+import { TASKS_INITIAL_VALUES, TASKS_QUERY, TASKS_SUBSCRIBE } from 'components/Tasks/queries'
+import { TaskBasicData } from 'components/Tasks/types'
 
 const TasksHome = (props: any) => {
   const { subscribeToMore, data, error, loading } = useQuery(TASKS_QUERY, {

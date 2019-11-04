@@ -1,6 +1,5 @@
 import React from 'react'
-import styled, { withTheme } from 'styled-components'
-import gql from 'graphql-tag'
+import { withTheme } from 'styled-components'
 import { History } from 'history'
 import { useQuery } from '@apollo/react-hooks'
 import BaseTable from '../Common/BaseTable'
@@ -8,168 +7,163 @@ import { FlexAlign } from '../Common/EnhancedTableHead'
 import HexAddr from '../Common/HexAddr'
 import SectionTitle from '../Common/SectionTitle'
 import FullLoading from '../Common/FullLoading'
-import { TaskStatus } from '../TaskBlock'
 import { Value } from '../Common/GridCell'
 import TaskDetailed, { TaskDetailedProps } from '../TaskDetailed'
-
-enum Direction {
-  'ascending' = 'asc',
-  'descending' = 'desc',
-}
-
-enum FieldToGraph {
-  'taskId' = 'id',
-  'taskStatus' = 'status',
-  'taskEpochNumber' = 'epoch',
-  'taskUserAddress' = 'sender',
-  'taskScAddress' = 'secretContract',
-  'taskEngGasUsed' = 'gasUsed',
-  'taskNumber' = 'order',
-}
-
-enum GraphToField {
-  'id' = 'taskId',
-  'status' = 'taskStatus',
-  'epoch' = 'taskEpochNumber',
-  'sender' = 'taskUserAddress',
-  'secretContract' = 'taskScAddress',
-  'gasUsed' = 'taskEngGasUsed',
-  'order' = 'taskNumber',
-}
-
-export interface TaskBasicData {
-  id: string
-  status: string
-  sender: string
-  createdAt: string
-  modifiedAt: string | null
-  createdAtTransaction: string
-  order: string
-  gasUsed: string
-  gasLimit: string
-  gasPrice: string
-  optionalEthereumContractAddress: string | null
-  time: string
-  secretContract: {
-    address: string
-  } | null
-  epoch: {
-    id: string
-  }
-}
+import SearchBar from 'components/Common/SearchBar'
+import {
+  TASKS_BY_SECRET_CONTRACT_QUERY,
+  TASKS_BY_USER_ADDRESS_QUERY,
+  TASKS_QUERY,
+  TASKS_INITIAL_VALUES,
+  TASKS_BY_ID_QUERY,
+} from './queries'
+import { Direction, FieldToGraph, GraphToField, TaskBasicData, TaskStatus } from './types'
+import { LinkText } from '../Common/LinkText'
+import { DocumentNode } from 'graphql'
 
 interface TasksProps {
   theme?: any
   history: History
-  match: {
+  match?: {
     params: {
-      userAddress: string | undefined
+      userAddress?: string
     }
   }
+  scAddr?: string
+  scTasks?: string
+  query: DocumentNode
+  queryVariables: any
 }
 
-interface LinkTextProps extends React.HTMLAttributes<HTMLSpanElement> {
-  underline?: boolean
+interface TaskIdProps {
+  onClick: () => void
+  id: string
 }
+const TaskId: React.FC<TaskIdProps> = ({ id, onClick }) => (
+  <LinkText underline={true} onClick={onClick}>
+    <HexAddr start={8} end={8}>
+      {id}
+    </HexAddr>
+  </LinkText>
+)
 
-export const LinkText = styled.span<LinkTextProps>`
-  cursor: ${props => (props.underline ? 'pointer' : 'default')};
-  overflow: hidden;
-  text-decoration: ${props => (props.underline ? 'underline' : 'none')};
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`
+interface StatusProps {
+  color: string
+  status: string
+}
+const Status: React.FC<StatusProps> = ({ color, status }) => (
+  <Value underline={false} color={color}>
+    {status}
+  </Value>
+)
 
-const basicTaskDetailsFragment = gql`
-  fragment BasicTaskDetails on Task {
-    id
-    sender
-    createdAtTransaction
-    createdAt
-    modifiedAt
-    status
-    order
-    gasUsed
-    gasLimit
-    gasPrice
-    optionalEthereumContractAddress
-    secretContract {
-      address
-    }
-    epoch {
-      id
-    }
-  }
-`
+interface TaskEpochProps {
+  onClick: () => void
+  id: string
+}
+const TaskEpoch: React.FC<TaskEpochProps> = ({ id, onClick }) => (
+  <LinkText underline={true} onClick={onClick}>
+    {id}
+  </LinkText>
+)
 
-export const TASKS_QUERY = gql`
-  query Tasks($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
-    tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
-      ...BasicTaskDetails
-    }
-    enigmaState(id: 0) {
-      taskCount
-    }
-  }
-  ${basicTaskDetailsFragment}
-`
+interface TaskUserProps {
+  onClick: () => void
+  user: string
+}
+const TaskUser: React.FC<TaskUserProps> = ({ user, onClick }) => (
+  <LinkText underline={true} onClick={onClick}>
+    {user}
+  </LinkText>
+)
 
-export const TASKS_SUBSCRIBE = gql`
-  subscription TasksSubscribe($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
-    tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
-      ...BasicTaskDetails
-    }
-  }
-  ${basicTaskDetailsFragment}
-`
-
-export const TASKS_BY_USER_ADDRESS_QUERY = gql`
-  query Tasks($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $sender: String) {
-    tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection, where: { sender: $sender }) {
-      ...BasicTaskDetails
-    }
-    enigmaState(id: 0) {
-      taskCount
-    }
-  }
-  ${basicTaskDetailsFragment}
-`
+interface TaskSecretContractProps {
+  onClick: () => void
+  secretContract: string
+}
+const TaskSecretContract: React.FC<TaskSecretContractProps> = ({ onClick, secretContract }) => (
+  <LinkText underline={true} onClick={onClick}>
+    <HexAddr start={8} end={8}>
+      {secretContract}
+    </HexAddr>
+  </LinkText>
+)
 
 const HEADER_CELLS = [
-  { id: 'taskId', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexStart, label: 'Task ID' },
-  { id: 'taskStatus', useClassShowOnDesktop: false, sortable: false, align: FlexAlign.center, label: 'Status' },
-  { id: 'taskEpochNumber', useClassShowOnDesktop: false, sortable: false, align: FlexAlign.flexEnd, label: 'Epoch' },
-  { id: 'taskUserAddress', useClassShowOnDesktop: true, sortable: true, align: FlexAlign.flexStart, label: 'User' },
+  { id: 'taskId', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.start, label: 'Task ID' },
+  { id: 'taskStatus', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.center, label: 'Status' },
+  { id: 'taskEpochNumber', useClassShowOnDesktop: false, sortable: false, align: FlexAlign.end, label: 'Epoch' },
+  { id: 'taskUserAddress', useClassShowOnDesktop: true, sortable: true, align: FlexAlign.start, label: 'User' },
   {
     id: 'taskScAddress',
     useClassShowOnDesktop: true,
     sortable: false,
-    align: FlexAlign.flexStart,
+    align: FlexAlign.start,
     label: 'Secret Contract',
   },
   {
     id: 'taskEngGasUsed',
     useClassShowOnDesktop: true,
     sortable: true,
-    align: FlexAlign.flexEnd,
+    align: FlexAlign.end,
     label: 'ENG Gas Used',
   },
-  { id: 'taskNumber', useClassShowOnDesktop: true, sortable: true, align: FlexAlign.flexEnd, label: 'Task Number' },
+  { id: 'taskNumber', useClassShowOnDesktop: true, sortable: true, align: FlexAlign.end, label: 'Task Number' },
 ]
 
-export const TASKS_INITIAL_VALUES = {
-  total: 10,
-  skip: 0,
-  orderBy: FieldToGraph.taskNumber,
-  orderDirection: Direction.descending,
+const TasksWrapper: React.FC<any> = ({ history, match = { params: {} }, scAddr, scTasks }) => {
+  const {
+    params: { userAddress: sender },
+  } = match
+  const [taskParams, setTaskParams] = React.useState({ query: TASKS_QUERY, queryVariables: TASKS_INITIAL_VALUES })
+
+  React.useEffect(() => {
+    if (scAddr) {
+      setTaskParams({ query: TASKS_BY_SECRET_CONTRACT_QUERY, queryVariables: { ...TASKS_INITIAL_VALUES, scAddr } })
+    } else if (sender) {
+      setTaskParams({ query: TASKS_BY_USER_ADDRESS_QUERY, queryVariables: { ...TASKS_INITIAL_VALUES, sender } })
+    }
+  }, [])
+
+  const handleRequestSearch = async (event: React.SyntheticEvent<React.FormEvent>, id: any) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    if (!id) return
+
+    setTaskParams({ query: TASKS_BY_ID_QUERY, queryVariables: { ...TASKS_INITIAL_VALUES, id } })
+  }
+
+  const handleClearSearch = () => {
+    setTaskParams({ query: TASKS_QUERY, queryVariables: TASKS_INITIAL_VALUES })
+  }
+
+  const right =
+    !scAddr && !sender ? (
+      <SearchBar
+        placeholder="Search by Task ID..."
+        onRequestSearch={handleRequestSearch}
+        onClearSearch={handleClearSearch}
+      />
+    ) : null
+
+  return (
+    <>
+      <SectionTitle right={right}>
+        Tasks
+        {sender && (
+          <span>
+            {' '}
+            From User <LinkText underline={false}>{sender}</LinkText>
+          </span>
+        )}
+      </SectionTitle>
+      <Tasks {...taskParams} history={history} scTasks={scTasks} />
+    </>
+  )
 }
 
-const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
-  const {
-    params: { userAddress },
-  } = match
-  const query = userAddress ? TASKS_BY_USER_ADDRESS_QUERY : TASKS_QUERY
-  const queryVariables = userAddress ? { ...TASKS_INITIAL_VALUES, sender: userAddress } : TASKS_INITIAL_VALUES
+const Tasks: React.FC<TasksProps> = withTheme(({ theme, history, scTasks, query, queryVariables }) => {
   const { data, error, loading, variables, refetch } = useQuery(query, {
     variables: queryVariables,
     fetchPolicy: 'cache-and-network',
@@ -189,6 +183,7 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
       orderDirection: orderDirection === Direction.descending ? Direction.ascending : Direction.descending,
     })
   }
+
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, page: number) => {
     refetch({ ...variables, skip: page * total })
   }
@@ -200,9 +195,8 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
   const [modalProps, setModalProps] = React.useState<TaskDetailedProps | null>(null)
   const closeModal = () => setModalIsOpen(false)
-
   const openModal = (task: TaskDetailedProps) => {
-    const taskStatus = TaskStatus[task.status as keyof typeof TaskStatus] || 'Success'
+    const taskStatus = TaskStatus[task.status]
     const taskStatusColor = theme.taskStatus[taskStatus.toLowerCase() as keyof typeof theme.taskStatus]
     const taskDetailedProps: TaskDetailedProps = { ...task, taskStatus, taskStatusColor }
 
@@ -222,17 +216,69 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
     history.push(`/epochs/${epochId}`)
   }
 
+  const extractTaskData = (task: TaskBasicData, index: number) => {
+    const taskStatus = TaskStatus[task.status]
+    const taskStatusColor = theme.taskStatus[taskStatus.toLowerCase() as keyof typeof theme.taskStatus]
+    const taskDetailedProps: TaskDetailedProps = { ...task, taskStatus, taskStatusColor }
+
+    const id = {
+      align: HEADER_CELLS[0].align,
+      useClassShowOnDesktop: false,
+      id: `${task.id}_${task.id}_id_${index}`,
+      value: <TaskId id={task.id} onClick={() => openModal(taskDetailedProps)} />,
+    }
+    const status = {
+      align: HEADER_CELLS[1].align,
+      useClassShowOnDesktop: false,
+      id: `${task.id}_${taskStatus}_status_${index}`,
+      value: <Status color={taskStatusColor} status={taskStatus} />,
+    }
+    const epoch = {
+      align: HEADER_CELLS[2].align,
+      useClassShowOnDesktop: false,
+      id: `${task.id}_${task.epoch.id}_epoch_${index}`,
+      value: <TaskEpoch id={task.epoch.id} onClick={() => goToEpochDetailed(task.epoch.id)} />,
+    }
+    const user = {
+      align: HEADER_CELLS[3].align,
+      useClassShowOnDesktop: true,
+      id: `${task.id}_${task.sender}_user_${index}`,
+      value: <TaskUser user={task.sender} onClick={() => goToUserDetails(task.sender)} />,
+    }
+    const secretContract = {
+      align: HEADER_CELLS[4].align,
+      useClassShowOnDesktop: true,
+      id: `${task.id}_${task.secretContract && task.secretContract.address}_sc_${index}`,
+      value: task.secretContract ? (
+        <TaskSecretContract
+          secretContract={task.secretContract.address}
+          onClick={() => task && task.secretContract && goToSecretContractDetails(task.secretContract.address)}
+        />
+      ) : (
+        '-'
+      ),
+    }
+    const gasUsed = {
+      align: HEADER_CELLS[5].align,
+      useClassShowOnDesktop: true,
+      id: `${task.id}_${task.gasUsed}_gu_${index}`,
+      value: task.gasUsed,
+    }
+    const number = {
+      align: HEADER_CELLS[6].align,
+      useClassShowOnDesktop: true,
+      id: `${task.id}_${task.order}_nr_${index}`,
+      value: task.order,
+    }
+
+    return {
+      id: task.id,
+      cells: [id, status, epoch, user, secretContract, gasUsed, number],
+    }
+  }
+
   return (
     <>
-      <SectionTitle>
-        Tasks
-        {userAddress && (
-          <span>
-            {' '}
-            From User <LinkText underline={false}>{userAddress}</LinkText>
-          </span>
-        )}
-      </SectionTitle>
       <BaseTable
         headerProps={{
           headerCells: HEADER_CELLS,
@@ -240,94 +286,10 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
           orderBy: GraphToField[orderBy as keyof typeof GraphToField],
           onRequestSort: handleRequestSort,
         }}
-        rows={
-          data &&
-          data.tasks &&
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-          // @ts-ignore
-          data.tasks.map((task, index) => {
-            const taskStatus = TaskStatus[task.status as keyof typeof TaskStatus] || 'Success'
-            const taskStatusColor = theme.taskStatus[taskStatus.toLowerCase() as keyof typeof theme.taskStatus]
-            const taskDetailedProps: TaskDetailedProps = { ...task, taskStatus, taskStatusColor }
-
-            return {
-              id: task.id,
-              cells: [
-                {
-                  align: FlexAlign.flexStart,
-                  useClassShowOnDesktop: false,
-                  id: `${task.id}_${task.id}_id_${index}`,
-                  value: (
-                    <LinkText underline={true} onClick={() => openModal(taskDetailedProps)}>
-                      <HexAddr start={8} end={8}>
-                        {task.id}
-                      </HexAddr>
-                    </LinkText>
-                  ),
-                },
-                {
-                  align: FlexAlign.center,
-                  useClassShowOnDesktop: false,
-                  id: `${task.id}_${taskStatus}_status_${index}`,
-                  value: (
-                    <Value underline={false} color={taskStatusColor}>
-                      {taskStatus}
-                    </Value>
-                  ),
-                },
-                {
-                  align: FlexAlign.flexEnd,
-                  useClassShowOnDesktop: false,
-                  id: `${task.id}_${task.epoch.id}_epoch_${index}`,
-                  value: (
-                    <LinkText underline={true} onClick={() => goToEpochDetailed(task.epoch.id)}>
-                      {task.epoch.id}
-                    </LinkText>
-                  ),
-                },
-                {
-                  align: FlexAlign.flexStart,
-                  useClassShowOnDesktop: true,
-                  id: `${task.id}_${task.sender}_user_${index}`,
-                  value: (
-                    <LinkText underline={true} onClick={() => goToUserDetails(task.sender)}>
-                      {task.sender}
-                    </LinkText>
-                  ),
-                },
-                {
-                  align: FlexAlign.flexStart,
-                  useClassShowOnDesktop: true,
-                  id: `${task.id}_${task.secretContract && task.secretContract.address}_sc_${index}`,
-                  value: task.secretContract ? (
-                    <LinkText underline={true} onClick={() => goToSecretContractDetails(task.secretContract.address)}>
-                      <HexAddr start={8} end={8}>
-                        {task.secretContract.address}
-                      </HexAddr>
-                    </LinkText>
-                  ) : (
-                    '-'
-                  ),
-                },
-                {
-                  align: FlexAlign.flexEnd,
-                  useClassShowOnDesktop: true,
-                  id: `${task.id}_${task.gasUsed}_gu_${index}`,
-                  value: task.gasUsed,
-                },
-                {
-                  align: FlexAlign.flexEnd,
-                  useClassShowOnDesktop: true,
-                  id: `${task.id}_${task.order}_nr_${index}`,
-                  value: task.order,
-                },
-              ],
-            }
-          })
-        }
+        rows={data && data.tasks && data.tasks.map(extractTaskData)}
         paginatorProps={{
           colSpan: HEADER_CELLS.length,
-          count: data ? +data.enigmaState.taskCount : 0,
+          count: scTasks ? +scTasks : data && data.enigmaState ? +data.enigmaState.taskCount : 0,
           onChangePage: handleChangePage,
           onChangeRowsPerPage: handleChangeRowsPerPage,
           page: Math.floor(skip / total),
@@ -338,6 +300,6 @@ const Tasks: React.FC<TasksProps> = ({ theme, history, match }: TasksProps) => {
       {loading && !data && <FullLoading />}
     </>
   )
-}
+})
 
-export default withTheme(Tasks)
+export default TasksWrapper

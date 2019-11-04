@@ -43,6 +43,36 @@ Subgraph to connect the explorer to.
 _Local Value_: `enigmampc/enigma`
 
 ---
+### `REACT_APP_ENIGMA_CONTRACT_ADDRESS`
+Enigma Contract address in Ethereum network
+
+_Local Value_: `0x59d3631c86bbe35ef041872d502f218a39fba150`
+
+---
+### `REACT_APP_ENIGMA_TOKEN_ADDRESS`
+Enigma Token Contract address in Ethereum network
+
+_Local Value_: `0xCfEB869F69431e42cdB54A4F4f105C19C080A601`
+
+---
+### `REACT_APP_ENIGMA_RPC_URL`
+Enigma p2p network address for RPC calls
+
+_Local Value_: `http://localhost:3346`
+
+---
+### `REACT_APP_COINMARKET_CAP_API_KEY`
+Coinmarket Cap API KEY
+
+_Local Value_: _not set_
+
+---
+### `REACT_APP_ETHERSCAN_URL`
+Etherscan address detail link
+
+_Local Value_: `etherscan.io/address`
+
+---
 #### `REACT_APP_ETH_URL`
 Blockchain RPC host.
 

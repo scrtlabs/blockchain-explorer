@@ -7,14 +7,14 @@ import ProgressCircle from '../ProgressCircle'
 import EpochBlockNumbers, { EpochBlockTypes } from '../EpochBlockNumbers'
 import EpochDetailed from '../EpochDetailed'
 import { shortEngHumanizer } from '../../utils/humanizer'
-import { EpochBlocksInfoProps, EpochProps } from 'components/Epochs'
+import { EpochBlocksInfoProps, EpochBasicData } from 'components/Epochs/types'
 
 export interface EpochBlockProps extends HTMLAttributes<HTMLDivElement> {
   isCurrent: boolean
   currentBlockNumber: number
   finishBlockNumber: number
   pendingTime?: number
-  epoch: EpochProps
+  epoch: EpochBasicData
   theme?: any
 }
 

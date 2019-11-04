@@ -1,6 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
 import Card from '../Common/Card'
+import { useSubscription } from '@apollo/react-hooks'
+import gql from 'graphql-tag'
+import { coinMarketCap } from '../../utils/api'
 
 const NetworkInfoCardStyled = styled(Card)`
   min-width: 244px;
@@ -34,40 +37,86 @@ const Code = styled.span`
   font-size: 18px;
 `
 
-const info = [
+const INFO = [
   {
     title: 'ENG Price',
-    value: '111,111.111',
+    key: 'price',
     code: 'USD',
   },
   {
     title: 'Market Cap',
-    value: '9,999,999',
+    key: 'marketCap',
     code: 'USD',
   },
   {
     title: 'Unique Users',
-    value: '9888777',
+    key: 'users',
   },
   {
     title: 'Workers',
-    value: '9999999',
+    key: 'workers',
   },
   {
     title: 'Staked ENG',
-    value: '3333333',
+    key: 'stake',
   },
 ]
 
+const ENIGMA_STATE_QUERY = gql`
+  subscription EnigmaState {
+    enigmaState(id: 0) {
+      workerCount
+      userCount
+      staked
+    }
+  }
+`
+
 const NetworkInfoCard = ({ ...restProps }) => {
+  const { data, error, loading } = useSubscription(ENIGMA_STATE_QUERY)
+  const [stats, setStats] = React.useState({
+    marketCap: '0',
+    price: '0',
+    users: '0',
+    workers: '0',
+    stake: '0',
+  })
+
+  if (error) console.error(error.message)
+
+  React.useMemo(() => {
+    const partialStats = {
+      users: stats.users,
+      workers: stats.workers,
+      stake: stats.stake,
+    }
+
+    if (data && data.enigmaState) {
+      partialStats.users = data.enigmaState.userCount
+      partialStats.workers = data.enigmaState.workerCount
+      partialStats.stake = data.enigmaState.staked
+    }
+
+    setStats(prev => ({ ...prev, ...partialStats }))
+  }, [data && data.enigmaState, loading])
+
+  React.useEffect(() => {
+    const retrieveMarketStats = async () => {
+      const { price, marketCap } = await coinMarketCap()
+      setStats(prev => ({ ...prev, price, marketCap }))
+    }
+
+    retrieveMarketStats()
+  }, [])
+
   return (
     <NetworkInfoCardStyled {...restProps}>
-      {info.map((item, index) => {
+      {INFO.map(item => {
         return (
-          <Item key={index}>
+          <Item key={item.key}>
             <Title>{item.title}</Title>
             <Value>
-              {item.value} {item.code ? <Code>{item.code}</Code> : null}
+              {stats[item.key as keyof typeof stats]} {item.code && <Code>{item.code}</Code>}
             </Value>
           </Item>
         )

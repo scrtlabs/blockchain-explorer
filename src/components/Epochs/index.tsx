@@ -1,5 +1,4 @@
 import React from 'react'
-import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
 import { History } from 'history'
 import BaseTable from '../Common/BaseTable'
@@ -7,188 +6,119 @@ import { FlexAlign } from '../Common/EnhancedTableHead'
 import SectionTitle from '../Common/SectionTitle'
 import FullLoading from '../Common/FullLoading'
 import { shortEngHumanizer } from '../../utils/humanizer'
-import EpochDetailed, { EpochDetailedProps, WorkerType } from '../EpochDetailed'
-import { LinkText } from '../Tasks'
+import EpochDetailed, { EpochDetailedProps } from '../EpochDetailed'
 import estimateCurrentEpochEnd from '../../utils/estimateCurrentEpochEnd'
 import { EpochBlockTypes } from '../EpochBlockNumbers'
 import ethApi from '../../utils/eth'
-
-enum Direction {
-  'ascending' = 'asc',
-  'descending' = 'desc',
-}
-
-enum FieldToGraph {
-  'epochId' = 'order',
-  'epochAge' = 'age',
-  'epochTotalTasks' = 'taskCount',
-  'epochCompleteTasks' = 'completedTaskCount',
-  'epochWorkers' = 'workerCount',
-  'epochEngGasUsed' = 'gasUsed',
-  'epochEngReward' = 'reward',
-}
-
-enum GraphToField {
-  'order' = 'epochId',
-  'age' = 'epochAge',
-  'taskCount' = 'epochTotalTasks',
-  'completedTaskCount' = 'epochCompleteTasks',
-  'workerCount' = 'epochWorkers',
-  'gasUsed' = 'epochEngGasUsed',
-  'reward' = 'epochEngReward',
-}
-
-export interface EpochProps {
-  id: string
-  completeBlockNumber: string
-  inclusionBlockNumber: string
-  startBlockNumber: string
-  endBlockNumber: string
-  startTime: string
-  endTime: string
-  workers: WorkerType[]
-  tasks: any[]
-  taskCount: string
-  completedTaskCount: string
-  workerCount: string
-  userCount: string
-  gasUsed: string
-  reward: string
-}
+import SearchBar from '../Common/SearchBar'
+import { DocumentNode } from 'graphql'
+import { LinkText } from '../Common/LinkText'
+import { EpochBasicData, FieldToGraph, GraphToField, Direction, EpochBlocksInfoProps } from './types'
+import { EPOCHS_QUERY, EPOCHS_BY_WORKER_QUERY, EPOCH_BY_ID_QUERY, EPOCHS_INITIAL_VALUES } from './queries'
 
 interface EpochsProps extends React.HTMLAttributes<HTMLDivElement> {
-  title?: string
-  workerId?: string | null
-  match?: {
-    params?: {
-      epochId?: string
-    }
-  }
+  byParam: boolean
   history?: History
+  query: DocumentNode
+  queryVariables: any
 }
 
-export interface EpochBlocksInfoProps {
-  value: string | number
-  title: string
-  type: EpochBlockTypes
+interface EpochIdProps {
+  onClick: () => void
+  id: string
 }
+const EpochId: React.FC<EpochIdProps> = ({ id, onClick }) => (
+  <LinkText underline={true} onClick={onClick}>
+    #{id}
+  </LinkText>
+)
 
-const epochesDetailsFragment = gql`
-  fragment EpochsDetails on Epoch {
-    id
-    startTime
-    endTime
-    startBlockNumber
-    endBlockNumber
-    workerCount
-    completedTaskCount
-    taskCount
-    userCount
-    failedTaskCount
-    gasUsed
-    reward
-  }
-`
-
-const latestEpochFragment = gql`
-  fragment LatestEpoch on EnigmaState {
-    latestEpoch {
-      id
-    }
-  }
-`
-
-export const EPOCHS_QUERY = gql`
-  query Epoches($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
-    epoches(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
-      ...EpochsDetails
-    }
-    enigmaState(id: 0) {
-      ...LatestEpoch
-    }
-  }
-  ${epochesDetailsFragment}
-  ${latestEpochFragment}
-`
-
-export const EPOCHS_BY_ID_QUERY = gql`
-  query Epoch($epochId: String) {
-    epoch(id: $epochId) {
-      ...EpochsDetails
-    }
-    enigmaState(id: 0) {
-      ...LatestEpoch
-    }
-  }
-  ${epochesDetailsFragment}
-  ${latestEpochFragment}
-`
-
-export const EPOCHS_BY_WORKER_QUERY = gql`
-  query EpochesByWorker($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $workerId: String) {
-    worker(id: $workerId) {
-      epochs(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
-        ...EpochsDetails
-      }
-      epochCount
-    }
-    enigmaState(id: 0) {
-      ...LatestEpoch
-    }
-  }
-  ${epochesDetailsFragment}
-  ${latestEpochFragment}
-`
+const calculateProgress = ({ taskCount, completedTaskCount }: EpochBasicData) =>
+  +taskCount === 0 ? null : `${+(+completedTaskCount / +taskCount).toFixed(2) * 100}`
 
 const HEADER_CELLS = [
-  { id: 'epochId', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexEnd, label: 'Number' },
+  { id: 'epochId', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.start, label: 'Number' },
   { id: 'epochAge', useClassShowOnDesktop: false, sortable: false, align: FlexAlign.center, label: 'Age' },
   {
     id: 'epochTotalTasks',
     useClassShowOnDesktop: false,
     sortable: true,
-    align: FlexAlign.flexEnd,
+    align: FlexAlign.end,
     label: 'Number Of Tasks',
   },
   {
     id: 'epochCompleteTasks',
     useClassShowOnDesktop: true,
     sortable: false,
-    align: FlexAlign.flexEnd,
+    align: FlexAlign.end,
     label: '% Of Completed Tasks',
   },
   {
     id: 'epochWorkers',
     useClassShowOnDesktop: true,
     sortable: true,
-    align: FlexAlign.flexEnd,
+    align: FlexAlign.end,
     label: 'Number Of Selected Workers',
   },
-  {
-    id: 'epochEngGasUsed',
-    useClassShowOnDesktop: true,
-    sortable: true,
-    align: FlexAlign.flexEnd,
-    label: 'ENG Gas Used',
-  },
-  { id: 'epochEngReward', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.flexEnd, label: 'ENG Reward' },
+  { id: 'epochEngGasUsed', useClassShowOnDesktop: true, sortable: true, align: FlexAlign.end, label: 'ENG Gas Used' },
+  { id: 'epochEngReward', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.end, label: 'ENG Reward' },
 ]
 
-export const EPOCHS_INITIAL_VALUES = {
-  total: 10,
-  skip: 0,
-  orderBy: FieldToGraph.epochId,
-  orderDirection: Direction.descending,
+const EpochsWrapper: React.FC<any> = ({ title = 'Epochs', workerId, epoches, match = { params: {} }, history }) => {
+  const {
+    params: { epochId },
+  } = match
+  const [epochParams, setEpochParams] = React.useState({ query: EPOCHS_QUERY, queryVariables: EPOCHS_INITIAL_VALUES })
+
+  React.useEffect(() => {
+    if (epochId) {
+      setEpochParams({ query: EPOCH_BY_ID_QUERY, queryVariables: { ...EPOCHS_INITIAL_VALUES, epochId } })
+    }
+  }, [])
+
+  React.useMemo(() => {
+    if (workerId && epoches.length) {
+      setEpochParams({ query: EPOCHS_BY_WORKER_QUERY, queryVariables: { ...EPOCHS_INITIAL_VALUES, workerId, epoches } })
+    }
+  }, [workerId, epoches && epoches.length])
+
+  React.useMemo(() => {
+    if (!epochId) {
+      setEpochParams({ query: EPOCHS_QUERY, queryVariables: EPOCHS_INITIAL_VALUES })
+    }
+  }, [epochId])
+
+  const handleRequestSearch = async (event: React.SyntheticEvent<React.FormEvent>, epochId: any) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    if (!epochId) return
+
+    setEpochParams({ query: EPOCH_BY_ID_QUERY, queryVariables: { ...EPOCHS_INITIAL_VALUES, epochId } })
+  }
+
+  const handleClearSearch = () => {
+    setEpochParams({ query: EPOCHS_QUERY, queryVariables: EPOCHS_INITIAL_VALUES })
+  }
+
+  const right =
+    !workerId && !epochId ? (
+      <SearchBar
+        placeholder="Search by Epoch number..."
+        onRequestSearch={handleRequestSearch}
+        onClearSearch={handleClearSearch}
+      />
+    ) : null
+
+  return (
+    <>
+      <SectionTitle right={right}>{title}</SectionTitle>
+      <Epochs {...epochParams} history={history} byParam={!!epochId} />
+    </>
+  )
 }
 
-const calculateProgress = (epoch: EpochProps) =>
-  +epoch.taskCount === 0 ? null : `${+(+epoch.completedTaskCount / +epoch.taskCount).toFixed(2) * 100}`
-
-const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null, match, history }: EpochsProps) => {
-  const epochId = match && match.params && match.params.epochId
-  const query = workerId ? EPOCHS_BY_WORKER_QUERY : epochId ? EPOCHS_BY_ID_QUERY : EPOCHS_QUERY
-  const queryVariables = workerId || epochId ? { ...EPOCHS_INITIAL_VALUES, workerId, epochId } : EPOCHS_INITIAL_VALUES
-
+const Epochs: React.FC<EpochsProps> = ({ byParam, history, query, queryVariables }: EpochsProps) => {
   const { data, error, loading, variables, refetch } = useQuery(query, { variables: queryVariables })
   const { total, skip, orderBy, orderDirection } = variables
 
@@ -220,12 +150,12 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null, matc
   const closeModal = () => {
     setModalIsOpen(false)
 
-    if (epochId && history) {
+    if (byParam && history) {
       history.replace(`/epochs`)
     }
   }
 
-  const openModal = async (epoch: EpochProps) => {
+  const openModal = async (epoch: EpochBasicData) => {
     const progress = calculateProgress(epoch)
     const isCurrent: boolean = epoch.id === data.enigmaState.latestEpoch.id
     const currentEpochEstimates = estimateCurrentEpochEnd(data.epoches)
@@ -249,70 +179,68 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null, matc
     setModalIsOpen(true)
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
-  const extractEpochData = (epoch, index) => {
+  const extractEpochData = (epoch: EpochBasicData, index: number) => {
     const isCurrent: boolean = epoch.id === data.enigmaState.latestEpoch.id
     const age = isCurrent ? 'current' : shortEngHumanizer(Date.now() - +epoch.endTime * 1000)
     const progress = calculateProgress(epoch)
 
+    const id = {
+      align: HEADER_CELLS[0].align,
+      useClassShowOnDesktop: false,
+      id: `${epoch.id}_${epoch.id}`,
+      value: <EpochId id={epoch.id} onClick={() => openModal(epoch)} />,
+    }
+    const epochAge = {
+      align: HEADER_CELLS[1].align,
+      useClassShowOnDesktop: false,
+      id: `${epoch.id}_${age}_age`,
+      value: age,
+    }
+    const taskCount = {
+      align: HEADER_CELLS[2].align,
+      useClassShowOnDesktop: false,
+      id: `${epoch.id}_${epoch.taskCount}_tasks_${index}`,
+      value: epoch.taskCount,
+    }
+    const epochProgress = {
+      align: HEADER_CELLS[3].align,
+      useClassShowOnDesktop: true,
+      id: `${epoch.id}_${epoch.completedTaskCount + epoch.taskCount + epoch.failedTaskCount}_${index}`,
+      value: progress === null ? '-' : `${progress}%`,
+    }
+    const workerCount = {
+      align: HEADER_CELLS[4].align,
+      useClassShowOnDesktop: true,
+      id: `${epoch.id}_${epoch.workerCount}_w_${index}`,
+      value: epoch.workerCount || '-',
+    }
+    const gasUsed = {
+      align: HEADER_CELLS[5].align,
+      useClassShowOnDesktop: true,
+      id: `${epoch.id}_${epoch.gasUsed}_gu_${index}`,
+      value: epoch.gasUsed || '-',
+    }
+    const reward = {
+      align: HEADER_CELLS[6].align,
+      useClassShowOnDesktop: false,
+      id: `${epoch.id}_${epoch.reward}_rw_${index}`,
+      value: '-',
+    }
+
     return {
       id: epoch.id,
-      cells: [
-        {
-          align: FlexAlign.flexEnd,
-          useClassShowOnDesktop: false,
-          id: `${epoch.id}_${epoch.id}`,
-          value: (
-            <LinkText underline={true} onClick={() => openModal(epoch)}>
-              {epoch.id}
-            </LinkText>
-          ),
-        },
-        { align: FlexAlign.flexEnd, useClassShowOnDesktop: false, id: `${epoch.id}_${age}_age`, value: age },
-        {
-          align: FlexAlign.flexEnd,
-          useClassShowOnDesktop: false,
-          id: `${epoch.id}_${epoch.taskCount}_tasks_${index}`,
-          value: epoch.taskCount,
-        },
-        {
-          align: FlexAlign.flexEnd,
-          useClassShowOnDesktop: true,
-          id: `${epoch.id}_${epoch.completedTaskCount + epoch.taskCount + epoch.failedTaskCount}_${index}`,
-          value: progress === null ? '-' : `${progress}%`,
-        },
-        {
-          align: FlexAlign.flexEnd,
-          useClassShowOnDesktop: true,
-          id: `${epoch.id}_${epoch.workerCount}_w_${index}`,
-          value: epoch.workerCount || '-',
-        },
-        {
-          align: FlexAlign.flexEnd,
-          useClassShowOnDesktop: true,
-          id: `${epoch.id}_${epoch.gasUsed}_gu_${index}`,
-          value: epoch.gasUsed || '-',
-        },
-        {
-          align: FlexAlign.flexEnd,
-          useClassShowOnDesktop: false,
-          id: `${epoch.id}_${epoch.reward}_rw_${index}`,
-          value: '-',
-        },
-      ],
+      cells: [id, epochAge, taskCount, epochProgress, workerCount, gasUsed, reward],
     }
   }
 
   React.useMemo(() => {
-    if (data && data.epoch) {
+    if (byParam && data && data.epoch) {
       openModal(data.epoch)
     }
-  }, [data && data.epoch && data.epoch.id])
+  }, [byParam, data])
 
   return (
     <>
-      <SectionTitle>{title}</SectionTitle>
       <BaseTable
         headerProps={{
           headerCells: HEADER_CELLS,
@@ -331,7 +259,7 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null, matc
             data && data.epoches
               ? +data.enigmaState.latestEpoch.id + 1
               : data && data.worker
-              ? +data.worker.epochCount
+              ? variables.epoches.length
               : 0,
           onChangePage: handleChangePage,
           onChangeRowsPerPage: handleChangeRowsPerPage,
@@ -345,4 +273,4 @@ const Epochs: React.FC<EpochsProps> = ({ title = 'Epochs', workerId = null, matc
   )
 }
 
-export default Epochs
+export default EpochsWrapper
