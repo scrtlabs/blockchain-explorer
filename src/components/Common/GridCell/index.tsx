@@ -1,5 +1,6 @@
 import React, { HTMLAttributes } from 'react'
 import styled from 'styled-components'
+import CopyText from '../CopyText'
 
 export const GridCellStyled = styled.div`
   display: block;
@@ -36,7 +37,6 @@ export const Value = styled.p<ValueProps>`
   white-space: nowrap;
 
   @media (min-width: ${props => props.theme.themeBreakPoints.md}) {
-
   }
 `
 
@@ -45,16 +45,18 @@ export interface ValueAndSubtitleProps extends HTMLAttributes<HTMLDivElement> {
   underlineValue?: boolean
   value: string
   valueColor?: string
+  copy?: string
 }
 
 const GridCell: React.FC<ValueAndSubtitleProps> = (props: ValueAndSubtitleProps) => {
-  const { value, title, underlineValue, valueColor, ...restProps } = props
+  const { copy = '', value, title, underlineValue, valueColor, ...restProps } = props
 
   return (
     <GridCellStyled {...restProps}>
       <Title>{title}</Title>
       <Value underline={underlineValue} color={valueColor}>
         {value}
+        {copy !== '' && <CopyText text={copy} />}
       </Value>
     </GridCellStyled>
   )

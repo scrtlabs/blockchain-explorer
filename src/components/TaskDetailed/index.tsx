@@ -6,6 +6,7 @@ import GridCell from '../Common/GridCell'
 import ethApi from '../../utils/eth'
 import { TaskBasicData, TaskStatus } from 'components/Tasks/types'
 import getExternalLink from '../../utils/getExternalLink'
+import shrinkHexString from '../../utils/shrinkHexString'
 
 export interface TaskDetailedProps extends TaskBasicData {
   taskStatusColor: string
@@ -63,7 +64,7 @@ const TaskDetailed: React.FC<TaskDetailedProps> = props => {
     <ModalWrapper isOpen={modalIsOpen} title={`Task #${order}`} onRequestClose={closeModal}>
       <StrippedGrid>
         <StrippedGridRow columns={1}>
-          <GridCell title="ID" value={id} />
+          <GridCell title="ID" value={shrinkHexString(id, 16, 16)} copy={id} />
         </StrippedGridRow>
         <StrippedGridRow columns={3}>
           <GridCell title="Task Number" value={order} />
