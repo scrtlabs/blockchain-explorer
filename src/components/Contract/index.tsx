@@ -3,7 +3,6 @@ import Card from '../Common/Card'
 import SectionTitle from '../Common/SectionTitle'
 import CopyText from '../Common/CopyText'
 import { ButtonView } from '../Common/ButtonView'
-import { ButtonExpand } from '../Common/ButtonExpand'
 import GridCell, { GridCellStyled, Title, Value } from '../Common/GridCell'
 import styled from 'styled-components'
 import ModalWrapper from '../Common/ModalWrapper'
@@ -26,21 +25,13 @@ const DetailsCard = styled(Card)`
 
     @media (min-width: ${props => props.theme.themeBreakPoints.md}) {
       column-gap: 15px;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
     }
 
     @media (min-width: ${props => props.theme.themeBreakPoints.xxl}) {
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
     }
   }
-`
-
-const CopyContract = styled(CopyText)`
-  margin: 0;
-  position: absolute;
-  right: 35px;
-  top: 20px;
-  z-index: 5;
 `
 
 const ValueStyled = styled(Value)`
@@ -55,25 +46,6 @@ const ContractWrapper = styled.div`
   padding: 15px;
   position: relative;
   width: 100%;
-`
-
-const ContractSRC = styled.textarea`
-  background-color: #fafafa;
-  border-radius: 3px;
-  border: solid 1px #d5d5d5;
-  color: ${props => props.theme.colors.textCommon};
-  font-family: ${props => props.theme.fonts.fontFamilyCode};
-  font-size: 12px;
-  font-weight: normal;
-  height: 100%;
-  line-height: 1.17;
-  outline: none;
-  padding: 12px 15px;
-  position: relative;
-  text-align: left;
-  white-space: pre;
-  width: 100%;
-  z-index: 1;
 `
 
 const EthContractWrapper = styled(ContractWrapper)`
@@ -115,8 +87,6 @@ const ExternalLink = styled.a`
   text-decoration: none;
 `
 
-const CONTRACT_VALUE = '...'
-
 export const SECRET_CONTRACT_QUERY = gql`
   query SecretContract($scAddr: String) {
     secretContract(id: $scAddr) {
@@ -143,10 +113,6 @@ const Contract: React.FC<ContractProps> = ({ history, match = { params: {} } }) 
     params: { contractAddress = '' },
   } = match
   const { data, loading, error } = useQuery(SECRET_CONTRACT_QUERY, { variables: { scAddr: contractAddress } })
-
-  const [bytecodeModal, setBytecodeModalIsOpen] = React.useState(false)
-  const closeBytecodeModal = () => setBytecodeModalIsOpen(false)
-  const openBytecodeModal = () => setBytecodeModalIsOpen(true)
 
   const [ethContractModal, setEthContractsModalIsOpen] = React.useState(false)
   const closeEthContractsModal = () => setEthContractsModalIsOpen(false)
@@ -176,9 +142,6 @@ const Contract: React.FC<ContractProps> = ({ history, match = { params: {} } }) 
         <ButtonView onClick={openEthContractsModal} disabled={ethContractCount === '0'}>
           Contracts Called ({ethContractCount})
         </ButtonView>
-        <ButtonExpand onClick={openBytecodeModal} disabled={true}>
-          Expand Bytecode
-        </ButtonExpand>
       </DetailsCard>
       <Tasks scAddr={contractAddress} scTasks={taskCount} history={history} />
       <ModalWrapper
@@ -203,17 +166,6 @@ const Contract: React.FC<ContractProps> = ({ history, match = { params: {} } }) 
               </ExternalLink>
             ))}
         </EthContractWrapper>
-      </ModalWrapper>
-      <ModalWrapper
-        ariaHideApp={false}
-        isOpen={bytecodeModal}
-        title="Contract's Bytecode"
-        onRequestClose={closeBytecodeModal}
-      >
-        <ContractWrapper>
-          <ContractSRC defaultValue={CONTRACT_VALUE} />
-          <CopyContract text={CONTRACT_VALUE} color="#1ca8f8" />
-        </ContractWrapper>
       </ModalWrapper>
       {loading && !data && <FullLoading />}
     </>
