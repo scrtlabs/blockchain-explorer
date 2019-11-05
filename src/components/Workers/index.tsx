@@ -31,7 +31,7 @@ const HEADER_CELLS = [
     useClassShowOnDesktop: false,
     sortable: true,
     align: FlexAlign.end,
-    label: 'Staked ENG',
+    label: 'Staked',
   },
   {
     id: 'workerActiveVsTotal',
@@ -52,7 +52,7 @@ const HEADER_CELLS = [
     useClassShowOnDesktop: false,
     sortable: true,
     align: FlexAlign.end,
-    label: 'ENG Reward',
+    label: 'Reward',
   },
 ]
 

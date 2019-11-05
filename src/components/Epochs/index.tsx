@@ -44,7 +44,7 @@ const HEADER_CELLS = [
     useClassShowOnDesktop: false,
     sortable: true,
     align: FlexAlign.end,
-    label: 'Number Of Tasks',
+    label: 'Tasks',
   },
   {
     id: 'epochCompleteTasks',
@@ -58,7 +58,7 @@ const HEADER_CELLS = [
     useClassShowOnDesktop: true,
     sortable: true,
     align: FlexAlign.end,
-    label: 'Number Of Selected Workers',
+    label: 'Selected Workers',
   },
   { id: 'epochEngGasUsed', useClassShowOnDesktop: true, sortable: true, align: FlexAlign.end, label: 'ENG Gas Used' },
   { id: 'epochEngReward', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.end, label: 'ENG Reward' },
