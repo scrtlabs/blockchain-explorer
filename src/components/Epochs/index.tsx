@@ -74,13 +74,13 @@ const EpochsWrapper: React.FC<any> = ({ title = 'Epochs', workerId, epoches, mat
     if (epochId) {
       setEpochParams({ query: EPOCH_BY_ID_QUERY, queryVariables: { ...EPOCHS_INITIAL_VALUES, epochId } })
     }
-  }, [])
+  }, [epochId])
 
   React.useMemo(() => {
     if (workerId && epoches.length) {
       setEpochParams({ query: EPOCHS_BY_WORKER_QUERY, queryVariables: { ...EPOCHS_INITIAL_VALUES, workerId, epoches } })
     }
-  }, [workerId, epoches && epoches.length])
+  }, [workerId, epoches])
 
   React.useMemo(() => {
     if (!epochId) {
@@ -237,6 +237,7 @@ const Epochs: React.FC<EpochsProps> = ({ byParam, history, query, queryVariables
     if (byParam && data && data.epoch) {
       openModal(data.epoch)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [byParam, data])
 
   return (

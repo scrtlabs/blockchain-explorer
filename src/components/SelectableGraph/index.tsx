@@ -311,7 +311,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
 }
 
 const LineChartGraph: React.FC<any> = ({ dataKey, query, queryVariables }) => {
-  const { data, error, loading } = useQuery(query, { variables: queryVariables })
+  const { data, error } = useQuery(query, { variables: queryVariables })
   const [domain, setDomain] = React.useState<[AxisDomain, AxisDomain]>([0, 0])
 
   if (error) console.error(error.message)
@@ -319,21 +319,23 @@ const LineChartGraph: React.FC<any> = ({ dataKey, query, queryVariables }) => {
   // We're forcing domain for the y-axis, as for some reason line will be drawn outside of the chart
   // See: https://github.com/recharts/recharts/issues/1080
   React.useMemo(() => {
-    const newDomain = (data &&
-      data.statistics &&
-      data.statistics.reduce(
-        (acc: [AxisDomain, AxisDomain], stat: any) => {
-          if (stat && stat[dataKey] !== undefined) {
-            if (acc[0] === null || acc[0] > +stat[dataKey]) acc[0] = +stat[dataKey]
-            if (acc[1] === null || acc[1] < +stat[dataKey]) acc[1] = +stat[dataKey]
-          }
-          return acc
-        },
-        [null, null],
-      )) || [0, 0]
-    const numbers: [AxisDomain, AxisDomain] = [Math.floor(newDomain[0] * 0.95), Math.floor(newDomain[1] * 1.05)]
-    setDomain(numbers)
-  }, [dataKey, data && data.statistics && data.statistics.length, loading])
+    if (data && data.statistics && data.statistics.length) {
+      const newDomain = (data &&
+        data.statistics &&
+        data.statistics.reduce(
+          (acc: [AxisDomain, AxisDomain], stat: any) => {
+            if (stat && stat[dataKey] !== undefined) {
+              if (acc[0] === null || acc[0] > +stat[dataKey]) acc[0] = +stat[dataKey]
+              if (acc[1] === null || acc[1] < +stat[dataKey]) acc[1] = +stat[dataKey]
+            }
+            return acc
+          },
+          [null, null],
+        )) || [0, 0]
+      const numbers: [AxisDomain, AxisDomain] = [Math.floor(newDomain[0] * 0.95), Math.floor(newDomain[1] * 1.05)]
+      setDomain(numbers)
+    }
+  }, [dataKey, data])
 
   return (
     <ResponsiveContainer>

@@ -123,7 +123,7 @@ const TasksWrapper: React.FC<any> = ({ history, match = { params: {} }, scAddr, 
     } else if (sender) {
       setTaskParams({ query: TASKS_BY_USER_ADDRESS_QUERY, queryVariables: { ...TASKS_INITIAL_VALUES, sender } })
     }
-  }, [])
+  }, [scAddr, sender])
 
   const handleRequestSearch = async (event: React.SyntheticEvent<React.FormEvent>, id: any) => {
     event.preventDefault()

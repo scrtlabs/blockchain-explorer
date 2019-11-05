@@ -73,7 +73,7 @@ const ENIGMA_STATE_QUERY = gql`
 `
 
 const NetworkInfoCard = ({ ...restProps }) => {
-  const { data, error, loading } = useSubscription(ENIGMA_STATE_QUERY)
+  const { data, error } = useSubscription(ENIGMA_STATE_QUERY)
   const [stats, setStats] = React.useState({
     marketCap: '0',
     price: '0',
@@ -98,7 +98,7 @@ const NetworkInfoCard = ({ ...restProps }) => {
     }
 
     setStats(prev => ({ ...prev, ...partialStats }))
-  }, [data && data.enigmaState, loading])
+  }, [data, stats.users, stats.workers, stats.stake])
 
   React.useEffect(() => {
     const retrieveMarketStats = async () => {

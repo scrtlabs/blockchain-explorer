@@ -7,35 +7,29 @@ import { TASKS_INITIAL_VALUES, TASKS_QUERY, TASKS_SUBSCRIBE } from 'components/T
 import { TaskBasicData } from 'components/Tasks/types'
 
 const TasksHome = (props: any) => {
-  const { subscribeToMore, data, error, loading } = useQuery(TASKS_QUERY, {
+  const { subscribeToMore, data, error } = useQuery(TASKS_QUERY, {
     variables: { ...TASKS_INITIAL_VALUES, total: 5 },
   })
   const [tasks, setTasks] = React.useState<TaskBasicData[]>([])
 
-  const extractTasks = () => {
-    setTasks(
-      data.tasks.map((task: TaskBasicData) => ({
-        ...task,
-        time: shortEngHumanizer(Date.now() - (new Date(+task.createdAt * 1000) as any)) + ' ago',
-      })),
-    )
-  }
+  if (error) console.error(error.message)
 
   React.useEffect(() => {
-    if (!loading && !error) {
-      extractTasks()
-    }
-
     return subscribeToMore({
       document: TASKS_SUBSCRIBE,
       variables: { ...TASKS_INITIAL_VALUES, total: 5 },
       updateQuery: (prev, { subscriptionData }) => (subscriptionData.data ? subscriptionData.data : prev),
     })
-  }, [])
+  }, [subscribeToMore])
 
   React.useMemo(() => {
-    if (data) {
-      extractTasks()
+    if (data && data.tasks) {
+      setTasks(
+        data.tasks.map((task: any) => ({
+          ...task,
+          time: shortEngHumanizer(Date.now() - (new Date(+task.createdAt * 1000) as any)) + ' ago',
+        })),
+      )
     }
   }, [data])
 

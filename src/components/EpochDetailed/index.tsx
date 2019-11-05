@@ -25,7 +25,9 @@ const EpochDetailed: React.FC<EpochDetailedProps> = props => {
 
   // Dates Range
   const start = new Date(+epoch.startTime * 1000).toLocaleString()
-  const end = new Date(pendingTime !== undefined ? Date.now() + +pendingTime : +epoch.endTime * 1000).toLocaleString()
+  const end = new Date(
+    pendingTime !== undefined && isCurrent ? Date.now() + +pendingTime : +epoch.endTime * 1000,
+  ).toLocaleString()
 
   return (
     <ModalWrapper isOpen={modalIsOpen} title={`Epoch #${epoch.id}`} onRequestClose={closeModal}>

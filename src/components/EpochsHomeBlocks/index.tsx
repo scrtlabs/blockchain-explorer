@@ -22,43 +22,12 @@ const EpochsRow = styled.div`
 const EpochHomeBlocks = () => {
   const [epochs, setEpochs] = React.useState([])
   const [currentBlockNumber, setCurrentBlockNumber] = React.useState(0)
-  const { data, error, refetch } = useQuery(EPOCHS_QUERY, {
+  const { error, refetch } = useQuery(EPOCHS_QUERY, {
     variables: { ...EPOCHS_INITIAL_VALUES },
     fetchPolicy: 'cache-and-network',
   })
 
   if (error) console.error(error.message)
-
-  const calculateEpochsValues = async (epochsHistory: Array<any>, epoch: any) => {
-    const isCurrent: boolean = epoch.id === data.enigmaState.latestEpoch.id
-    const calculatedValues: { finishBlockNumber?: number; pendingTime?: number } = {
-      finishBlockNumber: undefined,
-      pendingTime: undefined,
-    }
-
-    if (isCurrent) {
-      const { finishBlockNumber, pendingTime } = await estimateCurrentEpochEnd(epochsHistory)
-      calculatedValues.finishBlockNumber = finishBlockNumber
-      calculatedValues.pendingTime = pendingTime
-    }
-
-    return {
-      isCurrent,
-      currentBlockNumber,
-      ...calculatedValues,
-      epoch,
-    }
-  }
-
-  const extractEpochs = async () => {
-    if (!data) return
-
-    const { epoches: epochsHistory } = data
-    const epoches = epochsHistory.slice(0, 3)
-    const newEpochs = await Promise.all(epoches.map(calculateEpochsValues.bind(calculateEpochsValues, epochsHistory)))
-
-    setEpochs(newEpochs as any)
-  }
 
   React.useEffect(() => {
     const intervalPtr = setInterval(async () => {
@@ -69,9 +38,42 @@ const EpochHomeBlocks = () => {
   }, [currentBlockNumber])
 
   React.useMemo(() => {
-    refetch({ ...EPOCHS_INITIAL_VALUES })
+    const extractEpochs = async () => {
+      const { data } = await refetch({ ...EPOCHS_INITIAL_VALUES })
+
+      if (data && data.epoches) {
+        const { epoches: epochsHistory } = data
+        const epoches = epochsHistory.slice(0, 3)
+
+        const calculateEpochValues = async (epoch: any) => {
+          const isCurrent: boolean = epoch.id === data.enigmaState.latestEpoch.id
+          const calculatedValues: { finishBlockNumber?: number; pendingTime?: number } = {
+            finishBlockNumber: undefined,
+            pendingTime: undefined,
+          }
+
+          if (isCurrent) {
+            const { finishBlockNumber, pendingTime } = await estimateCurrentEpochEnd(epochsHistory)
+            calculatedValues.finishBlockNumber = finishBlockNumber
+            calculatedValues.pendingTime = pendingTime
+          }
+
+          return {
+            isCurrent,
+            currentBlockNumber,
+            ...calculatedValues,
+            epoch,
+          }
+        }
+
+        const newEpochs = await Promise.all(epoches.map(calculateEpochValues))
+
+        setEpochs(newEpochs as any)
+      }
+    }
+
     extractEpochs()
-  }, [currentBlockNumber])
+  }, [currentBlockNumber, refetch])
 
   return (
     <>
