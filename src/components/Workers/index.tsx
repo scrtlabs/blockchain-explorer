@@ -153,7 +153,7 @@ const Workers: React.FC<WorkersProps> = ({ history, query, queryVariables }) => 
       align: HEADER_CELLS[3].align,
       useClassShowOnDesktop: true,
       id: `${worker.id}_${worker.completedTaskCount + worker.failedTaskCount}_t_${index}`,
-      value: `${totalTasks ? +(+worker.completedTaskCount / totalTasks).toFixed(2) * 100 : 0}%`,
+      value: `${totalTasks ? Math.floor(+(+worker.completedTaskCount / totalTasks).toFixed(2) * 100) : 0}%`,
     }
     const reward = {
       align: HEADER_CELLS[4].align,
