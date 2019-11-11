@@ -20,6 +20,18 @@ export interface EpochDetailedProps {
 
 const EpochDetailed: React.FC<EpochDetailedProps> = props => {
   const { modalIsOpen, closeModal, isCurrent, progress, pendingTime, blocks, epoch } = props
+  const [selectedWorkers, setSelectedWorkers] = React.useState([])
+
+  React.useEffect(() => {
+    const retrieveWorkers = async () => {
+      const workers = epoch ? await (await fetch(`${process.env.REACT_APP_ENIGMA_API}/epochs/${epoch.id}`)).json() : []
+      setSelectedWorkers(workers)
+    }
+
+    if (epoch) {
+      retrieveWorkers()
+    }
+  }, [epoch])
 
   if (epoch === undefined) return null
 
@@ -42,7 +54,7 @@ const EpochDetailed: React.FC<EpochDetailedProps> = props => {
         </StrippedGridRow>
         <StrippedGridRow columns={2}>
           <GridCell title="Registered Workers" value={epoch.workerCount || '-'} />
-          <GridCell title="Selected Workers" value={'-'} />
+          <GridCell title="Selected Workers" value={`${selectedWorkers.length}` || '-'} />
         </StrippedGridRow>
         <StrippedGridRow columns={1}>
           <GridCell title="Unique Users" value={epoch.userCount || '-'} />

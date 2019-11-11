@@ -5,7 +5,6 @@ import { HttpLink } from 'apollo-link-http'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 import gql from 'graphql-tag'
-import JSBI from 'jsbi'
 import ethApi from './utils/eth'
 import { EpochBasicData } from './components/Epochs/types'
 
@@ -21,22 +20,6 @@ const typeDefs = gql`
 const resolvers = {
   Epoch: {
     endTime: (epoch: EpochBasicData) => ethApi.getBlockTimestamp(epoch.endBlockNumber),
-    selectedWorkers: (epoch: EpochBasicData) => {
-      const params = {
-        firstBlockNumber: parseInt(epoch.startBlockNumber),
-        seed: JSBI.BigInt(epoch.seed),
-        workers: epoch.workers.map(({ id }) => id),
-        stakes: epoch.stakes.map(stake => JSBI.BigInt(stake)),
-      }
-
-      return Array.from(
-        new Set(
-          epoch.deployedSecretContracts.map(
-            scAddr => ethApi.enigma.selectWorkerGroup(scAddr, params, params.workers.length)[0],
-          ),
-        ),
-      )
-    },
   },
 }
 

@@ -9,7 +9,6 @@ import GridCell, { GridCellStyled, Title, Value } from '../Common/GridCell'
 import Epochs from '../Epochs'
 import HexAddr from '../Common/HexAddr'
 import FullLoading from '../Common/FullLoading'
-import { EpochBasicData } from '../Epochs/types'
 
 const DetailsCard = styled(Card)`
   margin-bottom: 35px;
@@ -54,7 +53,6 @@ const WORKER_BY_ID_QUERY = gql`
         }
         stakes
         deployedSecretContracts
-        selectedWorkers @client
       }
     }
     enigmaState(id: 0) {
@@ -75,20 +73,15 @@ const Worker = (props: any) => {
   const worker = data ? data.worker : { completedTaskCount: 0, reward: 0, balance: 0, epochs: [] }
   const totalEpochs = +(data && data.enigmaState.latestEpoch.id) + 1 || 0
   const totalTasks = (worker && +worker.completedTaskCount + +worker.failedTaskCount) || 0
-  const { epoches = [], selected = 0 } =
-    worker &&
-    worker.epochs
-      .map((e: EpochBasicData) => ({ id: e.order, workers: e.selectedWorkers }))
-      .reduce(
-        (acc: any, e: { id: string; workers: string[] }) => {
-          if (e.workers.indexOf(workerAddress) !== -1) {
-            acc.selected += 1
-            acc.epoches.push(e.id)
-          }
-          return acc
-        },
-        { epoches: [], selected: 0 },
-      )
+  const [epoches, setEpoches] = React.useState([])
+
+  React.useMemo(() => {
+    const updateEpoches = async () => {
+      const selectedEpoches = await (await fetch(`${process.env.REACT_APP_ENIGMA_API}/workers/${workerAddress}`)).json()
+      setEpoches(selectedEpoches)
+    }
+    updateEpoches()
+  }, [workerAddress])
 
   if (error) console.error(error.message)
 
@@ -109,7 +102,7 @@ const Worker = (props: any) => {
         <GridCell title="ENG Rewards" value={worker.reward} />
         <GridCell title="ENG Staked" value={worker.balance} />
         <GridCell title="Epochs Active" value={`${worker.epochCount || 0} / ${totalEpochs}`} />
-        <GridCell title="Epochs Selected" value={`${selected} / ${totalEpochs}`} />
+        <GridCell title="Epochs Selected" value={`${epoches.length} / ${totalEpochs}`} />
       </DetailsCard>
       <Epochs title="Selected Epochs" workerId={workerAddress} epoches={epoches} />
       {loading && !data && <FullLoading />}

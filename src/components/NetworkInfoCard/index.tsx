@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import Card from '../Common/Card'
 import { useSubscription } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import { coinMarketCap } from '../../utils/api'
+import { enigmaTicker } from '../../utils/api'
 
 const NetworkInfoCardStyled = styled(Card)`
   min-width: 244px;
@@ -102,7 +102,7 @@ const NetworkInfoCard = ({ ...restProps }) => {
 
   React.useEffect(() => {
     const retrieveMarketStats = async () => {
-      const { price, marketCap } = await coinMarketCap()
+      const { price, marketCap } = await enigmaTicker()
       setStats(prev => ({ ...prev, price, marketCap }))
     }
 
