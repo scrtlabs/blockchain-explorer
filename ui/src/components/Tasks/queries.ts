@@ -45,7 +45,7 @@ export const TASKS_SUBSCRIBE = gql`
 `
 
 export const TASKS_BY_USER_ADDRESS_QUERY = gql`
-  query Tasks($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $sender: String) {
+  query TasksByUser($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $sender: String) {
     tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection, where: { sender: $sender }) {
       ...BasicTaskDetails
     }
@@ -57,7 +57,7 @@ export const TASKS_BY_USER_ADDRESS_QUERY = gql`
 `
 
 export const TASKS_BY_SECRET_CONTRACT_QUERY = gql`
-  query Tasks($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $scAddr: String) {
+  query TasksBySecretContract($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $scAddr: String) {
     tasks(
       first: $total
       skip: $skip

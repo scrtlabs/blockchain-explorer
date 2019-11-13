@@ -35,7 +35,7 @@ export const WORKERS_QUERY = gql`
 `
 
 export const WORKERS_BY_ID_QUERY = gql`
-  query Workers($total: Int, $skip: Int, $orderBy: Worker_orderBy, $orderDirection: OrderDirection, $id: ID!) {
+  query WorkersById($total: Int, $skip: Int, $orderBy: Worker_orderBy, $orderDirection: OrderDirection, $id: ID!) {
     workers(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection, where: { id: $id }) {
       ...BasicWorkerFragment
     }
