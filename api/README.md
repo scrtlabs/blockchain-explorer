@@ -13,7 +13,7 @@ Also provides a consistent source of information for the Enigma ticker stats.
 
 # How to Run
 
-- Copy `.env.example` to `.env` and edit as appropriate.
+- Copy `.env.template` to `.env` and edit as appropriate.
   - `MONGO_DATABASE` is the MongoDB database name
   - `MONGO_HOST` is the MongoDB host URL
   - `MONGO_PORT` is the MongoDB port
@@ -41,6 +41,7 @@ Also provides a consistent source of information for the Enigma ticker stats.
 
 ## With Docker
 
+- Copy `.env.template` to `.env` and edit as appropriate.
 - Run `docker-compose up`
 
 ## Epoch Collection

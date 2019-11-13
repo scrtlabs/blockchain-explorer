@@ -4,7 +4,7 @@
 
 #### Local
 
-1. Update `.env.local` values to match your requirements
+1. Copy `.env.template` to `.env` and edit as appropriate.
 
 2. Install dependencies
 ```bash
@@ -19,7 +19,6 @@ $ yarn start
 #### Docker
 
 1. Copy `.env.template` to `.env` and update values to match your requirements
-
 2. Launch `docker-compose up`
 
 
