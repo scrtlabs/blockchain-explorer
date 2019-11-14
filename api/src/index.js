@@ -9,7 +9,7 @@ import initDB from './db'
 import initApolloSubscription from './apolloSubscription'
 import { getTicker, updateOrCreateTicker } from './controller/ticker'
 import { getWorker, getWorkers } from './controller/worker'
-import { getEpochs, getEpoch } from './controller/epoch'
+import { getEpochs, getEpoch, getLastEpoch } from './controller/epoch'
 import config from './config/constants'
 
 const TIME_WINDOW = 3 * 60 * 1000
@@ -29,7 +29,16 @@ const fetchTicker = async () => {
 const app = new Koa()
 const router = new Router()
 
-initDB().then(() => initApolloSubscription())
+initDB()
+  .then(async () => {
+    try {
+      const lastEpoch = await getLastEpoch()
+      return +lastEpoch[0].epochId
+    } catch (error) {
+      return 0
+    }
+  })
+  .then(startAt => initApolloSubscription(isNaN(startAt) ? 0 : startAt))
 
 router
   .get('/', ctx => {

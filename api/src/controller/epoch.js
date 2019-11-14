@@ -11,6 +11,14 @@ export const getEpochs = () => {
   }
 }
 
+export const getLastEpoch = () => {
+  try {
+    return Epoch.find({}).sort({ $natural: -1 }).limit(1)
+  } catch (error) {
+    throw new Error('There was an error retrieving the last epoch:', error.message)
+  }
+}
+
 export const getEpoch = ({ epochId }) => {
   try {
     return Epoch.findOne({ epochId })
