@@ -4,12 +4,25 @@ services:
 
   block_explorer:
     image: enigmampc/block_explorer:develop
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: ./ui
     working_dir: /app
     network_mode: host
     expose:
-      - "8008"
+      - '${BLOCK_EXPLORER_PORT}'
     environment:
-      - PORT=8008
+      - 'PORT=${BLOCK_EXPLORER_PORT}'
+
+  block_explorer_api:
+    image: enigmapmc/block_explorer_api:develop
+    restart: always
+    build: ./api
+    ports:
+      - '${BLOCK_EXPLORER_API_PORT}:${BLOCK_EXPLORER_API_PORT}'
+    network_mode: host
+
+  block_explorer_mongodb:
+    image: mongo:4.0
+    volumes:
+      - './data:/data/db'
+    ports:
+      - '${BLOCK_EXPLORER_DB_PORT}:${BLOCK_EXPLORER_DB_PORT}'

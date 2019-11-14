@@ -8,6 +8,7 @@ import TaskDetailed, { TaskDetailedProps } from '../TaskDetailed'
 import ArrowIcon from './img/right.svg'
 import TimeIcon from './img/time.svg'
 import { TaskBasicData, TaskStatus } from '../Tasks/types'
+import { shortEngHumanizer } from '../../utils/humanizer'
 
 const TaskItem = styled.div`
   display: flex;
@@ -178,10 +179,10 @@ interface TaskBlockProps extends HTMLAttributes<HTMLDivElement> {
 
 const TaskBlock: React.FC<TaskBlockProps> = (props: TaskBlockProps) => {
   const { task, history, ...restProps } = props
-  const { status = TaskStatus.ReceiptVerified, order, sender, id, time, createdAtTransaction } = task
+  const { status = TaskStatus.ReceiptVerified, order, sender, id, createdAtTransaction } = task
   const taskStatus = TaskStatus[status as keyof typeof TaskStatus] || 'Success'
   const taskStatusColor = theme.taskStatus[taskStatus.toLowerCase() as keyof typeof theme.taskStatus]
-
+  const time = shortEngHumanizer(Date.now() - (new Date(+task.createdAt * 1000) as any)) + ' ago'
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
   const closeModal = () => setModalIsOpen(false)
   const openModal = () => setModalIsOpen(true)

@@ -1,103 +1,71 @@
-## Enigma Blockchain Explorer
+# Enigma Blockchain Explorer
 
-### Setup
+This project contains the [Enigma Blockchain Explorer](./ui) itself, and the [Enigma Blockchain Explorer API](./api) which provides the Enigma Blockchain Explorer with extra information.
 
-#### Local
+## Requirements
 
-1. Update `.env.local` values to match your requirements
+- Node - v11.15 or greater
+- Yarn - 1.19.1
+- [Docker](https://docs.docker.com/install/)
+- [Docker Compose](https://docs.docker.com/compose/install/) version 1.24.1 or higher.
+- [MongoDB](https://www.mongodb.com/download-center/community)
 
-2. Install dependencies
-```bash
-$ yarn
-```
+# How to Run
 
-3. Start the project
-```bash
-$ yarn start
-```
+## General
+- Copy [`./.env.template`](./.env.template) to `./.env` and edit as appropriate.
+  - `BLOCK_EXPLORER_PORT` this is Explorer UI port
+  - `BLOCK_EXPLORER_API_PORT` this is Explorer API port
+  - `BLOCK_EXPLORER_DB_PORT` this is Explorer API Database port
 
-#### Docker
+## API
+- Copy [`./api/.env.template`](./api/.env.template) to `./api/.env` and edit as appropriate.
+  - `MONGO_DATABASE` is the MongoDB database name
+  - `MONGO_HOST` is the MongoDB host URL
+  - `MONGO_PORT` is the MongoDB port
+  - `SUBGRAPH_NAME` is the Subgraph Name
+  - `SUBGRAPH_HTTP` is the Subgraph HTTP host
+  - `SUBGRAPH_WS` is the Subgraph WebSocket host
+  - `ETH_NETWORK_ID` is the Ethereum network ID
+  - `ETH_URL` is the Ethereum RPC URL
+  - `ENIGMA_CONTRACT_ADDRESS` is the Enigma Contract address deployed in the Ethereum network
+  - `ENIGMA_TOKEN_ADDRESS` is the Enigma Token Contract address deployed in the Ethereum network
+  - `ENIGMA_RPC_URL` is the Enigma p2p network address for RPC calls
+  - `ENIGMA_API_PORT` is the Enigma API port
 
-1. Update `.env.local` values to match your requirements
+## UI
+- Copy [`./ui/.env.template`](./ui/.env.template) to `./ui/.env` and edit as appropriate.
+  - `REACT_APP_SUBGRAPH_HTTP` is the HTTP subgraph connection
+  - `REACT_APP_SUBGRAPH_WS` is the WebSocket subgraph connection
+  - `REACT_APP_SUBGRAPH_NAME` is the Subgraph name
+  - `REACT_APP_ENIGMA_CONTRACT_ADDRESS` is the Enigma Contract address in Ethereum network
+  - `REACT_APP_ENIGMA_TOKEN_ADDRESS` is the Enigma Token Contract address in Ethereum network
+  - `REACT_APP_ENIGMA_RPC_URL` is the Enigma p2p network address for RPC calls
+  - `REACT_APP_ENIGMA_API` is the # Required. Default: <undefined>
+  - `REACT_APP_ETHERSCAN_URL` is the Etherscan address detail link
+  - `REACT_APP_ETH_NETWORK_ID` is the Blockchain network ID
+  - `REACT_APP_ETH_URL` is the Blockchain RPC host
+  - `REACT_APP_ETH_NETWORK_NAME` is the Blockchain network descriptive name
 
-2. Launch `docker-compose up`
+## Without Docker
 
+- Before running, make sure you have up and running:
+  - a MongoDB instance, with the proper `MONGO_DATABASE` name set.
+  - the [subgraph](https://github.com/enigmampc/subgraph)
+- On [`./api`](./api):
+  - Run `yarn` to install all the required dependencies
+  - Run `yarn dev` to start the server in 'dev' mode
+  - If you want to build it before serve it:
+    - Run `yarn build` to build the node server
+    - Run `yarn start` to start the server
+  - Access [http://localhost:8005](http://localhost:8005)
+- On [`./ui`](./ui):
+  - Run `yarn` to install all the required dependencies
+  - Run `yarn start` to start the server
+  - Access [http://localhost:8008](http://localhost:8008)
 
-#### ENV variables
-
-#### `REACT_APP_SUBGRAPH_HTTP_URL`
-HTTP subgraph connection.
-
-_Local Value_: `http://localhost:8000`
-
----
-#### `REACT_APP_SUBGRAPH_WS`
-WebSocket subgraph connection.
-
-_Local Value_: `ws://localhost:8001`
-
----
-### `REACT_APP_SUBGRAPH_NAME`
-Subgraph to connect the explorer to.
-
-_Local Value_: `enigmampc/enigma`
-
----
-### `REACT_APP_ENIGMA_CONTRACT_ADDRESS`
-Enigma Contract address in Ethereum network
-
-_Local Value_: `0x59d3631c86bbe35ef041872d502f218a39fba150`
-
----
-### `REACT_APP_ENIGMA_TOKEN_ADDRESS`
-Enigma Token Contract address in Ethereum network
-
-_Local Value_: `0xCfEB869F69431e42cdB54A4F4f105C19C080A601`
-
----
-### `REACT_APP_ENIGMA_RPC_URL`
-Enigma p2p network address for RPC calls
-
-_Local Value_: `http://localhost:3346`
-
----
-### `REACT_APP_ENIGMA_API`
-Enigma Blockchain Explorer's API endpoint
-
-_Local Value_: `http://localhost:8005`
-
----
-### `REACT_APP_COINMARKET_CAP_API_KEY`
-Coinmarket Cap API KEY
-
-_Local Value_: _not set_
-
----
-### `REACT_APP_ETHERSCAN_URL`
-Etherscan address detail link
-
-_Local Value_: `etherscan.io/address`
-
----
-#### `REACT_APP_ETH_URL`
-Blockchain RPC host.
-
-_Local Value_: `http://localhost:9545`
-
-**Note:** If `REACT_APP_ETH_NETWORK_ID` is specified, this value will not be used.
-
----
-#### `REACT_APP_ETH_NETWORK_NAME`
-Blockchain network descriptive name.
-
-_Local Value_: `'Enigma Local'`.
-
-**Note:** If `REACT_APP_ETH_NETWORK_ID` is specified, this value will not be used.
-
----
-#### `REACT_APP_ETH_NETWORK_ID`
-Blockchain network ID. If set will extract network information from [networks.json](src/utils/networks.json).
-
-_Local Value_: _not set_
-
-**Note:** If specified, `REACT_APP_ETH_URL` && `REACT_APP_ETH_NETWORK_NAME` won't be taken into account.
+## With Docker
+- Copy [`./.env.template`](./.env.template) to `./.env` and edit as appropriate.
+- Copy [`./api/.env.template`](./api/.env.template) to `./api/.env` and edit as appropriate.
+- Copy [`./ui/.env.template`](./ui/.env.template) to `./ui/.env` and edit as appropriate.
+- Run `docker-compose up`

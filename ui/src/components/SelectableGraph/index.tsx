@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { useQuery } from '@apollo/react-hooks'
+import { useSubscription } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { AxisDomain, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import Card from '../Common/Card'
@@ -75,7 +75,7 @@ const statisticsCommonFragment = gql`
 `
 
 const STATISTICS_TASK_QUERY = gql`
-  query Statistics($total: Int, $since: Int, $type: String) {
+  subscription StatisticsByTask($total: Int, $since: Int, $type: String) {
     statistics(first: $total, skip: 0, orderBy: order, orderDirection: asc, where: { type: $type, order_gte: $since }) {
       ...StatisticsCommonFragment
       taskCount
@@ -87,7 +87,7 @@ const STATISTICS_TASK_QUERY = gql`
 `
 
 const STATISTICS_USER_QUERY = gql`
-  query Statistics($total: Int, $since: Int, $type: String) {
+  subscription StatisticsByUser($total: Int, $since: Int, $type: String) {
     statistics(first: $total, skip: 0, orderBy: order, orderDirection: asc, where: { type: $type, order_gte: $since }) {
       ...StatisticsCommonFragment
       userCount
@@ -98,7 +98,7 @@ const STATISTICS_USER_QUERY = gql`
 `
 
 const STATISTICS_WORKER_QUERY = gql`
-  query Statistics($total: Int, $since: Int, $type: String) {
+  subscription StatisticsByWorker($total: Int, $since: Int, $type: String) {
     statistics(first: $total, skip: 0, orderBy: order, orderDirection: asc, where: { type: $type, order_gte: $since }) {
       ...StatisticsCommonFragment
       workerCount
@@ -311,7 +311,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
 }
 
 const LineChartGraph: React.FC<any> = ({ dataKey, query, queryVariables }) => {
-  const { data, error } = useQuery(query, { variables: queryVariables })
+  const { data, error } = useSubscription(query, { variables: queryVariables })
   const [domain, setDomain] = React.useState<[AxisDomain, AxisDomain]>([0, 0])
 
   if (error) console.error(error.message)
