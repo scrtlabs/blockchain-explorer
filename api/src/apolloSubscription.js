@@ -75,10 +75,10 @@ async function initApolloSubscription(startAt = 0) {
           await updateOrCreateEpoch({ epochId: epoch.id, worker })
         }
       }
+      return epoches[epoches.length - (epoches.length > 1 ? 2 : 1)].order
     }
-    return epoches[epoches.length - (epoches.length > 1 ? 2 : 1)].order
   })
-  .then(order => setTimeout(async () => await initApolloSubscription(+order), 5000))
+  .then((order = '0') => setTimeout(async () => await initApolloSubscription(+order), 5000))
   .catch(console.error)
 }
 
