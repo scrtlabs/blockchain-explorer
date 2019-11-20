@@ -40,6 +40,24 @@ export const EPOCHS_QUERY = gql`
   ${latestEpochFragment}
 `
 
+export const EPOCHS_SUBSCRIPTION = gql`
+  subscription EpochesSubs($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
+    epoches(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
+      ...EpochsDetails
+    }
+  }
+  ${epochesDetailsFragment}
+`
+
+export const ENG_STATE_SUBSCRIPTION = gql`
+  subscription EngStateSubs {
+    enigmaState(id: 0) {
+      ...LatestEpoch
+    }
+  }
+  ${latestEpochFragment}
+`
+
 export const EPOCH_BY_ID_QUERY = gql`
   query Epoch($epochId: String) {
     epoch(id: $epochId) {
