@@ -35,7 +35,7 @@ const EpochHomeBlocks = () => {
     }, 1000)
 
     return () => clearInterval(intervalPtr)
-  }, [currentBlockNumber])
+  }, [])
 
   React.useMemo(() => {
     const extractEpochs = async () => {
