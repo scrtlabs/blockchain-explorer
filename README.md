@@ -68,4 +68,8 @@ This project contains the [Enigma Blockchain Explorer](./ui) itself, and the [En
 - Copy [`./.env.template`](./.env.template) to `./.env` and edit as appropriate.
 - Copy [`./api/.env.template`](./api/.env.template) to `./api/.env` and edit as appropriate.
 - Copy [`./ui/.env.template`](./ui/.env.template) to `./ui/.env` and edit as appropriate.
-- Run `docker-compose up`
+- NOTE: If you need to wipe out the previous database volume, be sure to remove the `./data` directory before running docker
+```shell script
+$ sudo rm -rf ./data
+```
+- Run `docker-compose up --build`

@@ -19,7 +19,11 @@ $ yarn start
 #### Docker
 
 1. Copy `.env.template` to `.env` and update values to match your requirements
-2. Launch `docker-compose up`
+2. NOTE: If you need to wipe out the previous database volume, be sure to remove the `./data` directory before running docker
+```shell script
+$ sudo rm -rf ./data
+```
+3. Launch `docker-compose up --build`
 
 
 #### ENV variables
