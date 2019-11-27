@@ -244,6 +244,7 @@ const Epochs: React.FC<EpochsProps> = ({ byParam, history, query, queryVariables
   return (
     <>
       <BaseTable
+        loading={loading}
         headerProps={{
           headerCells: HEADER_CELLS,
           order: orderDirection,
@@ -270,7 +271,6 @@ const Epochs: React.FC<EpochsProps> = ({ byParam, history, query, queryVariables
         }}
       />
       <EpochDetailed {...modalProps} modalIsOpen={modalIsOpen} closeModal={closeModal} />
-      {loading && !data && <FullLoading />}
     </>
   )
 }

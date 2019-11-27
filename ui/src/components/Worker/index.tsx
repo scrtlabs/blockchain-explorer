@@ -8,10 +8,11 @@ import CopyText from '../Common/CopyText'
 import GridCell, { GridCellStyled, Title, Value } from '../Common/GridCell'
 import Epochs from '../Epochs'
 import HexAddr from '../Common/HexAddr'
-import FullLoading from '../Common/FullLoading'
+import ContainedLoading from '../Common/ContainedLoading'
 
 const DetailsCard = styled(Card)`
   margin-bottom: 35px;
+  position: relative;
 
   > div {
     display: grid;
@@ -103,9 +104,9 @@ const Worker = (props: any) => {
         <GridCell title="ENG Staked" value={worker.balance} />
         <GridCell title="Epochs Active" value={`${worker.epochCount || 0} / ${totalEpochs}`} />
         <GridCell title="Epochs Selected" value={`${epoches.length} / ${totalEpochs}`} />
+        {loading && <ContainedLoading />}
       </DetailsCard>
       <Epochs title="Selected Epochs" workerId={workerAddress} epoches={epoches} />
-      {loading && !data && <FullLoading />}
     </>
   )
 }

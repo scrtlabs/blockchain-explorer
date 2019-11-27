@@ -283,6 +283,7 @@ const Tasks: React.FC<TasksProps> = withTheme(({ theme, history, scTasks, query,
   return (
     <>
       <BaseTable
+        loading={loading}
         headerProps={{
           headerCells: HEADER_CELLS,
           order: orderDirection,
@@ -300,7 +301,6 @@ const Tasks: React.FC<TasksProps> = withTheme(({ theme, history, scTasks, query,
         }}
       />
       {modalProps !== null && <TaskDetailed {...modalProps} modalIsOpen={modalIsOpen} closeModal={closeModal} />}
-      {loading && !data && <FullLoading />}
     </>
   )
 })
