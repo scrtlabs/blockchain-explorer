@@ -24,7 +24,7 @@ const basicTaskDetailsFragment = gql`
 `
 
 export const TASKS_QUERY = gql`
-  query Tasks($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
+  query Tasks($total: Int, $skip: Int, $orderBy: Task_orderBy, $orderDirection: OrderDirection) {
     tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
       ...BasicTaskDetails
     }
@@ -36,7 +36,7 @@ export const TASKS_QUERY = gql`
 `
 
 export const TASKS_SUBSCRIBE = gql`
-  subscription TasksSubscribe($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
+  subscription TasksSubscribe($total: Int, $skip: Int, $orderBy: Task_orderBy, $orderDirection: OrderDirection) {
     tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
       ...BasicTaskDetails
     }
@@ -45,7 +45,7 @@ export const TASKS_SUBSCRIBE = gql`
 `
 
 export const TASKS_BY_USER_ADDRESS_QUERY = gql`
-  query TasksByUser($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $sender: String) {
+  query TasksByUser($total: Int, $skip: Int, $orderBy: Task_orderBy, $orderDirection: OrderDirection, $sender: Bytes) {
     tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection, where: { sender: $sender }) {
       ...BasicTaskDetails
     }
@@ -57,13 +57,20 @@ export const TASKS_BY_USER_ADDRESS_QUERY = gql`
 `
 
 export const TASKS_BY_SECRET_CONTRACT_QUERY = gql`
-  query TasksBySecretContract($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $scAddr: String) {
+  query TasksBySecretContract(
+    $total: Int
+    $skip: Int
+    $orderBy: Task_orderBy
+    $orderDirection: OrderDirection
+    $notId: ID
+    $scAddr: String
+  ) {
     tasks(
       first: $total
       skip: $skip
       orderBy: $orderBy
       orderDirection: $orderDirection
-      where: { id_not: $scAddr, secretContract: $scAddr }
+      where: { id_not: $notId, secretContract: $scAddr }
     ) {
       ...BasicTaskDetails
     }
@@ -72,7 +79,7 @@ export const TASKS_BY_SECRET_CONTRACT_QUERY = gql`
 `
 
 export const TASKS_BY_ID_QUERY = gql`
-  query TasksById($total: Int, $skip: Int, $orderBy: String, $orderDirection: String, $id: String) {
+  query TasksById($total: Int, $skip: Int, $orderBy: Task_orderBy, $orderDirection: OrderDirection, $id: ID) {
     tasks(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection, where: { id: $id }) {
       ...BasicTaskDetails
     }
@@ -91,4 +98,5 @@ export const TASKS_INITIAL_VALUES = {
   scAddr: undefined,
   sender: undefined,
   id: undefined,
+  notId: undefined,
 }

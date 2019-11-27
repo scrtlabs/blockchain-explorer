@@ -36,7 +36,7 @@ const ValueStyled = styled(Value)`
 `
 
 const WORKER_BY_ID_QUERY = gql`
-  query WorkerById($workerId: String) {
+  query WorkerById($workerId: ID!) {
     worker(id: $workerId) {
       completedTaskCount
       failedTaskCount

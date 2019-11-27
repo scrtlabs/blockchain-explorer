@@ -88,7 +88,7 @@ const ExternalLink = styled.a`
 `
 
 export const SECRET_CONTRACT_QUERY = gql`
-  query SecretContract($scAddr: String) {
+  query SecretContract($scAddr: ID!) {
     secretContract(id: $scAddr) {
       taskCount
       userCount
