@@ -4,6 +4,7 @@ import { FullLoadingStyled, Message } from '../FullLoading'
 import Spinner from '../Spinner'
 
 const ContainedLoadingStyled = styled(FullLoadingStyled)`
+  background-color: #fff;
   height: 100%;
   width: 100%;
   position: absolute;
@@ -11,8 +12,8 @@ const ContainedLoadingStyled = styled(FullLoadingStyled)`
 
 const ContainedLoading = () => (
   <ContainedLoadingStyled>
-    <Spinner />
-    <Message>Loading...</Message>
+    <Spinner whiteBackground={true} />
+    <Message whiteBackground={true}>Loading...</Message>
   </ContainedLoadingStyled>
 )
 

@@ -5,6 +5,7 @@ import SpinnerSVG from './img/spinner.svg'
 type RotatingSpinnerProps = {
   width?: string
   height?: string
+  whiteBackground?: boolean
 }
 
 interface SpinnerProps extends React.HTMLAttributes<HTMLDivElement>, RotatingSpinnerProps {}
@@ -29,15 +30,16 @@ RotatingSpinner.defaultProps = {
   height: '40px',
 }
 
-const SpinnerIcon = styled.img`
+const SpinnerIcon = styled.img<{ whiteBackground?: boolean }>`
   height: 100%;
   width: 100%;
+  filter: ${props => (props.whiteBackground ? 'opacity(0.6) brightness(0.7) invert(0.8)' : 'none')};
 `
 
-const Spinner = ({ width, height, ...restProps }: SpinnerProps) => {
+const Spinner = ({ width, height, whiteBackground, ...restProps }: SpinnerProps) => {
   return (
     <RotatingSpinner width={width} height={height} {...restProps}>
-      <SpinnerIcon src={SpinnerSVG} alt="" />
+      <SpinnerIcon whiteBackground={whiteBackground} src={SpinnerSVG} alt="" />
     </RotatingSpinner>
   )
 }
