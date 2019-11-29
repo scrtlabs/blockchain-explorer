@@ -9,13 +9,13 @@ export type WorkerType = {
 }
 
 export interface EpochDetailedProps {
-  modalIsOpen: boolean
-  closeModal: () => void
-  isCurrent?: boolean
-  progress?: string | null
-  pendingTime?: number
   blocks?: EpochBlocksInfoProps[]
+  closeModal: () => void
   epoch?: EpochBasicData
+  isCurrent?: boolean
+  modalIsOpen: boolean
+  pendingTime?: number
+  progress?: string | null
 }
 
 const EpochDetailed: React.FC<EpochDetailedProps> = props => {

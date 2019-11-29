@@ -10,11 +10,11 @@ import { shortEngHumanizer } from '../../utils/humanizer'
 import { EpochBlocksInfoProps, EpochBasicData } from 'components/Epochs/types'
 
 export interface EpochBlockProps extends HTMLAttributes<HTMLDivElement> {
-  isCurrent: boolean
   currentBlockNumber: number
-  finishBlockNumber: number
-  pendingTime?: number
   epoch: EpochBasicData
+  finishBlockNumber: number
+  isCurrent: boolean
+  pendingTime?: number
   theme?: any
 }
 
