@@ -19,7 +19,7 @@ export const Value = styled.p<{ underline?: boolean }>`
   display: block;
   font-size: 20px;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.2;
   margin: 0;
   overflow: hidden;
   text-align: center;
