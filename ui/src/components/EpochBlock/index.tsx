@@ -8,6 +8,8 @@ import EpochBlockNumbers, { EpochBlockTypes } from '../EpochBlockNumbers'
 import EpochDetailed from '../EpochDetailed'
 import { shortEngHumanizer } from '../../utils/humanizer'
 import { EpochBlocksInfoProps, EpochBasicData } from 'components/Epochs/types'
+import PlaceholderSVGWide from './img/placeholder-content.svg'
+import PlaceholderSVGTall from './img/placeholder-content-2.svg'
 
 export interface EpochBlockProps extends HTMLAttributes<HTMLDivElement> {
   currentBlockNumber: number
@@ -25,6 +27,7 @@ interface BlockProps extends HTMLAttributes<HTMLDivElement> {
 
 const EpochBlockStyled = styled(Card)<BlockProps>`
   cursor: pointer;
+  min-width: 0;
   padding: 19px 10px 12px;
   position: relative;
   transition: box-shadow 0.15s linear;
@@ -99,6 +102,37 @@ const TwoItemsGrid = styled.div`
   }
 `
 
+const PlaceholderContainer = styled.div`
+  align-items: center;
+  display: flex;
+  flex-grow: 1;
+  min-height: 116px;
+  max-width: 100%;
+  justify-content: center;
+
+  img {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+`
+
+const PlaceholderImgWide = styled.img`
+  display: none;
+
+  @media (min-width: ${props => props.theme.themeBreakPoints.xxl}) {
+    display: block;
+  }
+`
+
+const PlaceholderImgTall = styled.img`
+  display: block;
+
+  @media (min-width: ${props => props.theme.themeBreakPoints.xxl}) {
+    display: none;
+  }
+`
+
 const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   const { isCurrent, currentBlockNumber, finishBlockNumber, pendingTime, epoch, theme, ...restProps } = props
 
@@ -156,16 +190,12 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   )
 }
 
-export const EpochBlockLoading: React.FC<{ isCurrent: boolean }> = isCurrent => (
-  <EpochBlockStyled borderColor="#999">
-    <ProgressCircleStyled color="#999" title="Loading..." progress={null} />
-    <Values>
-      <TwoItemsGrid>
-        <ValueAndSubtitle underlineValue={true} value="" subtitle="Epoch" />
-        <ValueAndSubtitle value="" subtitle="Tasks" />
-      </TwoItemsGrid>
-      <EpochBlockNumbers values={[]} current={!!isCurrent} />
-    </Values>
+export const EpochBlockLoading: React.FC = () => (
+  <EpochBlockStyled borderColor="#f0f0f0">
+    <PlaceholderContainer>
+      <PlaceholderImgWide src={PlaceholderSVGWide} alt="" />
+      <PlaceholderImgTall src={PlaceholderSVGTall} alt="" />
+    </PlaceholderContainer>
   </EpochBlockStyled>
 )
 

@@ -84,9 +84,9 @@ const EpochHomeBlocks = () => {
     <>
       <SectionTitle>Epochs</SectionTitle>
       <EpochsRow>
-        {currentEpoch ? <EpochBlock {...currentEpoch} /> : <EpochBlockLoading isCurrent={true} />}
-        {epochs[0] ? <EpochBlock {...epochs[0]} /> : <EpochBlockLoading isCurrent={false} />}
-        {epochs[1] ? <EpochBlock {...epochs[1]} /> : <EpochBlockLoading isCurrent={false} />}
+        {currentEpoch ? <EpochBlock {...currentEpoch} /> : <EpochBlockLoading />}
+        {epochs[0] ? <EpochBlock {...epochs[0]} /> : <EpochBlockLoading />}
+        {epochs[1] ? <EpochBlock {...epochs[1]} /> : <EpochBlockLoading />}
       </EpochsRow>
     </>
   )
