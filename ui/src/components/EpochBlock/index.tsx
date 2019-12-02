@@ -16,6 +16,7 @@ export interface EpochBlockProps extends HTMLAttributes<HTMLDivElement> {
   pendingTime?: number
   epoch: EpochBasicData
   theme?: any
+  loading: boolean
 }
 
 interface BlockProps extends HTMLAttributes<HTMLDivElement> {
@@ -154,5 +155,18 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
     </>
   )
 }
+
+export const EpochBlockLoading: React.FC<{ isCurrent: boolean }> = isCurrent => (
+  <EpochBlockStyled borderColor="#999">
+    <ProgressCircleStyled color="#999" title="Loading..." progress={null} />
+    <Values>
+      <TwoItemsGrid>
+        <ValueAndSubtitle underlineValue={true} value="" subtitle="Epoch" />
+        <ValueAndSubtitle value="" subtitle="Tasks" />
+      </TwoItemsGrid>
+      <EpochBlockNumbers values={[]} current={!!isCurrent} />
+    </Values>
+  </EpochBlockStyled>
+)
 
 export default withTheme(EpochBlock)
