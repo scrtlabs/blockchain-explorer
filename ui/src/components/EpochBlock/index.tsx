@@ -10,11 +10,11 @@ import { shortEngHumanizer } from '../../utils/humanizer'
 import { EpochBlocksInfoProps, EpochBasicData } from 'components/Epochs/types'
 
 export interface EpochBlockProps extends HTMLAttributes<HTMLDivElement> {
-  isCurrent: boolean
   currentBlockNumber: number
-  finishBlockNumber: number
-  pendingTime?: number
   epoch: EpochBasicData
+  finishBlockNumber: number
+  isCurrent: boolean
+  pendingTime?: number
   theme?: any
   loading: boolean
 }
@@ -81,7 +81,7 @@ const TwoItemsGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-column-gap: 20px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 
   > div {
     position: relative;
@@ -111,15 +111,15 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
   const time = shortEngHumanizer(pendingTime !== undefined ? +pendingTime : Date.now() - +epoch.endTime * 1000)
 
   const blocks: EpochBlocksInfoProps[] = [
-    { value: epoch.startBlockNumber, title: 'First Block', type: EpochBlockTypes.first },
+    { value: epoch.startBlockNumber, title: 'First', type: EpochBlockTypes.first },
   ]
 
   if (isCurrent) {
     const value = finishBlockNumber > currentBlockNumber ? finishBlockNumber : currentBlockNumber
-    blocks.push({ value: currentBlockNumber, title: 'Current Block', type: EpochBlockTypes.current })
-    blocks.push({ value, title: 'Last Block', type: EpochBlockTypes.last })
+    blocks.push({ value: currentBlockNumber, title: 'Current', type: EpochBlockTypes.current })
+    blocks.push({ value, title: 'Last', type: EpochBlockTypes.last })
   } else {
-    blocks.push({ value: epoch.endBlockNumber, title: 'Last Block', type: EpochBlockTypes.last })
+    blocks.push({ value: epoch.endBlockNumber, title: 'Last', type: EpochBlockTypes.last })
   }
 
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
@@ -144,13 +144,13 @@ const EpochBlock: React.FC<EpochBlockProps> = (props: EpochBlockProps) => {
         <TimeLeftStyled current={isCurrent} value={time} />
       </EpochBlockStyled>
       <EpochDetailed
-        modalIsOpen={modalIsOpen}
-        closeModal={closeModal}
-        isCurrent={isCurrent}
-        progress={progress}
-        pendingTime={pendingTime}
         blocks={blocks}
+        closeModal={closeModal}
         epoch={epoch}
+        isCurrent={isCurrent}
+        modalIsOpen={modalIsOpen}
+        pendingTime={pendingTime}
+        progress={progress}
       />
     </>
   )

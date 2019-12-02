@@ -4,7 +4,7 @@ import CloseIcon from './img/close.svg'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   disableCloseButton?: boolean
-  onRequestClose: any
+  onClick?: any
   title: string
 }
 
@@ -56,12 +56,12 @@ const ModalClose = styled.button`
 
 class ModalTitle extends React.Component<Props> {
   public render = () => {
-    const { onRequestClose, title, disableCloseButton, ...restProps } = this.props
+    const { onClick, title, disableCloseButton, ...restProps } = this.props
 
     return (
       <ModalTitleWrapper {...restProps}>
         <ModalTitleText>{title}</ModalTitleText>
-        <ModalClose onClick={onRequestClose} disabled={disableCloseButton} />
+        <ModalClose onClick={onClick} disabled={disableCloseButton} />
       </ModalTitleWrapper>
     )
   }
