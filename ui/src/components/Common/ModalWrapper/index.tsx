@@ -19,9 +19,9 @@ const ModalWrapper: React.FC<Props> = props => {
   }, [])
 
   return (
-    <Modal {...restProps} style={modalStyle}>
+    <Modal {...restProps} onRequestClose={onRequestClose} shouldCloseOnOverlayClick={true} style={modalStyle}>
       {title ? (
-        <ModalTitle title={title} onRequestClose={onRequestClose} disableCloseButton={disableCloseButton} />
+        <ModalTitle title={title} onClick={onRequestClose} disableCloseButton={disableCloseButton} />
       ) : null}
       {children}
     </Modal>

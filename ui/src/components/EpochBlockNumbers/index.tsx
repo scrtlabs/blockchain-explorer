@@ -2,8 +2,8 @@ import React, { HTMLAttributes } from 'react'
 import styled, { withTheme } from 'styled-components'
 
 export enum EpochBlockTypes {
-  first,
   current,
+  first,
   last,
 }
 
@@ -32,8 +32,11 @@ const getTextColor = (type: EpochBlockTypes, defaultColor: string, current: bool
   } else return defaultColor
 }
 
+const EpochBlockNumbersOuter = styled.div``
+
 const EpochBlockNumbersWrapper = styled.div`
   align-items: center;
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.15);
   border-radius: 3px;
   display: flex;
   justify-content: center;
@@ -83,6 +86,16 @@ const Value = styled.p<{ type: EpochBlockTypes; defaultColor: string; current: b
   text-align: center;
 `
 
+const SubHeader = styled.h4`
+  color: ${ props => props.theme.colors.textLight };
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.44;
+  margin: 5px 0 0 0;
+  text-align: center;
+  text-transform: uppercase;
+`
+
 interface EpochBlockNumbersProps {
   current: boolean
   theme?: any
@@ -95,26 +108,29 @@ const EpochBlockNumbers: React.FC<TimeLeftProps> = (props: TimeLeftProps) => {
   const { values = [], current, theme, ...restProps } = props
 
   return (
-    <EpochBlockNumbersWrapper {...restProps}>
-      {values.map((item, index) => {
-        return (
-          <Cell
-            current={current}
-            currentBackgroundColor={theme.colors.secondary}
-            key={index}
-            lastBackgroundColor={theme.colors.primary}
-            type={item.type}
-          >
-            <Value type={item.type} defaultColor={theme.colors.textCommon} current={current}>
-              {item.value}
-            </Value>
-            <Title type={item.type} defaultColor={theme.colors.textLight} current={current}>
-              {item.title}
-            </Title>
-          </Cell>
-        )
-      })}
-    </EpochBlockNumbersWrapper>
+    <EpochBlockNumbersOuter {...restProps}>
+      <EpochBlockNumbersWrapper>
+        {values.map((item, index) => {
+          return (
+            <Cell
+              current={current}
+              currentBackgroundColor={theme.colors.secondary}
+              key={index}
+              lastBackgroundColor={theme.colors.primary}
+              type={item.type}
+            >
+              <Value type={item.type} defaultColor={theme.colors.textCommon} current={current}>
+                {item.value}
+              </Value>
+              <Title type={item.type} defaultColor={theme.colors.textLight} current={current}>
+                {item.title}
+              </Title>
+            </Cell>
+          )
+        })}
+      </EpochBlockNumbersWrapper>
+      <SubHeader>Ethereum Blocks</SubHeader>
+    </EpochBlockNumbersOuter>
   )
 }
 
