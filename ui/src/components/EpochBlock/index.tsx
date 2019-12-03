@@ -16,14 +16,16 @@ export interface EpochBlockProps extends HTMLAttributes<HTMLDivElement> {
   isCurrent: boolean
   pendingTime?: number
   theme?: any
+  loading: boolean
 }
 
 interface BlockProps extends HTMLAttributes<HTMLDivElement> {
   borderColor?: string
 }
 
-const EpochBlockStyled = styled(Card)<BlockProps>`
+export const EpochBlockStyled = styled(Card)<BlockProps>`
   cursor: pointer;
+  min-width: 0;
   padding: 19px 10px 12px;
   position: relative;
   transition: box-shadow 0.15s linear;

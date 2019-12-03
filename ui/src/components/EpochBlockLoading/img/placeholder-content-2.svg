@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="332" height="242" viewBox="0 0 332 242">
+    <defs>
+        <style>
+            .cls-1{fill:#f0f0f0}
+        </style>
+    </defs>
+    <g id="content-placeholder-2" transform="translate(-149 -106)">
+        <g id="Group_17" data-name="Group 17" transform="translate(-112 274)">
+            <rect id="bg" width="332" height="36" class="cls-1" rx="3" transform="translate(261 38)"/>
+            <rect id="bg-2" width="163" height="36" class="cls-1" data-name="bg" rx="3" transform="translate(261 -14)"/>
+            <rect id="bg-3" width="158" height="36" class="cls-1" data-name="bg" rx="3" transform="translate(435 -14)"/>
+        </g>
+        <circle id="Ellipse_12" cx="58" cy="58" r="58" class="cls-1" data-name="Ellipse 12" transform="translate(257 106)"/>
+    </g>
+</svg>
