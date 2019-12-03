@@ -28,7 +28,7 @@ const latestEpochFragment = gql`
 `
 
 export const EPOCHS_QUERY = gql`
-  query Epoches($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
+  query Epoches($total: Int, $skip: Int, $orderBy: Epoch_orderBy, $orderDirection: OrderDirection) {
     epoches(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
       ...EpochsDetails
     }
@@ -41,7 +41,7 @@ export const EPOCHS_QUERY = gql`
 `
 
 export const EPOCHS_SUBSCRIPTION = gql`
-  subscription EpochesSubs($total: Int, $skip: Int, $orderBy: String, $orderDirection: String) {
+  subscription EpochesSubs($total: Int, $skip: Int, $orderBy: Epoch_orderBy, $orderDirection: OrderDirection) {
     epoches(first: $total, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
       ...EpochsDetails
     }
@@ -59,7 +59,7 @@ export const ENG_STATE_SUBSCRIPTION = gql`
 `
 
 export const EPOCH_BY_ID_QUERY = gql`
-  query Epoch($epochId: String) {
+  query Epoch($epochId: ID!) {
     epoch(id: $epochId) {
       ...EpochsDetails
     }
@@ -75,9 +75,9 @@ export const EPOCHS_BY_WORKER_QUERY = gql`
   query EpochesByWorker(
     $total: Int
     $skip: Int
-    $orderBy: String
-    $orderDirection: String
-    $workerId: String
+    $orderBy: Epoch_orderBy
+    $orderDirection: OrderDirection
+    $workerId: ID!
     $epoches: [ID!]
   ) {
     worker(id: $workerId) {

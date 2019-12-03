@@ -7,7 +7,7 @@ interface FullLoadingProps extends React.HTMLAttributes<HTMLDivElement> {
   message?: string
 }
 
-const FullLoadingStyled = styled.div`
+export const FullLoadingStyled = styled.div`
   align-items: center;
   background-color: rgba(0, 0, 0, 0.35);
   display: flex;
@@ -21,7 +21,7 @@ const FullLoadingStyled = styled.div`
   z-index: 12345;
 `
 
-const Message = styled.p`
+export const Message = styled.p<{ whiteBackground?: boolean }>`
   color: #fff;
   font-size: 15px;
   font-weight: 600;
@@ -32,6 +32,7 @@ const Message = styled.p`
   text-align: center;
   text-shadow: 0 0 2px #000;
   width: 480px;
+  filter: ${props => (props.whiteBackground ? 'opacity(0.6) brightness(0.7) invert(0.8)' : 'none')};
 `
 
 const FullLoading = ({ message = 'Loading...', ...restProps }: FullLoadingProps) =>

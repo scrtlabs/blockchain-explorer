@@ -169,26 +169,24 @@ const Workers: React.FC<WorkersProps> = ({ history, query, queryVariables }) => 
   }
 
   return (
-    <>
-      <BaseTable
-        headerProps={{
-          headerCells: HEADER_CELLS,
-          order: orderDirection,
-          orderBy: GraphToField[orderBy as keyof typeof GraphToField],
-          onRequestSort: handleRequestSort,
-        }}
-        rows={data && data.workers && data.workers.map(extractWorkerData)}
-        paginatorProps={{
-          colSpan: HEADER_CELLS.length,
-          count: data ? +data.enigmaState.workerCount : 0,
-          onChangePage: handleChangePage,
-          onChangeRowsPerPage: handleChangeRowsPerPage,
-          page: Math.floor(skip / total),
-          rowsPerPage: total,
-        }}
-      />
-      {loading && !data && <FullLoading />}
-    </>
+    <BaseTable
+      loading={loading}
+      headerProps={{
+        headerCells: HEADER_CELLS,
+        order: orderDirection,
+        orderBy: GraphToField[orderBy as keyof typeof GraphToField],
+        onRequestSort: handleRequestSort,
+      }}
+      rows={data && data.workers && data.workers.map(extractWorkerData)}
+      paginatorProps={{
+        colSpan: HEADER_CELLS.length,
+        count: data ? +data.enigmaState.workerCount : 0,
+        onChangePage: handleChangePage,
+        onChangeRowsPerPage: handleChangeRowsPerPage,
+        page: Math.floor(skip / total),
+        rowsPerPage: total,
+      }}
+    />
   )
 }
 

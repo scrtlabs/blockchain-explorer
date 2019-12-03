@@ -119,7 +119,10 @@ const TasksWrapper: React.FC<any> = ({ history, match = { params: {} }, scAddr, 
 
   React.useEffect(() => {
     if (scAddr) {
-      setTaskParams({ query: TASKS_BY_SECRET_CONTRACT_QUERY, queryVariables: { ...TASKS_INITIAL_VALUES, scAddr } })
+      setTaskParams({
+        query: TASKS_BY_SECRET_CONTRACT_QUERY,
+        queryVariables: { ...TASKS_INITIAL_VALUES, scAddr, notId: scAddr },
+      })
     } else if (sender) {
       setTaskParams({ query: TASKS_BY_USER_ADDRESS_QUERY, queryVariables: { ...TASKS_INITIAL_VALUES, sender } })
     }
@@ -280,6 +283,7 @@ const Tasks: React.FC<TasksProps> = withTheme(({ theme, history, scTasks, query,
   return (
     <>
       <BaseTable
+        loading={loading}
         headerProps={{
           headerCells: HEADER_CELLS,
           order: orderDirection,
@@ -297,7 +301,6 @@ const Tasks: React.FC<TasksProps> = withTheme(({ theme, history, scTasks, query,
         }}
       />
       {modalProps !== null && <TaskDetailed {...modalProps} modalIsOpen={modalIsOpen} closeModal={closeModal} />}
-      {loading && !data && <FullLoading />}
     </>
   )
 })

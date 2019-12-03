@@ -13,8 +13,9 @@ import ethApi from '../../utils/eth'
 import SearchBar from '../Common/SearchBar'
 import { DocumentNode } from 'graphql'
 import { LinkText } from '../Common/LinkText'
-import { EpochBasicData, FieldToGraph, GraphToField, Direction, EpochBlocksInfoProps } from './types'
+import { FieldToGraph, GraphToField, Direction, EpochBlocksInfoProps } from './types'
 import { EPOCHS_QUERY, EPOCHS_BY_WORKER_QUERY, EPOCH_BY_ID_QUERY, EPOCHS_INITIAL_VALUES } from './queries'
+import { Epoch_epoch } from '../../apolloTypeDef'
 
 interface EpochsProps extends React.HTMLAttributes<HTMLDivElement> {
   byParam: boolean
@@ -33,7 +34,7 @@ const EpochId: React.FC<EpochIdProps> = ({ id, onClick }) => (
   </LinkText>
 )
 
-const calculateProgress = ({ taskCount, completedTaskCount }: EpochBasicData) =>
+const calculateProgress = ({ taskCount, completedTaskCount }: Epoch_epoch) =>
   +taskCount === 0 ? null : `${+(+completedTaskCount / +taskCount).toFixed(2) * 100}`
 
 const HEADER_CELLS = [
@@ -155,7 +156,7 @@ const Epochs: React.FC<EpochsProps> = ({ byParam, history, query, queryVariables
     }
   }
 
-  const openModal = async (epoch: EpochBasicData) => {
+  const openModal = async (epoch: Epoch_epoch) => {
     const progress = calculateProgress(epoch)
     const isCurrent: boolean = epoch.id === data.enigmaState.latestEpoch.id
     const currentEpochEstimates = estimateCurrentEpochEnd(data.epoches)
@@ -175,11 +176,11 @@ const Epochs: React.FC<EpochsProps> = ({ byParam, history, query, queryVariables
     }
 
     const { pendingTime = undefined } = await currentEpochEstimates
-    setModalProps({ epoch: { ...epoch }, isCurrent, progress, pendingTime, blocks })
+    setModalProps({ epoch, isCurrent, progress, pendingTime, blocks })
     setModalIsOpen(true)
   }
 
-  const extractEpochData = (epoch: EpochBasicData, index: number) => {
+  const extractEpochData = (epoch: Epoch_epoch, index: number) => {
     const isCurrent: boolean = epoch.id === data.enigmaState.latestEpoch.id
     const age = isCurrent ? 'current' : shortEngHumanizer(Date.now() - +epoch.endTime * 1000)
     const progress = calculateProgress(epoch)
@@ -243,6 +244,7 @@ const Epochs: React.FC<EpochsProps> = ({ byParam, history, query, queryVariables
   return (
     <>
       <BaseTable
+        loading={loading}
         headerProps={{
           headerCells: HEADER_CELLS,
           order: orderDirection,
@@ -269,7 +271,6 @@ const Epochs: React.FC<EpochsProps> = ({ byParam, history, query, queryVariables
         }}
       />
       <EpochDetailed {...modalProps} modalIsOpen={modalIsOpen} closeModal={closeModal} />
-      {loading && !data && <FullLoading />}
     </>
   )
 }

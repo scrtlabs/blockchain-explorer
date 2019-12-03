@@ -75,7 +75,7 @@ const statisticsCommonFragment = gql`
 `
 
 const STATISTICS_TASK_QUERY = gql`
-  subscription StatisticsByTask($total: Int, $since: Int, $type: String) {
+  subscription StatisticsByTask($total: Int, $since: BigDecimal, $type: StatisticType) {
     statistics(first: $total, skip: 0, orderBy: order, orderDirection: asc, where: { type: $type, order_gte: $since }) {
       ...StatisticsCommonFragment
       taskCount
@@ -87,7 +87,7 @@ const STATISTICS_TASK_QUERY = gql`
 `
 
 const STATISTICS_USER_QUERY = gql`
-  subscription StatisticsByUser($total: Int, $since: Int, $type: String) {
+  subscription StatisticsByUser($total: Int, $since: BigDecimal, $type: StatisticType) {
     statistics(first: $total, skip: 0, orderBy: order, orderDirection: asc, where: { type: $type, order_gte: $since }) {
       ...StatisticsCommonFragment
       userCount
@@ -98,7 +98,7 @@ const STATISTICS_USER_QUERY = gql`
 `
 
 const STATISTICS_WORKER_QUERY = gql`
-  subscription StatisticsByWorker($total: Int, $since: Int, $type: String) {
+  subscription StatisticsByWorker($total: Int, $since: BigDecimal, $type: StatisticType) {
     statistics(first: $total, skip: 0, orderBy: order, orderDirection: asc, where: { type: $type, order_gte: $since }) {
       ...StatisticsCommonFragment
       workerCount

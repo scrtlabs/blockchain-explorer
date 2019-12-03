@@ -2,7 +2,8 @@ import React from 'react'
 import ModalWrapper from '../Common/ModalWrapper'
 import StrippedGrid, { StrippedGridRow } from '../Common/StrippedGrid'
 import GridCell from '../Common/GridCell'
-import { EpochBlocksInfoProps, EpochBasicData } from '../Epochs/types'
+import { EpochBlocksInfoProps } from '../Epochs/types'
+import { Epoch_epoch } from '../../apolloTypeDef'
 
 export type WorkerType = {
   balance: string
@@ -11,7 +12,7 @@ export type WorkerType = {
 export interface EpochDetailedProps {
   blocks?: EpochBlocksInfoProps[]
   closeModal: () => void
-  epoch?: EpochBasicData
+  epoch?: Epoch_epoch
   isCurrent?: boolean
   modalIsOpen: boolean
   pendingTime?: number
@@ -67,7 +68,10 @@ const EpochDetailed: React.FC<EpochDetailedProps> = props => {
           </StrippedGridRow>
         )}
         <StrippedGridRow columns={3}>
-          <GridCell title="ENG Staked" value={epoch.stakes.reduce((acc, stake) => acc + +stake, 0).toString()} />
+          <GridCell
+            title="ENG Staked"
+            value={epoch.stakes ? epoch.stakes.reduce((acc, stake) => acc + +stake, 0).toString() : '0'}
+          />
           <GridCell title="ENG Gas Used" value={epoch.gasUsed} />
           <GridCell title="ENG Reward" value={'-'} />
         </StrippedGridRow>
