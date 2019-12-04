@@ -25,8 +25,11 @@ const EpochDetailed: React.FC<EpochDetailedProps> = props => {
 
   React.useEffect(() => {
     const retrieveWorkers = async () => {
-      const workers = epoch ? await (await fetch(`${process.env.REACT_APP_ENIGMA_API}/epochs/${epoch.id}`)).json() : []
-      setSelectedWorkers(workers)
+      if (epoch) {
+        const response = await fetch(`${process.env.REACT_APP_ENIGMA_API}/epochs/${epoch.id}`)
+        const workers = response.ok ? await response.json() : []
+        setSelectedWorkers(workers)
+      }
     }
 
     if (epoch) {
