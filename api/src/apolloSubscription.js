@@ -34,7 +34,7 @@ async function initApolloSubscription(startAt = 0) {
     variables: { startAt }
   })
   .then(async ({ data: { epoches } }) => {
-    if (epoches) {
+    if (epoches.length) {
       for (let epochIndex = 0; epochIndex < epoches.length; epochIndex++) {
         const epoch = epoches[epochIndex]
 
