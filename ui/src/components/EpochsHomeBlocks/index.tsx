@@ -71,7 +71,7 @@ const EpochHomeBlocks = () => {
       setCurrentEpoch(newCurrentEpoch as any),
     )
     setEpochs(extractEpochs({ ...data, ...engState }, currentBlockNumber))
-  }, [data, engState])
+  }, [data, engState, currentBlockNumber])
 
   React.useEffect(() => {
     const intervalPtr = setInterval(async () => {
