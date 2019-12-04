@@ -27,14 +27,14 @@ const EpochDetailed: React.FC<EpochDetailedProps> = props => {
     const retrieveWorkers = async () => {
       if (epoch) {
         const response = await fetch(`${process.env.REACT_APP_ENIGMA_API}/epochs/${epoch.id}`)
-        const workers = response.ok ? await response.json() : []
-        setSelectedWorkers(workers)
+
+        if (response.ok) {
+          setSelectedWorkers(await response.json())
+        }
       }
     }
 
-    if (epoch) {
-      retrieveWorkers()
-    }
+    retrieveWorkers()
   }, [epoch])
 
   if (epoch === undefined) return null
