@@ -72,7 +72,7 @@ router
     const epoch = await getEpoch({ epochId: ctx.params.id })
 
     // eslint-disable-next-line require-atomic-updates
-    ctx.body = epoch.workers.map(({ workerId }) => `${workerId}`)
+    ctx.body = !epoch ? [] : epoch.workers.map(({ workerId }) => `${workerId}`)
   })
   .get('workers', '/workers', async ctx => {
     const workers = (await getWorkers()) || []
@@ -87,7 +87,7 @@ router
     const worker = await getWorker({ workerId: ctx.params.id })
 
     // eslint-disable-next-line require-atomic-updates
-    ctx.body = worker.epochs.map(({ epochId }) => `${epochId}`)
+    ctx.body = !worker ? [] : worker.epochs.map(({ epochId }) => `${epochId}`)
   })
 
 app
