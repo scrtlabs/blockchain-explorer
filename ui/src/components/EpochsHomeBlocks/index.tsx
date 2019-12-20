@@ -56,6 +56,8 @@ const extractEpochs = (data: any, currentBlockNumber: number): any => {
   return []
 }
 
+const POLL_FOR_BLOCK_NUMBER_DEFAULT = 1000 * 60
+
 const EpochHomeBlocks = () => {
   const [epochs, setEpochs] = React.useState([])
   const [currentEpoch, setCurrentEpoch] = React.useState()
@@ -77,7 +79,7 @@ const EpochHomeBlocks = () => {
     const intervalPtr = setInterval(async () => {
       const actualBlockNumber = await ethApi.getBlockNumber()
       setCurrentBlockNumber(actualBlockNumber)
-    }, 1000)
+    }, process.env.REACT_APP_POLL_FOR_BLOCK_NUMBER || POLL_FOR_BLOCK_NUMBER_DEFAULT)
     return () => clearInterval(intervalPtr)
   }, [])
 

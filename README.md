@@ -46,6 +46,7 @@ This project contains the [Enigma Blockchain Explorer](./ui) itself, and the [En
   - `REACT_APP_ETH_NETWORK_ID` is the Blockchain network ID
   - `REACT_APP_ETH_URL` is the Blockchain RPC host
   - `REACT_APP_ETH_NETWORK_NAME` is the Blockchain network descriptive name
+  - `REACT_APP_POLL_FOR_BLOCK_NUMBER` is the interval (in milliseconds) to poll for the current blockNumber
 
 ## Without Docker
 

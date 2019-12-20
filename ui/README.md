@@ -98,3 +98,9 @@ Blockchain network ID. If set will extract network information from [networks.js
 _Local Value_: _not set_
 
 **Note:** If specified, `REACT_APP_ETH_URL` && `REACT_APP_ETH_NETWORK_NAME` won't be taken into account.
+Blockchain network ID. If set will extract network information from [networks.json](src/utils/networks.json).
+
+---
+#### `REACT_APP_POLL_FOR_BLOCK_NUMBER`
+Interval (in milliseconds) to poll for the current blockNumber
+_Local Value_: `60000`
