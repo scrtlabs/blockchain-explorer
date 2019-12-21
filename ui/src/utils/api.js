@@ -68,10 +68,17 @@ export const binance = async () => {
 
 export const enigmaTicker = async () => {
   const enigmaAPIURL = `${process.env.REACT_APP_ENIGMA_API}/ticker`
-  const { price_usd, market_cap_usd } = await (await fetch(enigmaAPIURL)).json().catch()
+  const response = await fetch(enigmaAPIURL, { mode: 'no-cors' })
+  const ticker = { priceUsd: '0', marketCapUsd: '0' }
+
+  if (response.ok) {
+    const { price_usd, market_cap_usd } = await response.json()
+    ticker.priceUsd = price_usd
+    ticker.marketCapUsd = market_cap_usd
+  }
 
   return {
-    price: formatNumber(+price_usd, 4),
-    marketCap: formatNumber(+market_cap_usd, 0),
+    price: formatNumber(+ticker.price_usd, 4),
+    marketCap: formatNumber(+ticker.market_cap_usd, 0),
   }
 }
