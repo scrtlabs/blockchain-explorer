@@ -26,6 +26,7 @@ export interface WorkerBasicData {
   completedTaskCount: string
   failedTaskCount: string
   reward: string
+  status: string
   enigmaState: {
     latestEpoch: {
       id: string

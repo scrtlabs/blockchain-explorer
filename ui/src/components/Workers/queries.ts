@@ -9,6 +9,7 @@ const basicWorkerFragment = gql`
     completedTaskCount
     failedTaskCount
     reward
+    status
   }
 `
 

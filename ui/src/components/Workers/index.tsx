@@ -25,6 +25,7 @@ const WorkerId: React.FC<WorkerIdProps> = ({ id, onClick }) => (
 
 const HEADER_CELLS = [
   { id: 'workerAddress', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.start, label: 'Address' },
+  { id: 'workerStatus', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.center, label: 'Status' },
   {
     id: 'workerStackedEng',
     useClassShowOnDesktop: false,
@@ -96,6 +97,12 @@ const WorkersWrapper: React.FC<any> = ({ history }) => {
   )
 }
 
+const workerStatusMap = {
+  LoggedIn: 'logged in',
+  LoggedOut: 'logged out',
+  Unregistered: 'unregistered',
+}
+
 const Workers: React.FC<WorkersProps> = ({ history, query, queryVariables }) => {
   const { data, error, loading, variables, refetch } = useQuery(query, { variables: queryVariables })
   const { total, skip, orderBy, orderDirection } = variables
@@ -136,26 +143,32 @@ const Workers: React.FC<WorkersProps> = ({ history, query, queryVariables }) => 
       id: `${worker.id}_${worker.id}`,
       value: <WorkerId id={worker.id} onClick={() => goToWorkerDetails(worker.id)} />,
     }
-    const balance = {
+    const status = {
       align: HEADER_CELLS[1].align,
+      useClassShowOnDesktop: false,
+      id: `${worker.id}_${worker.status}`,
+      value: workerStatusMap[worker.status as keyof typeof workerStatusMap],
+    }
+    const balance = {
+      align: HEADER_CELLS[2].align,
       useClassShowOnDesktop: false,
       id: `${worker.id}_${worker.balance}`,
       value: worker.balance,
     }
     const epochCount = {
-      align: HEADER_CELLS[2].align,
+      align: HEADER_CELLS[3].align,
       useClassShowOnDesktop: true,
       id: `${worker.id}_${worker.epochCount}_${totalEpochs}`,
       value: `${worker.epochCount} of ${totalEpochs}`,
     }
     const percentage = {
-      align: HEADER_CELLS[3].align,
+      align: HEADER_CELLS[4].align,
       useClassShowOnDesktop: true,
       id: `${worker.id}_${worker.completedTaskCount + worker.failedTaskCount}_t_${index}`,
       value: `${totalTasks ? Math.floor(+(+worker.completedTaskCount / totalTasks).toFixed(2) * 100) : 0}%`,
     }
     const reward = {
-      align: HEADER_CELLS[4].align,
+      align: HEADER_CELLS[5].align,
       useClassShowOnDesktop: false,
       id: `${worker.id}_${worker.reward}`,
       value: worker.reward || '-',
@@ -163,7 +176,7 @@ const Workers: React.FC<WorkersProps> = ({ history, query, queryVariables }) => 
 
     return {
       id: worker.id,
-      cells: [id, balance, epochCount, percentage, reward],
+      cells: [id, status, balance, epochCount, percentage, reward],
     }
   }
 
