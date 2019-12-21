@@ -1,5 +1,4 @@
 import Web3 from 'web3'
-import { Enigma } from 'enigma-js/node'
 import getNetworkDetailsBy from './networks'
 
 export const ENG_DECIMALS = 8
@@ -13,15 +12,6 @@ class EthAPI {
     } else {
       this.web3 = new Web3(new Web3.providers.HttpProvider(process.env.REACT_APP_ETH_URL))
     }
-
-    // enigma
-    this.enigma = new Enigma(
-      this.web3,
-      process.env.REACT_APP_ENIGMA_CONTRACT_ADDRESS,
-      process.env.REACT_APP_ENIGMA_TOKEN_ADDRESS,
-      process.env.REACT_APP_ENIGMA_RPC_URL,
-    )
-    this.enigma.admin()
   }
 
   getBlockNumber() {
