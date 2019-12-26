@@ -1,9 +1,9 @@
 import React from 'react'
 import ModalWrapper from '../Common/ModalWrapper'
-import StrippedGrid, {StrippedGridRow} from '../Common/StrippedGrid'
+import StrippedGrid, { StrippedGridRow } from '../Common/StrippedGrid'
 import GridCell from '../Common/GridCell'
-import {EpochBlocksInfoProps} from '../Epochs/types'
-import {Epoch_epoch} from '../../apolloTypeDef'
+import { EpochBlocksInfoProps } from '../Epochs/types'
+import { Epoch_epoch } from '../../apolloTypeDef'
 
 export type WorkerType = {
   balance: string
