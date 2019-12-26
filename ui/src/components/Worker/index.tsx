@@ -1,11 +1,11 @@
 import React from 'react'
 import gql from 'graphql-tag'
-import { useQuery } from '@apollo/react-hooks'
+import {useQuery} from '@apollo/react-hooks'
 import styled from 'styled-components'
 import Card from '../Common/Card'
 import SectionTitle from '../Common/SectionTitle'
 import CopyText from '../Common/CopyText'
-import GridCell, { GridCellStyled, Title, Value } from '../Common/GridCell'
+import GridCell, {GridCellStyled, Title, Value} from '../Common/GridCell'
 import Epochs from '../Epochs'
 import HexAddr from '../Common/HexAddr'
 import ContainedLoading from '../Common/ContainedLoading'
@@ -78,7 +78,7 @@ const Worker = (props: any) => {
 
   React.useMemo(() => {
     const updateEpoches = async () => {
-      const response = await fetch(`${process.env.REACT_APP_ENIGMA_API}/workers/${workerAddress}`, { mode: 'no-cors' })
+      const response = await fetch(`${process.env.REACT_APP_ENIGMA_API}/workers/${workerAddress}`)
 
       if (response.ok) {
         setEpoches(await response.json())
