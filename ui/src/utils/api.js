@@ -78,7 +78,7 @@ export const enigmaTicker = async () => {
   }
 
   return {
-    price: formatNumber(+ticker.price_usd, 4),
-    marketCap: formatNumber(+ticker.market_cap_usd, 0),
+    price: formatNumber(+ticker.priceUsd, 4),
+    marketCap: formatNumber(+ticker.marketCapUsd, 0),
   }
 }
