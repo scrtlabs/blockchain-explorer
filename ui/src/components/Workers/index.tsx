@@ -25,34 +25,41 @@ const WorkerId: React.FC<WorkerIdProps> = ({ id, onClick }) => (
 
 const HEADER_CELLS = [
   { id: 'workerAddress', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.start, label: 'Address' },
-  { id: 'workerStatus', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.center, label: 'Status' },
   {
-    id: 'workerStackedEng',
-    useClassShowOnDesktop: false,
-    sortable: true,
-    align: FlexAlign.end,
-    label: 'Staked',
-  },
-  {
-    id: 'workerActiveVsTotal',
-    useClassShowOnDesktop: true,
-    sortable: false,
     align: FlexAlign.center,
-    label: 'Epochs Active / Total Epochs',
-  },
-  {
-    id: 'workerCompletedTasks',
-    useClassShowOnDesktop: true,
-    sortable: false,
-    align: FlexAlign.end,
-    label: '% Of Completed Tasks',
-  },
-  {
-    id: 'workerEngReward',
-    useClassShowOnDesktop: false,
+    filter: true,
+    id: 'workerStatus',
+    label: 'Status',
     sortable: true,
+    useClassShowOnDesktop: false,
+  },
+  {
     align: FlexAlign.end,
+    id: 'workerStackedEng',
+    label: 'Staked',
+    sortable: true,
+    useClassShowOnDesktop: false,
+  },
+  {
+    align: FlexAlign.center,
+    id: 'workerActiveVsTotal',
+    label: 'Epochs Active / Total Epochs',
+    sortable: false,
+    useClassShowOnDesktop: true,
+  },
+  {
+    align: FlexAlign.end,
+    id: 'workerCompletedTasks',
+    label: '% Of Completed Tasks',
+    sortable: false,
+    useClassShowOnDesktop: true,
+  },
+  {
+    align: FlexAlign.end,
+    id: 'workerEngReward',
     label: 'Reward',
+    sortable: true,
+    useClassShowOnDesktop: false,
   },
 ]
 

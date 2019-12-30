@@ -2,22 +2,23 @@ import React from 'react'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import TableCell from '@material-ui/core/TableCell'
-import TableSortLabel from '@material-ui/core/TableSortLabel'
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
+import { FilterSVG } from './img/FilterSVG'
 import styled from 'styled-components'
 
 export enum FlexAlign {
-  'start' = 'flex-start',
-  'end' = 'flex-end',
   'center' = 'center',
+  'end' = 'flex-end',
+  'start' = 'flex-start',
 }
 
 export type HeaderCell = {
-  id: string
-  useClassShowOnDesktop: boolean
   align: FlexAlign
+  id: string
   label: string
+  filter?: boolean
   sortable: boolean
+  useClassShowOnDesktop: boolean
 }
 
 export interface EnhancedTableHeadProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -27,28 +28,26 @@ export interface EnhancedTableHeadProps extends React.HTMLAttributes<HTMLDivElem
   onRequestSort: CallableFunction
 }
 
-const TableHeadText = styled.span`
-  color: #999;
-  font-size: 12px;
-  white-space: nowrap;
+const COLOR_DEFAULT = '#999'
+const COLOR_ACTIVE = '#333'
 
-  & + svg {
-    opacity: 1;
-  }
+const TableHeadWrapper = styled.span<{ alignElements?: string }>`
+  align-items: center;
+  display: flex;
+  justify-content: ${props => (props.alignElements ? props.alignElements : 'flex-start')};
 `
 
-const theme = createMuiTheme({
-  overrides: {
-    MuiTableSortLabel: {
-      icon: {
-        color: 'rgba(0, 0, 0, 0.3)',
-      },
-      active: {
-        color: 'rgba(0, 0, 0, 0.7)',
-      },
-    },
-  },
-})
+const TableHeadText = styled.span<{ active?: boolean }>`
+  color: ${props => (props.active ? COLOR_ACTIVE : COLOR_DEFAULT)};
+  font-size: 12px;
+  white-space: nowrap;
+`
+
+const FilterWrapper = styled.span<{ active?: boolean }>`
+  cursor: pointer;
+  fill: ${props => (props.active ? COLOR_ACTIVE : COLOR_DEFAULT)};
+  margin-left: 5px;
+`
 
 const EnhancedTableHead = ({ headerCells, order, orderBy, onRequestSort }: EnhancedTableHeadProps) => {
   const createSortHandler = (property: string) => (event: React.SyntheticEvent) => {
@@ -56,51 +55,46 @@ const EnhancedTableHead = ({ headerCells, order, orderBy, onRequestSort }: Enhan
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <TableHead>
-        <TableRow>
-          {headerCells.map(headerCell => {
-            const active = orderBy === headerCell.id
+    <TableHead>
+      <TableRow>
+        {headerCells.map(headerCell => {
+          const activeSorting = orderBy === headerCell.id
+          const sortProps: any = {
+            direction: activeSorting ? 'asc' : 'desc',
+            onClick: createSortHandler(headerCell.id),
+            style: {
+              cursor: 'pointer',
+              fill: activeSorting ? COLOR_ACTIVE : COLOR_DEFAULT,
+              height: '16px',
+              marginLeft: '8px',
+              transform: order === 'desc' ? 'rotate(180deg)' : '',
+              width: '16px',
+            },
+          }
 
-            return (
-              <TableCell
-                key={headerCell.id}
-                sortDirection={active ? order : false}
-                className={headerCell.useClassShowOnDesktop ? 'showOnDesktop' : ''}
-                style={{
-                  paddingRight: '5px',
-                  display: headerCell.useClassShowOnDesktop ? 'none' : 'table-cell',
-                }}
-              >
-                {active ? (
-                  <TableSortLabel
-                    active={active}
-                    direction={order}
-                    onClick={createSortHandler(headerCell.id)}
-                    style={{ justifyContent: headerCell.align, display: 'flex', cursor: 'pointer' }}
-                  >
-                    <TableHeadText>{headerCell.label}</TableHeadText>
-                  </TableSortLabel>
-                ) : (
-                  <TableSortLabel
-                    direction="asc"
-                    hideSortIcon={!headerCell.sortable}
-                    onClick={headerCell.sortable ? createSortHandler(headerCell.id) : () => {}}
-                    style={{
-                      justifyContent: headerCell.align,
-                      display: 'flex',
-                      cursor: headerCell.sortable ? 'pointer' : 'default',
-                    }}
-                  >
-                    <TableHeadText>{headerCell.label}</TableHeadText>
-                  </TableSortLabel>
-                )}
-              </TableCell>
-            )
-          })}
-        </TableRow>
-      </TableHead>
-    </ThemeProvider>
+          return (
+            <TableCell
+              className={headerCell.useClassShowOnDesktop ? 'showOnDesktop' : ''}
+              key={headerCell.id}
+              style={{
+                display: headerCell.useClassShowOnDesktop ? 'none' : 'table-cell',
+                paddingRight: '5px',
+              }}
+            >
+              <TableHeadWrapper alignElements={headerCell.align}>
+                <TableHeadText active={activeSorting}>{headerCell.label}</TableHeadText>
+                {headerCell.sortable ? <ArrowDownwardIcon {...sortProps} /> : null}
+                {headerCell.filter ? (
+                  <FilterWrapper>
+                    <FilterSVG />
+                  </FilterWrapper>
+                ) : null}
+              </TableHeadWrapper>
+            </TableCell>
+          )
+        })}
+      </TableRow>
+    </TableHead>
   )
 }
 
