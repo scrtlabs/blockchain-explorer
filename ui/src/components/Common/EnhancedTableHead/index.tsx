@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { createRef } from 'react'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import TableCell from '@material-ui/core/TableCell'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import { FilterSVG } from './img/FilterSVG'
+import FilterItem from '../FilterItem'
+import { Button } from '../Button'
 import styled from 'styled-components'
 
 export enum FlexAlign {
@@ -43,15 +45,114 @@ const TableHeadText = styled.span<{ active?: boolean }>`
   white-space: nowrap;
 `
 
-const FilterWrapper = styled.span<{ active?: boolean }>`
+const FilterWrapper = styled.div<{ active?: boolean }>`
+  background-color: transparent;
+  border: none;
   cursor: pointer;
-  fill: ${props => (props.active ? COLOR_ACTIVE : COLOR_DEFAULT)};
-  margin-left: 5px;
+  margin: 0 0 0 5px;
+  outline: none;
+  padding: 0;
+  position: relative;
+
+  > svg {
+    fill: ${COLOR_DEFAULT};
+  }
+
+  &:focus-within {
+    > div {
+      display: block;
+    }
+
+    > svg {
+      fill: ${COLOR_ACTIVE};
+    }
+  }
+`
+
+const FilterDropdown = styled.div`
+  background-color: #fff;
+  border-radius: 3px;
+  border: solid 1px ${props => props.theme.borders.borderColor};
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.02);
+  display: none;
+  left: 50%;
+  position: absolute;
+  top: calc(100% + 10px);
+  transform: translateX(-50%);
+  width: 125px;
+
+  &::before {
+    border-bottom: 5px solid #fff;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    content: '';
+    height: 5px;
+    left: 50%;
+    position: absolute;
+    top: -5px;
+    transform: translateX(-50%);
+    width: 5px;
+    z-index: 5;
+  }
+
+  &::after {
+    border-bottom: 7px solid ${props => props.theme.borders.borderColor};
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    content: '';
+    height: 7px;
+    left: 50%;
+    position: absolute;
+    top: -7px;
+    transform: translateX(-50%);
+    width: 7px;
+    z-index: 1;
+  }
+`
+
+const FilterButtonContainer = styled.span`
+  display: flex;
+  padding: 6px 8px;
+`
+
+const HelperFocusItem = styled.span`
+  height: 0;
+  line-height: 0;
+  width: 0;
+  position: absolute;
+  z-index: -123456;
+`
+
+const ButtonStyled = styled(Button)`
+  border-radius: 2px;
+  flex-grow: 1;
+  font-size: 12px;
+  font-weight: 600;
+  height: 22px;
+  line-height: 22px;
+  text-transform: uppercase;
 `
 
 const EnhancedTableHead = ({ headerCells, order, orderBy, onRequestSort }: EnhancedTableHeadProps) => {
   const createSortHandler = (property: string) => (event: React.SyntheticEvent) => {
     onRequestSort(event, property)
+  }
+  const options = [
+    { title: 'Logged In', value: 'loggedin' },
+    { title: 'Logged Out', value: 'loggedout' },
+    { title: 'Unregistered', value: 'unregistered' },
+  ]
+
+  const myRef = createRef<HTMLDivElement>()
+
+  const applyFilter = () => {
+    // filter stuff
+    // (...)
+
+    // close dropdown
+    if(myRef.current) {
+       myRef.current.focus()
+    }
   }
 
   return (
@@ -85,9 +186,20 @@ const EnhancedTableHead = ({ headerCells, order, orderBy, onRequestSort }: Enhan
                 <TableHeadText active={activeSorting}>{headerCell.label}</TableHeadText>
                 {headerCell.sortable ? <ArrowDownwardIcon {...sortProps} /> : null}
                 {headerCell.filter ? (
-                  <FilterWrapper>
+                  <>
+                  <HelperFocusItem tabIndex={-1} ref={myRef} />
+                  <FilterWrapper tabIndex={-1}>
                     <FilterSVG />
+                    <FilterDropdown>
+                      {options.map((item, index) => {
+                        return <FilterItem text={item.title} key={index} />
+                      })}
+                      <FilterButtonContainer>
+                        <ButtonStyled onClick={applyFilter} backgroundColor="#e72e9d">Apply</ButtonStyled>
+                      </FilterButtonContainer>
+                    </FilterDropdown>
                   </FilterWrapper>
+                  </>
                 ) : null}
               </TableHeadWrapper>
             </TableCell>
