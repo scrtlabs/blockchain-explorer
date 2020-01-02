@@ -78,7 +78,7 @@ const Worker = (props: any) => {
 
   React.useMemo(() => {
     const updateEpoches = async () => {
-      const response = await fetch(`${process.env.REACT_APP_ENIGMA_API}/workers/${workerAddress}`, { mode: 'no-cors' })
+      const response = await fetch(`${process.env.REACT_APP_ENIGMA_API}/workers/${workerAddress}`)
 
       if (response.ok) {
         setEpoches(await response.json())
