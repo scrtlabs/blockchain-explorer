@@ -3,6 +3,8 @@ import { Enigma } from 'enigma-js/node'
 import config from './config/constants'
 import getNetworkDetailsBy from './networks'
 
+export const ENG_DECIMALS = 8
+
 class EnigmaAPI {
   constructor() {
     // web3

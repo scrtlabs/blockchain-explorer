@@ -1,9 +1,11 @@
 import gql from 'graphql-tag'
 import JSBI from 'jsbi'
-import EnigmaAPI from './enigma'
+import EnigmaAPI, { ENG_DECIMALS } from './enigma'
 import apolloClient from './apolloClient'
 import { updateOrCreateEpoch } from './controller/epoch'
 import { updateOrCreateWorker } from './controller/worker'
+
+const castToENGInt = amount => `1e${ENG_DECIMALS}` * amount
 
 const epochFragment = gql`
   fragment EpochFragment on Epoch {
@@ -44,7 +46,7 @@ async function initApolloSubscription(startAt = 0) {
           firstBlockNumber: parseInt(epoch.startBlockNumber),
           seed: JSBI.BigInt(epoch.seed),
           workers: epoch.workers.map(({ id }) => id),
-          stakes: epoch.stakes.map(stake => JSBI.BigInt(stake))
+          stakes: epoch.stakes.map(stake => JSBI.BigInt(castToENGInt(stake)))
         }
 
         const selectedWorkers = []
