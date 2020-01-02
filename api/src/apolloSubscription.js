@@ -44,7 +44,7 @@ async function initApolloSubscription(startAt = 0) {
 
         const params = {
           firstBlockNumber: parseInt(epoch.startBlockNumber),
-          seed: JSBI.BigInt(castToENGInt(epoch.seed)),
+          seed: JSBI.BigInt(epoch.seed),
           workers: epoch.workers.map(({ id }) => id),
           stakes: epoch.stakes.map(stake => JSBI.BigInt(castToENGInt(stake)))
         }
