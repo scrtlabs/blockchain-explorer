@@ -14,11 +14,17 @@ export enum FlexAlign {
   'start' = 'flex-start',
 }
 
+export type FilterOption = {
+  title: string
+  value: string
+}
+
 export type HeaderCell = {
   align: FlexAlign
   id: string
   label: string
   filter?: boolean
+  filterOptions?: FilterOption[]
   sortable: boolean
   useClassShowOnDesktop: boolean
 }
@@ -28,6 +34,8 @@ export interface EnhancedTableHeadProps extends React.HTMLAttributes<HTMLDivElem
   order: 'asc' | 'desc'
   orderBy: string
   onRequestSort: CallableFunction
+  onRequestFilter?: CallableFunction
+  filteredDataSet?: boolean
 }
 
 const COLOR_DEFAULT = '#999'
@@ -133,25 +141,69 @@ const ButtonStyled = styled(Button)`
   text-transform: uppercase;
 `
 
-const EnhancedTableHead = ({ headerCells, order, orderBy, onRequestSort }: EnhancedTableHeadProps) => {
+export type TableFilterProps = {
+  options?: FilterOption[]
+  myRef: any
+  applyFilter: Function
+  item: string
+}
+
+const TableFilter = ({ options, myRef, applyFilter, item }: TableFilterProps) => {
+  options = options || []
+  const [optionsSelection, setOptionsSelection] = React.useState(
+    options.reduce((acc: { [index: string]: boolean }, { value }) => {
+      acc[value] = false
+      return acc
+    }, {}),
+  )
+
+  const onChangeFilterItem = (item: string, isChecked: boolean) => {
+    setOptionsSelection(prevState => ({ ...prevState, [item]: isChecked }))
+  }
+
+  return (
+    <>
+      <HelperFocusItem tabIndex={-1} ref={myRef} />
+      <FilterWrapper tabIndex={-1}>
+        <FilterSVG />
+        <FilterDropdown>
+          {options &&
+            options.map(({ title, value }) => (
+              <FilterItem onChange={onChangeFilterItem} text={title} value={value} key={value} />
+            ))}
+          <FilterButtonContainer>
+            <ButtonStyled onClick={() => applyFilter(optionsSelection, item)} backgroundColor="#e72e9d">
+              Apply
+            </ButtonStyled>
+          </FilterButtonContainer>
+        </FilterDropdown>
+      </FilterWrapper>
+    </>
+  )
+}
+
+const EnhancedTableHead = ({
+  headerCells,
+  order,
+  orderBy,
+  onRequestSort,
+  onRequestFilter,
+  filteredDataSet,
+}: EnhancedTableHeadProps) => {
   const createSortHandler = (property: string) => (event: React.SyntheticEvent) => {
     onRequestSort(event, property)
   }
-  const options = [
-    { title: 'Logged In', value: 'loggedin' },
-    { title: 'Logged Out', value: 'loggedout' },
-    { title: 'Unregistered', value: 'unregistered' },
-  ]
 
   const myRef = createRef<HTMLDivElement>()
 
-  const applyFilter = () => {
-    // filter stuff
-    // (...)
+  const applyFilter = (optionsSelection: { [index: string]: boolean }, item: string) => {
+    // apply filter
+    const selectedOptions = Object.keys(optionsSelection).filter(k => optionsSelection[k])
+    onRequestFilter && onRequestFilter(item, selectedOptions)
 
     // close dropdown
-    if(myRef.current) {
-       myRef.current.focus()
+    if (myRef.current) {
+      myRef.current.focus()
     }
   }
 
@@ -186,20 +238,12 @@ const EnhancedTableHead = ({ headerCells, order, orderBy, onRequestSort }: Enhan
                 <TableHeadText active={activeSorting}>{headerCell.label}</TableHeadText>
                 {headerCell.sortable ? <ArrowDownwardIcon {...sortProps} /> : null}
                 {headerCell.filter ? (
-                  <>
-                  <HelperFocusItem tabIndex={-1} ref={myRef} />
-                  <FilterWrapper tabIndex={-1}>
-                    <FilterSVG />
-                    <FilterDropdown>
-                      {options.map((item, index) => {
-                        return <FilterItem text={item.title} key={index} />
-                      })}
-                      <FilterButtonContainer>
-                        <ButtonStyled onClick={applyFilter} backgroundColor="#e72e9d">Apply</ButtonStyled>
-                      </FilterButtonContainer>
-                    </FilterDropdown>
-                  </FilterWrapper>
-                  </>
+                  <TableFilter
+                    myRef={myRef}
+                    options={headerCell.filterOptions}
+                    item={headerCell.id}
+                    applyFilter={applyFilter}
+                  />
                 ) : null}
               </TableHeadWrapper>
             </TableCell>

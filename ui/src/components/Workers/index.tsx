@@ -2,13 +2,19 @@ import React from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import { History } from 'history'
 import BaseTable from '../Common/BaseTable'
-import { FlexAlign } from '../Common/EnhancedTableHead'
+import { FilterOption, FlexAlign } from '../Common/EnhancedTableHead'
 import HexAddr from '../Common/HexAddr'
 import SectionTitle from 'components/Common/SectionTitle'
 import { Value } from 'components/Common/GridCell'
 import SearchBar from '../Common/SearchBar'
 import { Direction, GraphToField, FieldToGraph, WorkerBasicData } from './types'
-import { WORKERS_INITIAL_VALUES, WORKERS_QUERY, WORKERS_BY_ID_QUERY } from './queries'
+import {
+  WORKERS_INITIAL_VALUES,
+  WORKERS_QUERY,
+  WORKERS_BY_ID_QUERY,
+  WORKERS_BY_STATUS_QUERY,
+  WORKERS_BY_NOT_STATUS_QUERY,
+} from './queries'
 import { DocumentNode } from 'graphql'
 
 interface WorkerIdProps {
@@ -23,11 +29,26 @@ const WorkerId: React.FC<WorkerIdProps> = ({ id, onClick }) => (
   </Value>
 )
 
+const workerStatusMap = {
+  LoggedIn: 'logged in',
+  LoggedOut: 'logged out',
+  Unregistered: 'unregistered',
+}
+
+const statusFilterOptions: FilterOption[] = Object.keys(workerStatusMap).map(k => ({
+  title: workerStatusMap[k as keyof typeof workerStatusMap]
+    .split(' ')
+    .map(s => s.charAt(0).toUpperCase() + s.substring(1))
+    .join(' '),
+  value: k,
+}))
+
 const HEADER_CELLS = [
   { id: 'workerAddress', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.start, label: 'Address' },
   {
     align: FlexAlign.center,
     filter: true,
+    filterOptions: statusFilterOptions,
     id: 'workerStatus',
     label: 'Status',
     sortable: false,
@@ -67,25 +88,59 @@ interface WorkersProps {
   history: History
   query: DocumentNode
   queryVariables: any
+  handleRequestFilter: CallableFunction
+  filteredDataSet: boolean
 }
 
 const WorkersWrapper: React.FC<any> = ({ history }) => {
   const [workerParams, setWorkerParams] = React.useState({
     query: WORKERS_QUERY,
     queryVariables: WORKERS_INITIAL_VALUES,
+    filteredDataSet: false,
   })
 
-  const handleRequestSearch = async (event: React.SyntheticEvent<React.FormEvent>, id: any) => {
+  const handleRequestSearch = (event: React.SyntheticEvent<React.FormEvent>, id: any) => {
     event.preventDefault()
     event.stopPropagation()
 
     if (!id) return
 
-    setWorkerParams({ query: WORKERS_BY_ID_QUERY, queryVariables: { ...WORKERS_INITIAL_VALUES, id } })
+    setWorkerParams({
+      query: WORKERS_BY_ID_QUERY,
+      queryVariables: { ...WORKERS_INITIAL_VALUES, id },
+      filteredDataSet: true,
+    })
   }
 
   const handleClearSearch = () => {
-    setWorkerParams({ query: WORKERS_QUERY, queryVariables: WORKERS_INITIAL_VALUES })
+    setWorkerParams({ query: WORKERS_QUERY, queryVariables: WORKERS_INITIAL_VALUES, filteredDataSet: false })
+  }
+
+  const handleRequestFilter = (itemId: string, selectedOptions: any[]) => {
+    if (itemId === 'workerStatus') {
+      switch (selectedOptions.length) {
+        case 1:
+          setWorkerParams({
+            query: WORKERS_BY_STATUS_QUERY,
+            queryVariables: { ...WORKERS_INITIAL_VALUES, status: selectedOptions[0] },
+            filteredDataSet: true,
+          })
+          break
+        case 2:
+          setWorkerParams({
+            query: WORKERS_BY_NOT_STATUS_QUERY,
+            queryVariables: {
+              ...WORKERS_INITIAL_VALUES,
+              status: Object.keys(workerStatusMap).find(k => !selectedOptions.includes(k)) || 'Unregistered',
+            },
+            filteredDataSet: true,
+          })
+          break
+        case 3:
+        default:
+          setWorkerParams({ query: WORKERS_QUERY, queryVariables: WORKERS_INITIAL_VALUES, filteredDataSet: false })
+      }
+    }
   }
 
   const right = (
@@ -99,18 +154,12 @@ const WorkersWrapper: React.FC<any> = ({ history }) => {
   return (
     <>
       <SectionTitle right={right}>Workers</SectionTitle>
-      <Workers {...workerParams} history={history} />
+      <Workers {...workerParams} handleRequestFilter={handleRequestFilter} history={history} />
     </>
   )
 }
 
-const workerStatusMap = {
-  LoggedIn: 'logged in',
-  LoggedOut: 'logged out',
-  Unregistered: 'unregistered',
-}
-
-const Workers: React.FC<WorkersProps> = ({ history, query, queryVariables }) => {
+const Workers: React.FC<WorkersProps> = ({ history, query, queryVariables, filteredDataSet, handleRequestFilter }) => {
   const { data, error, loading, variables, refetch } = useQuery(query, { variables: queryVariables })
   const { total, skip, orderBy, orderDirection } = variables
 
@@ -125,6 +174,7 @@ const Workers: React.FC<WorkersProps> = ({ history, query, queryVariables }) => 
       total,
       orderBy: FieldToGraph[sortField] === orderBy ? orderBy : FieldToGraph[sortField],
       orderDirection: orderDirection === Direction.descending ? Direction.ascending : Direction.descending,
+      status: filteredDataSet && variables.status,
     })
   }
 
@@ -195,6 +245,8 @@ const Workers: React.FC<WorkersProps> = ({ history, query, queryVariables }) => 
         order: orderDirection,
         orderBy: GraphToField[orderBy as keyof typeof GraphToField],
         onRequestSort: handleRequestSort,
+        onRequestFilter: handleRequestFilter,
+        filteredDataSet,
       }}
       rows={data && data.workers && data.workers.map(extractWorkerData)}
       paginatorProps={{

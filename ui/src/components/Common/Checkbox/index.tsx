@@ -28,7 +28,7 @@ const CheckboxWrapper = styled.div`
 `
 
 interface CheckboxProps {
-  checked?: boolean,
+  checked?: boolean
   onChange?: any
 }
 

@@ -20,16 +20,23 @@ const Text = styled.span`
 
 interface CheckboxProps {
   checked?: boolean
-  onChange?: any
-  text: any
+  onChange: CallableFunction
+  text: string
+  value: string
 }
 
 const FilterItem: React.FC<CheckboxProps> = (props: CheckboxProps) => {
-  const { text, checked, onChange, ...restProps } = props
+  const { text, value, checked, onChange, ...restProps } = props
   const [isChecked, setChecked] = useState(checked || false)
 
   const updateChecked = () => {
-    setChecked(!isChecked)
+    setChecked(prevState => {
+      const newState = !prevState
+
+      onChange(value, newState)
+
+      return newState
+    })
   }
 
   return (
