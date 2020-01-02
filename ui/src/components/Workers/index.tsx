@@ -30,7 +30,7 @@ const HEADER_CELLS = [
     filter: true,
     id: 'workerStatus',
     label: 'Status',
-    sortable: true,
+    sortable: false,
     useClassShowOnDesktop: false,
   },
   {
