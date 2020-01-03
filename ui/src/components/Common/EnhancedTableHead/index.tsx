@@ -63,7 +63,7 @@ const FilterWrapper = styled.div<{ active?: boolean }>`
   position: relative;
 
   > svg {
-    fill: ${COLOR_DEFAULT};
+    fill: ${props => (props.active ? COLOR_ACTIVE : COLOR_DEFAULT)};
   }
 
   &:focus-within {
@@ -146,9 +146,10 @@ export type TableFilterProps = {
   myRef: any
   applyFilter: Function
   item: string
+  filteredDataSet?: boolean
 }
 
-const TableFilter = ({ options, myRef, applyFilter, item }: TableFilterProps) => {
+const TableFilter = ({ options, myRef, applyFilter, item, filteredDataSet }: TableFilterProps) => {
   options = options || []
   const [optionsSelection, setOptionsSelection] = React.useState(
     options.reduce((acc: { [index: string]: boolean }, { value }) => {
@@ -164,7 +165,7 @@ const TableFilter = ({ options, myRef, applyFilter, item }: TableFilterProps) =>
   return (
     <>
       <HelperFocusItem tabIndex={-1} ref={myRef} />
-      <FilterWrapper tabIndex={-1}>
+      <FilterWrapper tabIndex={-1} active={filteredDataSet}>
         <FilterSVG />
         <FilterDropdown>
           {options &&
@@ -235,12 +236,15 @@ const EnhancedTableHead = ({
               }}
             >
               <TableHeadWrapper alignElements={headerCell.align}>
-                <TableHeadText active={activeSorting}>{headerCell.label}</TableHeadText>
+                <TableHeadText active={headerCell.filter ? filteredDataSet : activeSorting}>
+                  {headerCell.label}
+                </TableHeadText>
                 {headerCell.sortable ? <ArrowDownwardIcon {...sortProps} /> : null}
                 {headerCell.filter ? (
                   <TableFilter
                     myRef={myRef}
                     options={headerCell.filterOptions}
+                    filteredDataSet={filteredDataSet}
                     item={headerCell.id}
                     applyFilter={applyFilter}
                   />

@@ -30,9 +30,9 @@ const WorkerId: React.FC<WorkerIdProps> = ({ id, onClick }) => (
 )
 
 const workerStatusMap = {
-  LoggedIn: 'logged in',
-  LoggedOut: 'logged out',
-  Unregistered: 'unregistered',
+  LoggedIn: 'Logged In',
+  LoggedOut: 'Logged Out',
+  Unregistered: 'Unregistered',
 }
 
 const statusFilterOptions: FilterOption[] = Object.keys(workerStatusMap).map(k => ({
