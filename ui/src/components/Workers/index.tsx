@@ -2,13 +2,19 @@ import React from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import { History } from 'history'
 import BaseTable from '../Common/BaseTable'
-import { FlexAlign } from '../Common/EnhancedTableHead'
+import { FilterOption, FlexAlign } from '../Common/EnhancedTableHead'
 import HexAddr from '../Common/HexAddr'
 import SectionTitle from 'components/Common/SectionTitle'
 import { Value } from 'components/Common/GridCell'
 import SearchBar from '../Common/SearchBar'
 import { Direction, GraphToField, FieldToGraph, WorkerBasicData } from './types'
-import { WORKERS_INITIAL_VALUES, WORKERS_QUERY, WORKERS_BY_ID_QUERY } from './queries'
+import {
+  WORKERS_INITIAL_VALUES,
+  WORKERS_QUERY,
+  WORKERS_BY_ID_QUERY,
+  WORKERS_BY_STATUS_QUERY,
+  WORKERS_BY_NOT_STATUS_QUERY,
+} from './queries'
 import { DocumentNode } from 'graphql'
 
 interface WorkerIdProps {
@@ -23,35 +29,58 @@ const WorkerId: React.FC<WorkerIdProps> = ({ id, onClick }) => (
   </Value>
 )
 
+const workerStatusMap = {
+  LoggedIn: 'Logged In',
+  LoggedOut: 'Logged Out',
+  Unregistered: 'Unregistered',
+}
+
+const statusFilterOptions: FilterOption[] = Object.keys(workerStatusMap).map(k => ({
+  title: workerStatusMap[k as keyof typeof workerStatusMap]
+    .split(' ')
+    .map(s => s.charAt(0).toUpperCase() + s.substring(1))
+    .join(' '),
+  value: k,
+}))
+
 const HEADER_CELLS = [
   { id: 'workerAddress', useClassShowOnDesktop: false, sortable: true, align: FlexAlign.start, label: 'Address' },
   {
-    id: 'workerStackedEng',
-    useClassShowOnDesktop: false,
-    sortable: true,
-    align: FlexAlign.end,
-    label: 'Staked',
-  },
-  {
-    id: 'workerActiveVsTotal',
-    useClassShowOnDesktop: true,
-    sortable: false,
     align: FlexAlign.center,
-    label: 'Epochs Active / Total Epochs',
-  },
-  {
-    id: 'workerCompletedTasks',
-    useClassShowOnDesktop: true,
+    filter: true,
+    filterOptions: statusFilterOptions,
+    id: 'workerStatus',
+    label: 'Status',
     sortable: false,
-    align: FlexAlign.end,
-    label: '% Of Completed Tasks',
+    useClassShowOnDesktop: false,
   },
   {
-    id: 'workerEngReward',
-    useClassShowOnDesktop: false,
-    sortable: true,
     align: FlexAlign.end,
+    id: 'workerStackedEng',
+    label: 'Staked',
+    sortable: true,
+    useClassShowOnDesktop: false,
+  },
+  {
+    align: FlexAlign.center,
+    id: 'workerActiveVsTotal',
+    label: 'Epochs Active / Total Epochs',
+    sortable: false,
+    useClassShowOnDesktop: true,
+  },
+  {
+    align: FlexAlign.end,
+    id: 'workerCompletedTasks',
+    label: '% Of Completed Tasks',
+    sortable: false,
+    useClassShowOnDesktop: true,
+  },
+  {
+    align: FlexAlign.end,
+    id: 'workerEngReward',
     label: 'Reward',
+    sortable: true,
+    useClassShowOnDesktop: false,
   },
 ]
 
@@ -59,25 +88,59 @@ interface WorkersProps {
   history: History
   query: DocumentNode
   queryVariables: any
+  handleRequestFilter: CallableFunction
+  filteredDataSet: boolean
 }
 
 const WorkersWrapper: React.FC<any> = ({ history }) => {
   const [workerParams, setWorkerParams] = React.useState({
     query: WORKERS_QUERY,
     queryVariables: WORKERS_INITIAL_VALUES,
+    filteredDataSet: false,
   })
 
-  const handleRequestSearch = async (event: React.SyntheticEvent<React.FormEvent>, id: any) => {
+  const handleRequestSearch = (event: React.SyntheticEvent<React.FormEvent>, id: any) => {
     event.preventDefault()
     event.stopPropagation()
 
     if (!id) return
 
-    setWorkerParams({ query: WORKERS_BY_ID_QUERY, queryVariables: { ...WORKERS_INITIAL_VALUES, id } })
+    setWorkerParams({
+      query: WORKERS_BY_ID_QUERY,
+      queryVariables: { ...WORKERS_INITIAL_VALUES, id },
+      filteredDataSet: true,
+    })
   }
 
   const handleClearSearch = () => {
-    setWorkerParams({ query: WORKERS_QUERY, queryVariables: WORKERS_INITIAL_VALUES })
+    setWorkerParams({ query: WORKERS_QUERY, queryVariables: WORKERS_INITIAL_VALUES, filteredDataSet: false })
+  }
+
+  const handleRequestFilter = (itemId: string, selectedOptions: any[]) => {
+    if (itemId === 'workerStatus') {
+      switch (selectedOptions.length) {
+        case 1:
+          setWorkerParams({
+            query: WORKERS_BY_STATUS_QUERY,
+            queryVariables: { ...WORKERS_INITIAL_VALUES, status: selectedOptions[0] },
+            filteredDataSet: true,
+          })
+          break
+        case 2:
+          setWorkerParams({
+            query: WORKERS_BY_NOT_STATUS_QUERY,
+            queryVariables: {
+              ...WORKERS_INITIAL_VALUES,
+              status: Object.keys(workerStatusMap).find(k => !selectedOptions.includes(k)) || 'Unregistered',
+            },
+            filteredDataSet: true,
+          })
+          break
+        case 3:
+        default:
+          setWorkerParams({ query: WORKERS_QUERY, queryVariables: WORKERS_INITIAL_VALUES, filteredDataSet: false })
+      }
+    }
   }
 
   const right = (
@@ -91,12 +154,12 @@ const WorkersWrapper: React.FC<any> = ({ history }) => {
   return (
     <>
       <SectionTitle right={right}>Workers</SectionTitle>
-      <Workers {...workerParams} history={history} />
+      <Workers {...workerParams} handleRequestFilter={handleRequestFilter} history={history} />
     </>
   )
 }
 
-const Workers: React.FC<WorkersProps> = ({ history, query, queryVariables }) => {
+const Workers: React.FC<WorkersProps> = ({ history, query, queryVariables, filteredDataSet, handleRequestFilter }) => {
   const { data, error, loading, variables, refetch } = useQuery(query, { variables: queryVariables })
   const { total, skip, orderBy, orderDirection } = variables
 
@@ -111,6 +174,7 @@ const Workers: React.FC<WorkersProps> = ({ history, query, queryVariables }) => 
       total,
       orderBy: FieldToGraph[sortField] === orderBy ? orderBy : FieldToGraph[sortField],
       orderDirection: orderDirection === Direction.descending ? Direction.ascending : Direction.descending,
+      status: filteredDataSet && variables.status,
     })
   }
 
@@ -136,26 +200,32 @@ const Workers: React.FC<WorkersProps> = ({ history, query, queryVariables }) => 
       id: `${worker.id}_${worker.id}`,
       value: <WorkerId id={worker.id} onClick={() => goToWorkerDetails(worker.id)} />,
     }
-    const balance = {
+    const status = {
       align: HEADER_CELLS[1].align,
+      useClassShowOnDesktop: false,
+      id: `${worker.id}_${worker.status}`,
+      value: workerStatusMap[worker.status as keyof typeof workerStatusMap],
+    }
+    const balance = {
+      align: HEADER_CELLS[2].align,
       useClassShowOnDesktop: false,
       id: `${worker.id}_${worker.balance}`,
       value: worker.balance,
     }
     const epochCount = {
-      align: HEADER_CELLS[2].align,
+      align: HEADER_CELLS[3].align,
       useClassShowOnDesktop: true,
       id: `${worker.id}_${worker.epochCount}_${totalEpochs}`,
       value: `${worker.epochCount} of ${totalEpochs}`,
     }
     const percentage = {
-      align: HEADER_CELLS[3].align,
+      align: HEADER_CELLS[4].align,
       useClassShowOnDesktop: true,
       id: `${worker.id}_${worker.completedTaskCount + worker.failedTaskCount}_t_${index}`,
       value: `${totalTasks ? Math.floor(+(+worker.completedTaskCount / totalTasks).toFixed(2) * 100) : 0}%`,
     }
     const reward = {
-      align: HEADER_CELLS[4].align,
+      align: HEADER_CELLS[5].align,
       useClassShowOnDesktop: false,
       id: `${worker.id}_${worker.reward}`,
       value: worker.reward || '-',
@@ -163,7 +233,7 @@ const Workers: React.FC<WorkersProps> = ({ history, query, queryVariables }) => 
 
     return {
       id: worker.id,
-      cells: [id, balance, epochCount, percentage, reward],
+      cells: [id, status, balance, epochCount, percentage, reward],
     }
   }
 
@@ -175,6 +245,8 @@ const Workers: React.FC<WorkersProps> = ({ history, query, queryVariables }) => 
         order: orderDirection,
         orderBy: GraphToField[orderBy as keyof typeof GraphToField],
         onRequestSort: handleRequestSort,
+        onRequestFilter: handleRequestFilter,
+        filteredDataSet,
       }}
       rows={data && data.workers && data.workers.map(extractWorkerData)}
       paginatorProps={{

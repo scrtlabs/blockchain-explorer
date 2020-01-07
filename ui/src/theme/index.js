@@ -42,7 +42,7 @@ const theme = {
     xxxl: '1366px',
   },
   borders: {
-    borderColor: '#d5d5d5',
+    borderColor: '#efefef',
     commonBorderRadius: '5px',
   },
   separation: {

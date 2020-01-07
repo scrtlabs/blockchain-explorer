@@ -9,6 +9,7 @@ const basicWorkerFragment = gql`
     completedTaskCount
     failedTaskCount
     reward
+    status
   }
 `
 
@@ -47,10 +48,61 @@ export const WORKERS_BY_ID_QUERY = gql`
   ${globalWorkerStatsFragment}
 `
 
+export const WORKERS_BY_STATUS_QUERY = gql`
+  query WorkersByStatus(
+    $total: Int
+    $skip: Int
+    $orderBy: Worker_orderBy
+    $orderDirection: OrderDirection
+    $status: String
+  ) {
+    workers(
+      first: $total
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: { status: $status }
+    ) {
+      ...BasicWorkerFragment
+    }
+    enigmaState(id: 0) {
+      ...GlobalWorkerStatsFragment
+    }
+  }
+  ${basicWorkerFragment}
+  ${globalWorkerStatsFragment}
+`
+
+export const WORKERS_BY_NOT_STATUS_QUERY = gql`
+  query WorkersByStatus(
+    $total: Int
+    $skip: Int
+    $orderBy: Worker_orderBy
+    $orderDirection: OrderDirection
+    $status: String
+  ) {
+    workers(
+      first: $total
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: { status_not: $status }
+    ) {
+      ...BasicWorkerFragment
+    }
+    enigmaState(id: 0) {
+      ...GlobalWorkerStatsFragment
+    }
+  }
+  ${basicWorkerFragment}
+  ${globalWorkerStatsFragment}
+`
+
 export const WORKERS_INITIAL_VALUES = {
   total: 10,
   skip: 0,
   orderBy: FieldToGraph.workerAddress,
   orderDirection: Direction.descending,
+  status: 'Unregistered',
   id: undefined,
 }
