@@ -4,6 +4,7 @@ import Card from '../Common/Card'
 import { useSubscription } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { enigmaTicker } from '../../utils/api'
+import WorkerInfoCard from '../NetworkWorkerInfoCard'
 
 const NetworkInfoCardStyled = styled(Card)`
   min-width: 244px;
@@ -25,7 +26,7 @@ const Title = styled.h2`
   margin: 0;
 `
 
-const Value = styled.p`
+export const Value = styled.p`
   color: ${props => props.theme.colors.textCommon};
   font-size: 22px;
   font-weight: normal;
@@ -53,7 +54,7 @@ const INFO = [
     key: 'users',
   },
   {
-    title: 'Workers',
+    title: 'Workers (logged in / registered)',
     key: 'workers',
   },
   {
@@ -115,9 +116,13 @@ const NetworkInfoCard = ({ ...restProps }) => {
         return (
           <Item key={item.key}>
             <Title>{item.title}</Title>
-            <Value>
-              {stats[item.key as keyof typeof stats]} {item.code && <Code>{item.code}</Code>}
-            </Value>
+            {item.key === 'workers' ? (
+              <WorkerInfoCard totalWorkers={+stats[item.key as keyof typeof stats]} />
+            ) : (
+              <Value>
+                {stats[item.key as keyof typeof stats]} {item.code && <Code>{item.code}</Code>}
+              </Value>
+            )}
           </Item>
         )
       })}
