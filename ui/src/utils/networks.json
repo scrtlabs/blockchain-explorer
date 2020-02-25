@@ -2,7 +2,7 @@
   "kovan": {
     "url": "https://kovan.infura.io",
     "id": 42,
-    "label": "Kovan"
+    "label": "Discovery Testnet"
   },
   "mainnet": {
     "url": "https://mainnet.infura.io",

@@ -2,27 +2,54 @@ version: '3'
 
 services:
 
-  block_explorer:
+  explorer:
+    hostname: explorer
     image: enigmampc/block_explorer:develop
     build: ./ui
     working_dir: /app
-    network_mode: host
     expose:
-      - '${BLOCK_EXPLORER_PORT}'
+      - ${BLOCK_EXPLORER_PORT}
     environment:
       - 'PORT=${BLOCK_EXPLORER_PORT}'
 
-  block_explorer_api:
+  api:
+    hostname: api
     image: enigmapmc/block_explorer_api:develop
     restart: always
     build: ./api
-    ports:
-      - '${BLOCK_EXPLORER_API_PORT}:${BLOCK_EXPLORER_API_PORT}'
-    network_mode: host
+    expose:
+      - ${BLOCK_EXPLORER_API_PORT}
 
   block_explorer_mongodb:
+    hostname: mongo
+    container_name: mongo
     image: mongo:4.0
     volumes:
       - './data:/data/db'
+    expose:
+      - ${BLOCK_EXPLORER_DB_PORT}
+
+  nginx:
+    image: nginx:latest
+    hostname: nginx
+    restart: unless-stopped
+    volumes:
+      - ./config/nginx:/etc/nginx/conf.d
+      - ./config/certbot/conf:/etc/letsencrypt
+      - ./config/certbot/www:/var/www/certbot
+    depends_on:
+      - explorer
+      - api
     ports:
-      - '${BLOCK_EXPLORER_DB_PORT}:${BLOCK_EXPLORER_DB_PORT}'
+      - "80:80"
+      - "8081:8081"
+      - "443:443"
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./config/certbot/conf:/etc/letsencrypt
+      - ./config/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
